@@ -3,8 +3,9 @@
         <div class="row gy-4">
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-2">
-                    <div class="logo-icon me-2"></div>
-                    <div class="footer-logo">Online<span>marketbd</span></div>
+                    {{-- <div class="logo-icon me-2"></div>
+                    <div class="footer-logo">Online<span>marketbd</span></div> --}}
+                     <img src="{{ asset('Online-Market-BD-Logo.png') }}" width="220" height="60" alt="" srcset="">
                 </div>
                 <p class="footer-small mb-2">
                     A smart directory for small businesses across Bangladesh. Discover local services,
@@ -46,7 +47,7 @@
                 </p>
                 <form class="d-flex footer-input-group">
                     <input type="email" class="form-control" placeholder="Enter your email">
-                    <button class="btn btn-warning" type="button">Subscribe</button>
+                    <button class="btn" style="background-color: #ff7a1a" type="button">Subscribe</button>
                 </form>
             </div>
         </div>

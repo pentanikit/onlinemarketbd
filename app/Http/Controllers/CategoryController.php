@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+
     public function index(Request $request)
     {
         $q    = $request->get('q');
@@ -87,6 +89,80 @@ class CategoryController extends Controller
         return redirect()->back()->with('success', 'Category updated successfully.');
     }
 
+
+
+    public function show(Request $request, Category $category)
+    {
+        // Top nav (parent categories)
+        $topCategories = Category::parents()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id','name','slug','image']);
+
+        // Sidebar "Popular Cuisines" → sub categories of current parent (if any)
+        $currentParent = $category->parent_id ? $category->parent : $category;
+        $subCategories = Category::query()
+            ->where('parent_id', $currentParent->id)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id','name','slug','image']);
+
+        // Filters
+        $q      = trim((string) $request->get('q', ''));
+        $cityId = $request->get('city_id'); // optional if you use city filter
+
+        // Main listings query (active only)
+        $listings = Listing::query()
+            ->active()
+            ->where('category_id', $category->id)
+            ->with([
+                'category:id,name,slug',
+                'city:id,name,slug',
+                'address', // adjust select if needed
+                'primaryPhoto:id,listing_id,path,is_primary', // adjust column names
+            ])
+            ->when($cityId, fn($qq) => $qq->where('city_id', $cityId))
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('name', 'like', "%{$q}%")
+                      ->orWhere('tagline', 'like', "%{$q}%")
+                      ->orWhere('description', 'like', "%{$q}%");
+                });
+            })
+            ->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Featured listings (example: highest rating within same category)
+        $featured = Listing::query()
+            ->active()
+            ->where('category_id', $category->id)
+            ->orderByDesc('avg_rating')
+            ->orderByDesc('review_count')
+            ->limit(3)
+            ->get(['id','name','phone','slug','category_id']);
+
+        // Breadcrumb pieces (simple)
+        $breadcrumb = [
+            ['label' => 'Home', 'url' => url('/')],
+            ['label' => $currentParent->name, 'url' => route('frontend.category.show', $currentParent->slug)],
+        ];
+        if ($category->parent_id) {
+            $breadcrumb[] = ['label' => $category->name, 'url' => route('frontend.category.show', $category->slug)];
+        }
+
+        return view('frontend.categories.categories', compact(
+            'category',
+            'currentParent',
+            'topCategories',
+            'subCategories',
+            'listings',
+            'featured',
+            'breadcrumb',
+            'q',
+            'cityId'
+        ));
+    }
 
 
     public function destroy(Category $category)

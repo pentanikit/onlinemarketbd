@@ -36,7 +36,7 @@ public function listing()
                    ->orWhere('slug', 'like', "%{$q}%")
                    ->orWhere('phone', 'like', "%{$q}%")
                    ->orWhere('email', 'like', "%{$q}%")
-                   ->orWhereHas('user', function ($u) use ($q) {
+                   ->orWhereHas('owner', function ($u) use ($q) {
                        $u->where('name', 'like', "%{$q}%")
                          ->orWhere('email', 'like', "%{$q}%");
                    });

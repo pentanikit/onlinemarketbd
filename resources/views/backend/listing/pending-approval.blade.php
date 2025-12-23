@@ -127,7 +127,7 @@
                   <td class="text-muted">{{ $listing->created_at?->diffForHumans() ?? '—' }}</td>
 
                   <td class="text-end">
-                    <a href="{{ route('listings.pending.show', $listing->id) }}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{{ route('listings.pending', $listing->id) }}" class="btn btn-sm btn-outline-secondary">
                       <i class="bi bi-eye"></i>
                     </a>
 

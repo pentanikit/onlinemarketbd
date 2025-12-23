@@ -314,6 +314,188 @@ class ListingController extends Controller
     }
 
 
+
+    public function search(Request $request)
+    {
+        // Inputs
+        $q       = trim((string) $request->get('q', ''));         // "What?"
+        $where   = trim((string) $request->get('where', ''));     // "Where?" (text)
+        $cityId  = $request->get('city_id');                      // optional (if you use dropdown)
+
+        // Resolve city by ID or by typed name/slug
+        $city = null;
+
+        if (!empty($cityId)) {
+            $city = City::query()->select('id','name','slug')->find($cityId);
+        } elseif ($where !== '') {
+            $city = City::query()
+                ->select('id','name','slug')
+                ->where('name', 'like', "%{$where}%")
+                ->orWhere('slug', 'like', "%{$where}%")
+                ->first();
+        }
+
+        // Top nav categories (parent categories)
+        $topCategories = Category::parents()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id','name','slug','image']);
+
+        // Listings query
+        $listingsQuery = Listing::query()
+            ->active()
+            ->with([
+                'category:id,name,slug',
+                'city:id,name,slug',
+                'address', // adjust fields if needed
+                'primaryPhoto', // we will read ->path in blade (change if your column name differs)
+            ])
+            ->when($city?->id, fn($qq) => $qq->where('city_id', $city->id))
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('name', 'like', "%{$q}%")
+                      ->orWhere('tagline', 'like', "%{$q}%")
+                      ->orWhere('description', 'like', "%{$q}%");
+                });
+            });
+
+        $listings = (clone $listingsQuery)
+            ->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Sidebar: Popular categories based on counts in current search
+        // (Works great even if you later add many categories)
+        $popularCategories = Category::query()
+            ->select('id','name','slug')
+            ->withCount(['listings as listings_count' => function ($qq) use ($city, $q) {
+                $qq->where('status', 'active')
+                   ->when($city?->id, fn($x) => $x->where('city_id', $city->id))
+                   ->when($q !== '', function ($x) use ($q) {
+                       $x->where(function ($w) use ($q) {
+                           $w->where('name', 'like', "%{$q}%")
+                             ->orWhere('tagline', 'like', "%{$q}%")
+                             ->orWhere('description', 'like', "%{$q}%");
+                       });
+                   });
+            }])
+            ->orderByDesc('listings_count')
+            ->limit(6)
+            ->get();
+
+        // Sidebar: Featured listings (best rating in current search)
+        $featured = (clone $listingsQuery)
+            ->orderByDesc('avg_rating')
+            ->orderByDesc('review_count')
+            ->limit(3)
+            ->get(['id','name','phone','slug','category_id','avg_rating','review_count']);
+
+        // Breadcrumb/title
+        $titleParts = [];
+        if ($q !== '') $titleParts[] = $q;
+        if ($city?->name) $titleParts[] = $city->name;
+
+        $pageTitle = count($titleParts)
+            ? 'Search Results: ' . implode(' in ', $titleParts)
+            : 'Search Results';
+
+        return view('frontend.search.search', compact(
+            'q', 'where', 'cityId', 'city',
+            'topCategories',
+            'listings',
+            'popularCategories',
+            'featured',
+            'pageTitle'
+        ));
+    }
+
+
+
+    public function single_listing(Request $request, Listing $listing)
+    {
+        // Only active listing for public (change if you want)
+        if ($listing->status !== 'active') {
+            abort(404);
+        }
+
+        // Load relationships
+        $listing->load([
+            'category.parent',
+            'city',
+            'address',
+            'hours',
+            'photos',
+            'primaryPhoto',
+        ]);
+
+        // Top nav parent categories
+        $topCategories = Category::parents()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id','name','slug','image']);
+
+        // Breadcrumb pieces
+        $breadcrumb = [
+            ['label' => 'Home', 'url' => url('/')],
+        ];
+
+        if ($listing->city) {
+            $breadcrumb[] = ['label' => $listing->city->name, 'url' => '#'];
+        }
+
+        if ($listing->category) {
+            // If category has parent, show parent then child
+            if ($listing->category->parent) {
+                $breadcrumb[] = [
+                    'label' => $listing->category->parent->name,
+                    'url' => route('frontend.category.show', $listing->category->parent->slug),
+                ];
+            }
+
+            $breadcrumb[] = [
+                'label' => $listing->category->name,
+                'url' => route('frontend.category.show', $listing->category->slug),
+            ];
+        }
+
+        $breadcrumb[] = ['label' => $listing->name, 'url' => route('frontend.listing.show', $listing->slug)];
+
+        // Hours: group by day (expects ListingHour has day/open/close OR similar)
+        // If your columns differ, I’ll adjust once you paste ListingHour migration.
+        $hoursByDay = $listing->hours
+            ->groupBy(function ($h) {
+                return $h->day ?? $h->weekday ?? 'Day';
+            });
+
+        // Nearby places: show nearby cities based on same category (simple, dynamic)
+        $nearbyCities = collect();
+        if ($listing->category_id) {
+            $nearbyCities = Listing::query()
+                ->active()
+                ->where('category_id', $listing->category_id)
+                ->whereNotNull('city_id')
+                ->where('city_id', '!=', $listing->city_id)
+                ->with('city:id,name,slug')
+                ->select('id','city_id')
+                ->distinct()
+                ->limit(6)
+                ->get()
+                ->pluck('city')
+                ->filter()
+                ->unique('id')
+                ->values();
+        }
+
+        return view('frontend.listing.single-listing', compact(
+            'listing',
+            'topCategories',
+            'breadcrumb',
+            'hoursByDay',
+            'nearbyCities'
+        ));
+    }
+
+
     /**
      * Map "Everyday" / "Mon – Fri" / etc. into day_of_week integers
      */

@@ -3,12 +3,16 @@
         <div class="row g-2">
             @forelse ($categories as $item)
                 <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
-                    <div class="category-card">
-                        <div class="category-icon-wrapper">
-                            <img src="{{ asset('storage/'.$item->image) }}" alt="" width="60" height="60" srcset="">
+                    <a href="{{ route('frontend.category.show', $item->slug) }}">
+                        <div class="category-card">
+                            <div class="category-icon-wrapper">
+                                <img src="{{ asset('storage/' . $item->image) }}" alt="" width="60"
+                                    height="60" srcset="">
+                            </div>
+                            <div class="category-label">{{ $item->name }}</div>
                         </div>
-                        <div class="category-label">{{ $item->name }}</div>
-                    </div>
+                    </a>
+
                 </div>
             @empty
                 <p>No Categories Found</p>

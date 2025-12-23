@@ -4,7 +4,7 @@
             <header class="site-header">
                 <nav class="navbar navbar-expand-md container p-0">
                     <!-- Logo -->
-                    <a class="navbar-brand d-flex align-items-center" href="#">
+                    <a class="navbar-brand d-flex align-items-center" href="{{ route('clientHome') }}">
                         {{-- <div class="logo-icon"></div>
                         <div class="logo-text">
                             Online<span>marketbd</span>
@@ -50,14 +50,16 @@
         <!-- SEARCH BAR -->
         <section class="search-section">
             <div class="container">
-                <form id="searchForm">
+                <form id="searchForm" action="{{ route('frontend.search') }}" method="GET" >
+                    @csrf
                     <div class="search-wrapper d-flex flex-column flex-md-row align-items-stretch">
                         <!-- Business search -->
                         <div class="flex-grow-1 d-flex align-items-center mb-2 mb-md-0">
                             <span class="input-group-text ps-3">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <input type="text" class="form-control" placeholder="Find The Business">
+                            <input type="text" class="form-control" name="q" value=""
+                               placeholder='"Find the business" etc.'>
                         </div>
     
                         <div class="divider d-none d-md-block mx-2"></div>
@@ -67,12 +69,7 @@
                             <span class="input-group-text ps-3">
                                 <i class="fa-solid fa-location-dot"></i>
                             </span>
-                            <select class="form-control">
-                                <option>Dhaka, BD</option>
-                                <option>Chattogram, BD</option>
-                                <option>Khulna, BD</option>
-                                <option>Rajshahi, BD</option>
-                            </select>
+                            <input type="text" name="where" class="form-control" value="" placeholder="Where?">
                         </div>
     
                         <div class="divider d-none d-md-block mx-2"></div>
@@ -88,3 +85,111 @@
             </div>
         </section>
     </div>
+
+
+    <style>
+                /* Header */
+        .site-header {
+            padding: 18px 0 10px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 26px;
+            color: #00306b;
+        }
+
+        .logo-text span {
+            color: #ff7a1a;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 40px;
+            border: 3px solid #00306b;
+            border-radius: 6px;
+            border-top-width: 6px;
+            margin-right: 6px;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 12px;
+            border: 3px solid #00306b;
+            border-radius: 10px;
+            border-bottom: none;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+          /* Orange border */
+        .custom-hamburger{
+            border: 2px solid #ff7921 !important;
+            border-radius: 10px;   /* you can change */
+            padding: 8px 10px;     /* you can change */
+        }
+
+        /* White hamburger lines (Bootstrap uses a background-image for the icon) */
+        .custom-hamburger .navbar-toggler-icon{
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .top-links a {
+            font-size: 13px;
+            margin-left: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .top-links a i {
+            margin-right: 5px;
+        }
+
+        .top-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Search bar */
+        .search-section {
+            padding: 18px 0 26px;
+        }
+
+        .search-wrapper {
+            border: 1px solid #e5e5e5;
+            border-radius: 30px;
+            background-color: #ffffff;
+            padding: 6px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.03);
+        }
+
+        .search-wrapper .form-control,
+        .search-wrapper .form-select {
+            border: none;
+            box-shadow: none !important;
+            font-size: 14px;
+        }
+
+        .search-wrapper .input-group-text {
+            background: transparent;
+            border: none;
+            color: #777;
+        }
+
+        .search-wrapper .divider {
+            width: 1px;
+            background-color: #eeeeee;
+            height: 32px;
+        }
+
+        .search-btn {
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 13px;
+            padding-inline: 28px;
+        }
+    </style>

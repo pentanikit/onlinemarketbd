@@ -21,6 +21,15 @@ Route::prefix('listings')->group(function(){
 
 
 
+Route::get('/category/{category:slug}', [CategoryController::class, 'show'])
+    ->name('frontend.category.show');
+
+Route::get('/search', [ListingController::class, 'search'])->name('frontend.search');
+
+Route::get('/listing/{listing:slug}', [ListingController::class, 'show'])
+    ->name('frontend.listing.show');
+
+
 //admin routes
 Route::prefix('admin')->group(function(){
 

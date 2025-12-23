@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Market BD – Business Directory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <!-- Font Awesome for icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #ffffff;
+        }
+
+        .top-border-line {
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Header */
+        .site-header {
+            padding: 18px 0 10px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 26px;
+            color: #00306b;
+        }
+
+        .logo-text span {
+            color: #ff7a1a;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 40px;
+            border: 3px solid #00306b;
+            border-radius: 6px;
+            border-top-width: 6px;
+            margin-right: 6px;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 12px;
+            border: 3px solid #00306b;
+            border-radius: 10px;
+            border-bottom: none;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .top-links a {
+            font-size: 13px;
+            margin-left: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .top-links a i {
+            margin-right: 5px;
+        }
+
+        .top-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Search bar */
+        .search-section {
+            padding: 18px 0 26px;
+        }
+
+        .search-wrapper {
+            border: 1px solid #e5e5e5;
+            border-radius: 30px;
+            background-color: #ffffff;
+            padding: 6px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.03);
+        }
+
+        .search-wrapper .form-control,
+        .search-wrapper .form-select {
+            border: none;
+            box-shadow: none !important;
+            font-size: 14px;
+        }
+
+        .search-wrapper .input-group-text {
+            background: transparent;
+            border: none;
+            color: #777;
+        }
+
+        .search-wrapper .divider {
+            width: 1px;
+            background-color: #eeeeee;
+            height: 32px;
+        }
+
+        .search-btn {
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 13px;
+            padding-inline: 28px;
+        }
+
+        /* Hero */
+        .hero-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e5e5;
+            padding: 30px 26px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.04);
+        }
+
+        .hero-left-img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hero-title {
+            font-size: 46px;
+            line-height: 1.1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .hero-text {
+            margin-top: 14px;
+            font-size: 17px;
+            color: #555;
+        }
+
+        .hero-btn {
+            margin-top: 28px;
+            background-color: #5ca623;
+            border-color: #5ca623;
+            font-weight: 600;
+            padding: 10px 35px;
+            border-radius: 0;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .hero-btn i {
+            margin-left: 6px;
+        }
+
+        /* Categories strip */
+        .category-strip {
+            margin-top: 18px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background-color: #ffffff;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            padding-top: 10px;
+            padding-bottom: 6px;
+            text-align: center;
+        }
+
+        .category-icon-wrapper {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: #000;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-icon-wrapper i {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .category-label {
+            font-size: 11px;
+            color: #333;
+        }
+
+        /* Manage Listing + About */
+
+
+        /* Mission & Vision */
+        .mission-vision-section {
+            padding: 20px 0 70px;
+        }
+
+        .mv-block {
+            margin-bottom: 60px;
+        }
+
+        .mv-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #111;
+        }
+
+        .mv-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #444;
+            max-width: 520px;
+        }
+
+        .mv-image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* FAQ */
+        .faq-section {
+            padding: 50px 0 60px;
+            background-color: #f7f9fc;
+        }
+
+        .faq-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .faq-intro {
+            text-align: center;
+            max-width: 620px;
+            margin: 0 auto 30px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .accordion-button {
+            font-size: 15px;
+        }
+
+        /* Footer */
+        .site-footer {
+            background-color: #0b1728;
+            color: #dfe6ef;
+            padding-top: 40px;
+            padding-bottom: 25px;
+            margin-top: 0;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 22px;
+            color: #ffffff;
+        }
+
+        .footer-logo span {
+            color: #ffb347;
+        }
+
+        .footer-heading {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .footer-link {
+            font-size: 13px;
+            color: #dfe6ef;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        .footer-small {
+            font-size: 12px;
+            color: #9fb0c5;
+        }
+
+        .footer-input-group .form-control {
+            font-size: 13px;
+            border-radius: 999px 0 0 999px;
+            border: none;
+        }
+
+        .footer-input-group .btn {
+            border-radius: 0 999px 999px 0;
+            font-size: 13px;
+            padding-inline: 16px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin-top: 20px;
+            padding-top: 10px;
+            font-size: 12px;
+        }
+
+        .footer-social a {
+            color: #dfe6ef;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .footer-social a:hover {
+            color: #ffffff;
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-card {
+                padding: 18px 14px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+                margin-top: 16px;
+            }
+
+            .search-wrapper {
+                border-radius: 18px;
+                padding: 4px 8px;
+            }
+
+            .search-btn {
+                width: 100%;
+                margin-top: 6px;
+            }
+
+            .search-wrapper .divider {
+                display: none;
+            }
+
+            .manage-title {
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .manage-subtext {
+                text-align: center;
+            }
+
+            .listing-btn,
+            .listing-call {
+                text-align: center;
+            }
+
+            .mv-title {
+                font-size: 24px;
+                text-align: center;
+            }
+
+            .mv-text {
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .site-footer {
+                text-align: center;
+            }
+
+            .footer-input-group {
+                justify-content: center;
+            }
+        }
+
+        /* small helper for custom 1-5 width on large screens */
+        @media (min-width: 992px) {
+            .col-lg-1-5 {
+                flex: 0 0 auto;
+                width: 10%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div style="background-color: #0b1728; color: white;">
+        <!-- HEADER -->
+        <div class="container ">
+            <header class="site-header">
+                <nav class="navbar navbar-expand-md container p-0">
+                    <!-- Logo -->
+                    <a class="navbar-brand d-flex align-items-center" href="#">
+                        <div class="logo-icon"></div>
+                        <div class="logo-text">
+                            Online<span>marketbd</span>
+                        </div>
+                    </a>
+    
+                    <!-- Hamburger (mobile only) -->
+                    <button class="navbar-toggler d-block d-md-none border-0" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mainOffcanvas" aria-controls="mainOffcanvas" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+    
+                    <!-- Desktop menu -->
+                    <div class="ms-auto top-links d-none d-md-flex align-items-center" >
+                        <a href="#" style="color: white;"><i class="fa-regular fa-user"></i>About Us</a>
+                        <a href="#" style="color: white;"><i class="fa-solid fa-bullseye"></i>Mission</a>
+                        <a href="#" style="color: white;"><i class="fa-regular fa-circle-dot"></i>Vission</a>
+                    </div>
+                </nav>
+            </header>
+        </div>
+        <!-- OFFCANVAS MENU (MOBILE) -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mainOffcanvasLabel">Menu</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-regular fa-user me-2"></i>About Us</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-bullseye me-2"></i>Mission</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vission</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- SEARCH BAR -->
+        <section class="search-section">
+            <div class="container">
+                <form id="searchForm">
+                    <div class="search-wrapper d-flex flex-column flex-md-row align-items-stretch">
+                        <!-- Business search -->
+                        <div class="flex-grow-1 d-flex align-items-center mb-2 mb-md-0">
+                            <span class="input-group-text ps-3">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Find The Business">
+                        </div>
+    
+                        <div class="divider d-none d-md-block mx-2"></div>
+    
+                        <!-- Location -->
+                        <div class="flex-grow-0 flex-md-grow-0 d-flex align-items-center mb-2 mb-md-0 mx-md-2">
+                            <span class="input-group-text ps-3">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </span>
+                            <select class="form-control">
+                                <option>Dhaka, BD</option>
+                                <option>Chattogram, BD</option>
+                                <option>Khulna, BD</option>
+                                <option>Rajshahi, BD</option>
+                            </select>
+                        </div>
+    
+                        <div class="divider d-none d-md-block mx-2"></div>
+    
+                        <!-- Button -->
+                        <div class="d-flex align-items-center justify-content-md-end justify-content-center ms-md-auto">
+                            <button type="submit" class="btn btn-dark search-btn">
+                                FIND
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+
+
+
+<!-- HERO SECTION -->
+<section class="py-3">
+    <div class="container">
+        <div class="hero-card">
+            <div class="row align-items-center g-4">
+                <div class="col-md-6 text-center text-md-start">
+                    <!-- Replace src with your own left-side artwork -->
+                    <img src="./images/home_hero_image-removebg-preview.png" alt="Business Icons" class="hero-left-img">
+                </div>
+                <div class="col-md-6 text-center text-md-start">
+                    <h1 class="hero-title">Business<br>Directory</h1>
+                    <p class="hero-text">
+                        Helping you find right product and service company<br>
+                        for your online business
+                    </p>
+                    <button class="btn btn-success hero-btn">
+                        Get Listed Now <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORY STRIP -->
+<section class="category-strip">
+    <div class="container">
+        <div class="row g-2">
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <div class="category-label">Find People</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="category-label">Electricians</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <div class="category-label">Restaurants</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <div class="category-label">Auto Repair</div>
+                </div>
+            </div>
+
+            
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-tooth"></i>
+                    </div>
+                    <div class="category-label">Dentists</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-house-chimney"></i>
+                    </div>
+                    <div class="category-label">Roofing</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-wrench"></i>
+                    </div>
+                    <div class="category-label">Plumbers</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <div class="category-label">Attorneys</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-helmet-safety"></i>
+                    </div>
+                    <div class="category-label">Contractors</div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
+                <div class="category-card">
+                    <div class="category-icon-wrapper">
+                        <i class="fa-solid fa-hotel"></i>
+                    </div>
+                    <div class="category-label">Hotels</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MANAGE LISTING + ABOUT US SECTION -->
+<section class="manage-listing-section">
+    <div class="container ">
+        <div class="row align-items-center text-center text-md-start mb-5 py-5">
+            <!-- Left image circle -->
+            <div class="col-md-7 d-flex justify-content-center mb-3 mb-md-0">
+                <div class="listing-photo-wrapper">
+                    <!-- replace this image with your own -->
+                    <img src="./images/section left.PNG" alt="Manage Listing" class="listing-photo">
+                </div>
+            </div>
+
+            <!-- Right content -->
+            <div class="col-md-5">
+                <h2 class="manage-title">
+                    Manage your <span class="highlight-free">free</span> listing.
+                </h2>
+                <p class="manage-subtext mt-2 mb-1">
+                    Update your business information in a few steps.<br>
+                    Make it easy for your customers to find you on Yellowpages.
+                </p>
+                <p class="manage-subtext">
+                    <span class="new-label">New!</span> Post a job opening on your free listing.
+                </p>
+                <button class="btn btn-primary listing-btn">
+                    Claim Your Listing
+                </button>
+                <div class="listing-call">
+                    or call <span>1-866-794-0889</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Us text -->
+        <div class="py-5">
+            <h3 class="about-title text-center">About Us</h3>
+            <p class="about-text">
+                Page layouts look better with something in each section. Web page designers, content writers,
+                and layout artists use lorem ipsum, also known as placeholder copy, to distinguish which areas
+                on a page will hold advertisements, editorials, and filler before the final written content and
+                website designs receive client approval.
+            </p>
+            <p class="about-text">
+                Page layouts look better with something in each section. Web page designers, content writers,
+                and layout artists use lorem ipsum, also known as placeholder copy, to distinguish which areas
+                on a page will hold advertisements, editorials, and filler before the final written content and
+                website designs receive client approval.
+            </p>
+        </div>
+
+         
+
+    </div>
+</section>
+
+
+<!-- MISSION & VISION SECTION -->
+<section class="mission-vision-section">
+    <div class="container">
+
+        <!-- Mission -->
+        <div class="row align-items-center mv-block g-4 py-5">
+            <div class="col-md-6">
+                <h2 class="mv-title">Our Mission</h2>
+                <p class="mv-text">
+                    We’ve been around in one form or another for more than 125 years, always with one goal in
+                    mind — helping small businesses compete and win.
+                </p>
+                <p class="mv-text">
+                    We provide the technology, software and local business automation tools small business
+                    owners need to better manage their time, communicate with clients, and get paid, so they
+                    can take control of their business and be more successful.
+                </p>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="mv-image-wrapper">
+                    <!-- replace with your mission image -->
+                    <img src="./images/section right.PNG" alt="Mission Section Image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Vision -->
+        <div class="row align-items-center mv-block g-4 py-5">
+            <!-- Image left on desktop -->
+            <div class="col-md-6 order-2 order-md-1 text-center">
+                <div class="mv-image-wrapper">
+                    <!-- replace with your vision image -->
+                    <img src="./images/section right.PNG" alt="Vision Section Image">
+                </div>
+            </div>
+            <div class="col-md-6 order-1 order-md-2">
+                <h2 class="mv-title">Our Vision</h2>
+                <p class="mv-text">
+                    We’ve been around in one form or another for more than 125 years, always with one goal in
+                    mind — helping small businesses compete and win.
+                </p>
+                <p class="mv-text">
+                    We provide the technology, software and local business automation tools small business
+                    owners need to better manage their time, communicate with clients, and get paid, so they
+                    can take control of their business and be more successful.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- FAQ SECTION -->
+<section class="faq-section">
+    <div class="container">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <p class="faq-intro">
+            Got questions about how Online Market BD works? Here are some quick answers to help you get started.
+        </p>
+
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faq1-heading">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">
+                        How do I list my business?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" aria-labelledby="faq1-heading"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Click on the “Get Listed Now” or “Claim Your Listing” button and fill out the
+                        short form with your business details. Our team will review and publish your listing as soon as possible.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faq2-heading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                        Is listing my business really free?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. Creating a basic business listing is completely free. We also offer optional
+                        paid promotion packages if you want extra visibility and featured placement.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faq3-heading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                        Can I edit my information later?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-heading"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Absolutely. After your listing is created, you can log in at any time to update
+                        your address, phone number, opening hours, or any other details so customers always see accurate info.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faq4-heading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+                        How do customers contact my business?
+                    </button>
+                </h2>
+                <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faq4-heading"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Your listing shows your phone number, address, website, and other contact options
+                        you provide. Customers can call, message or visit you directly from your listing page.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="logo-icon me-2"></div>
+                    <div class="footer-logo">Online<span>marketbd</span></div>
+                </div>
+                <p class="footer-small mb-2">
+                    A smart directory for small businesses across Bangladesh. Discover local services,
+                    rate your experience and grow your business online.
+                </p>
+                <div class="footer-social mt-2">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="footer-heading">Quick Links</div>
+                <a href="#" class="footer-link">About Us</a>
+                <a href="#" class="footer-link">Add Your Business</a>
+                <a href="#" class="footer-link">Browse Categories</a>
+                <a href="#" class="footer-link">Help &amp; Support</a>
+            </div>
+
+            <div class="col-md-2">
+                <div class="footer-heading">Contact</div>
+                <p class="footer-small mb-1">
+                    Mirpur, Dhaka, Bangladesh
+                </p>
+                <p class="footer-small mb-1">
+                    Phone: +880 1700-000000
+                </p>
+                <p class="footer-small mb-0">
+                    Email: support@onlinemarketbd.com
+                </p>
+            </div>
+
+            <div class="col-md-3">
+                <div class="footer-heading">Get Updates</div>
+                <p class="footer-small">
+                    Subscribe to receive tips, updates and offers for small businesses.
+                </p>
+                <form class="d-flex footer-input-group">
+                    <input type="email" class="form-control" placeholder="Enter your email">
+                    <button class="btn btn-warning" type="button">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center mt-4">
+            <div class="footer-small">
+                &copy; <span id="footerYear"></span> Online Market BD. All rights reserved.
+            </div>
+            <div class="footer-small mt-2 mt-md-0">
+                <a href="#" class="footer-link d-inline-block me-2">Privacy Policy</a>
+                <a href="#" class="footer-link d-inline-block">Terms of Use</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap JS + Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Simple demo JS so the page actually has JS behaviour
+    document.getElementById('searchForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Search is demo only on this static layout.');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Market BD – Restaurant Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #ffffff;
+        }
+
+        .top-border-line {
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Header (same consistency as other pages) */
+        .site-header {
+            padding: 12px 0 8px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 24px;
+            color: #00306b;
+        }
+
+        .logo-text span {
+            color: #ff7a1a;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 36px;
+            border: 3px solid #00306b;
+            border-radius: 6px;
+            border-top-width: 6px;
+            margin-right: 6px;
+            position: relative;
+        }
+
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 60%;
+            height: 10px;
+            border: 3px solid #00306b;
+            border-radius: 10px;
+            border-bottom: none;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .top-links a {
+            font-size: 13px;
+            margin-left: 14px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .top-links a i {
+            margin-right: 5px;
+        }
+
+        .top-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Yellow search bar */
+        .header-search-bar {
+            background-color: #f5f5f4;
+            padding: 10px 0;
+        }
+
+        .header-search-bar .form-control,
+        .header-search-bar .form-select {
+            font-size: 14px;
+        }
+
+        .header-search-bar .search-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 2px;
+        }
+
+        .header-search-bar .btn-find {
+            background-color: #222;
+            border-color: #222;
+            color: #fff;
+            font-weight: 600;
+            padding-inline: 30px;
+            margin-top: 23px;
+        }
+
+        /* Category nav strip */
+        .category-top-nav {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 10px 0;
+            font-size: 13px;
+        }
+
+        .category-top-nav a {
+            color: #444;
+            text-decoration: none;
+            margin-right: 22px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .category-top-nav i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .category-top-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-custom {
+            font-size: 12px;
+            color: #777;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+
+        .breadcrumb-custom a {
+            color: #0073bb;
+            text-decoration: none;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
+        /* Left sidebar cards */
+        .side-card {
+            border: 1px solid #e1e4ea;
+            border-radius: 4px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            background-color: #fff;
+            font-size: 13px;
+        }
+
+        .side-card h5 {
+            font-size: 15px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .side-main-phone {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .side-link-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-top: 1px solid #eceff4;
+            font-size: 13px;
+        }
+
+        .side-link-btn:first-of-type {
+            border-top: none;
+        }
+
+        .side-link-btn i {
+            width: 22px;
+            text-align: center;
+            margin-right: 6px;
+            color: #0073bb;
+        }
+
+        .side-link-btn span {
+            color: #0073bb;
+            cursor: pointer;
+        }
+
+        .claim-box-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .btn-claim {
+            background-color: #0073bb;
+            border-color: #0073bb;
+            font-size: 13px;
+            padding: 7px 12px;
+            font-weight: 600;
+        }
+
+        .hours-label {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .places-link {
+            display: block;
+            font-size: 13px;
+            color: #0073bb;
+            text-decoration: none;
+            margin-bottom: 3px;
+        }
+
+        .places-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Main listing header */
+        .listing-header {
+            border-bottom: 1px solid #e1e4ea;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .listing-main-title {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .listing-cats {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .rating-stars {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .review-link {
+            font-size: 12px;
+            margin-left: 8px;
+            color: #0073bb;
+            text-decoration: none;
+        }
+
+        .review-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-open {
+            font-size: 13px;
+            color: #22a05d;
+            font-weight: 700;
+        }
+
+        .status-open i {
+            margin-right: 4px;
+        }
+
+        .hours-today {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .listing-meta-small {
+            font-size: 12px;
+            color: #777;
+            margin-top: 6px;
+        }
+
+        .listing-meta-small i {
+            margin-right: 4px;
+        }
+
+        .listing-thumb-main {
+            width: 140px;
+            height: 140px;
+            border-radius: 3px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .listing-thumb-main img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Menu cards */
+        .menu-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .menu-card {
+            border: 1px solid #e1e4ea;
+            border-radius: 4px;
+            padding: 12px 14px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+
+        .menu-card h6 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .menu-card ul {
+            padding-left: 18px;
+            margin-bottom: 0;
+        }
+
+        .menu-card ul li {
+            margin-bottom: 3px;
+        }
+
+        .btn-view-menu {
+            font-size: 13px;
+            border-color: #d0d4db;
+            color: #333;
+            margin-top: 4px;
+        }
+
+        /* Gallery */
+        .gallery-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-title small {
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .gallery-thumb {
+            width: 100%;
+            height: 120px;
+            border-radius: 3px;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-add-photo {
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .site-footer {
+            border-top: 1px solid #e5e5e5;
+            padding: 16px 0;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        @media (max-width: 767.98px) {
+            .header-search-bar .btn-find {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .listing-header {
+                text-align: center;
+            }
+
+            .listing-header .text-md-start {
+                text-align: center !important;
+            }
+
+            .listing-thumb-main {
+                margin: 0 auto 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class=" container top-border-line">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md container p-0">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="logo-icon"></div>
+                <div class="logo-text">Online<span>marketbd</span></div>
+            </a>
+
+            <button class="navbar-toggler d-block d-md-none border-0" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas"
+                    aria-controls="mainOffcanvas" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="ms-auto top-links d-none d-md-flex align-items-center">
+                <a href="#"><i class="fa-regular fa-user"></i>About Us</a>
+                <a href="#"><i class="fa-solid fa-bullseye"></i>Mission</a>
+                <a href="#"><i class="fa-regular fa-circle-dot"></i>Vission</a>
+            </div>
+        </nav>
+    </header>
+</div>
+
+<!-- OFFCANVAS MENU -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="mainOffcanvas"
+     aria-labelledby="mainOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="mainOffcanvasLabel">Menu</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="navbar-nav">
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="#"><i class="fa-regular fa-user me-2"></i>About Us</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="#"><i class="fa-solid fa-bullseye me-2"></i>Mission</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vission</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- YELLOW SEARCH BAR -->
+<div class="header-search-bar">
+    <div class="container">
+        <form class="row g-2 align-items-start">
+            <div class="col-md-5">
+                <div class="search-label">What?</div>
+                <input type="text" class="form-control" value="restaurants">
+            </div>
+            <div class="col-md-4">
+                <div class="search-label">Where?</div>
+                <input type="text" class="form-control" value="Washington, PA">
+            </div>
+            <div class="col-md-3 d-flex justify-content-md-start justify-content-center">
+                <button type="submit" class="btn btn-find w-100 w-md-auto mt-md-3">
+                    Find
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- CATEGORY NAV STRIP -->
+<div class="category-top-nav">
+    <div class="container">
+        <a href="#"><i class="fa-solid fa-car"></i>Auto Services</a>
+        <a href="#"><i class="fa-solid fa-spa"></i>Beauty</a>
+        <a href="#"><i class="fa-solid fa-house-circle-check"></i>Home Services</a>
+        <a href="#"><i class="fa-solid fa-shield-heart"></i>Insurance</a>
+        <a href="#"><i class="fa-solid fa-scale-balanced"></i>Legal Services</a>
+        <a href="#"><i class="fa-solid fa-stethoscope"></i>Medical Services</a>
+        <a href="#"><i class="fa-solid fa-paw"></i>Pet Services</a>
+        <a href="#"><i class="fa-solid fa-utensils"></i>Restaurants</a>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="container mb-4">
+    <div class="breadcrumb-custom">
+        <a href="#">Home</a> &gt; <a href="#">PA</a> &gt; <a href="#">Washington</a> &gt; <a href="#">Restaurants</a>
+    </div>
+
+    <div class="row">
+        <!-- LEFT SIDEBAR -->
+        <div class="col-lg-3 order-2 order-lg-1 mt-3 mt-lg-0">
+
+            <!-- Contact card -->
+            <div class="side-card">
+                <div class="side-main-phone">(724) 250-9275</div>
+
+                <div class="side-link-btn">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>Visit Website</span>
+                </div>
+                <div class="side-link-btn">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Map &amp; Directions<br>
+                        <small>2800 W Chestnut St<br>Washington, PA 15301</small>
+                    </span>
+                </div>
+                <div class="side-link-btn">
+                    <i class="fa-regular fa-star"></i>
+                    <span>Write a Review</span>
+                </div>
+            </div>
+
+            <!-- Claim business -->
+            <div class="side-card">
+                <div class="claim-box-title">Is this your business?</div>
+                <p class="mb-2">Customize this page.</p>
+                <button class="btn btn-claim w-100">Claim This Business</button>
+            </div>
+
+            <!-- Hours -->
+            <div class="side-card">
+                <h5>Hours</h5>
+                <div class="hours-label">Regular Hours</div>
+                <div class="hours-row">
+                    <span>Tue - Sat:</span>
+                    <span>4:00 am - 10:00 pm</span>
+                </div>
+                <div class="hours-row">
+                    <span>Sun:</span>
+                    <span>1:00 pm - 8:00 pm</span>
+                </div>
+            </div>
+
+            <!-- Places near -->
+            <div class="side-card">
+                <h5>Places Near Washington with Italian Restaurants</h5>
+                <a href="#" class="places-link">Canonsburg</a>
+                <a href="#" class="places-link">Eighty Four</a>
+                <a href="#" class="places-link">Houston</a>
+                <a href="#" class="places-link">Claysville</a>
+                <a href="#" class="places-link">Meadow Lands</a>
+                <a href="#" class="places-link">Prosperity</a>
+            </div>
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="col-lg-9 order-1 order-lg-2">
+            <!-- Header -->
+            <div class="listing-header">
+                <div class="row g-3 align-items-start">
+                    <div class="col-md-2 d-flex justify-content-center">
+                        <div class="listing-thumb-main">
+                            <!-- Replace with restaurant image -->
+                            <img src="restaurant-main.png" alt="Roland's Trattoria">
+                        </div>
+                    </div>
+                    <div class="col-md-10 text-md-start">
+                        <div class="listing-main-title">Roland's Trattoria</div>
+                        <div class="listing-cats">
+                            Italian Restaurants, American Restaurants, Restaurants
+                        </div>
+                        <div class="mt-2 d-flex flex-wrap align-items-center">
+                            <div class="rating-stars">
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+                            <a href="#" class="review-link">Be the first to review!</a>
+                        </div>
+                        <div class="mt-2">
+                            <span class="status-open">
+                                <i class="fa-solid fa-circle"></i>OPENING SOON
+                            </span>
+                            <span class="hours-today ms-2">
+                                Today: 4:00 am - 10:00 pm &nbsp; | &nbsp; Tomorrow: 4:00 am - 10:00 pm
+                            </span>
+                        </div>
+                        <div class="listing-meta-small">
+                            <i class="fa-regular fa-clock"></i>24 Years in Business
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <div class="menu-section mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="menu-title">Menu</div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="menu-card">
+                            <h6>Appetizers</h6>
+                            <ul>
+                                <li>Fried Zucchini</li>
+                                <li>Fried Cheese Sticks</li>
+                                <li>Fried Calamari Rings</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="menu-card">
+                            <h6>Salads</h6>
+                            <ul>
+                                <li>House Garden Salad</li>
+                                <li>Caesar Salad</li>
+                                <li>Spinach Salad</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="menu-card">
+                            <h6>Pasta</h6>
+                            <ul>
+                                <li>Choice of Rigatoni, Linguine or Angel Hair</li>
+                                <li>Lasagna</li>
+                                <li>Angel Hair</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-secondary btn-view-menu mt-2">
+                    <i class="fa-solid fa-utensils"></i> View Full Menu
+                </button>
+            </div>
+
+            <!-- Gallery -->
+            <div class="gallery-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="gallery-title">
+                        Gallery <small>View all (3)</small>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-add-photo">
+                        <i class="fa-regular fa-image me-1"></i>Add Photos
+                    </button>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-md-4 col-6">
+                        <div class="gallery-thumb">
+                            <!-- Replace with gallery image -->
+                            <img src="gallery1.png" alt="Gallery 1">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-6">
+                        <div class="gallery-thumb">
+                            <img src="gallery2.png" alt="Gallery 2">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-none d-md-block">
+                        <div class="gallery-thumb">
+                            <img src="gallery3.png" alt="Gallery 3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <div>
+            &copy; <span id="footerYear"></span> Online Market BD. All rights reserved.
+        </div>
+        <div class="mt-2 mt-md-0">
+            <a href="#" style="text-decoration:none; color:#777;" class="me-3">Privacy Policy</a>
+            <a href="#" style="text-decoration:none; color:#777;">Terms of Use</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

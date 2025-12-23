@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin • All Listings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root{--sidebar-width:260px;--topbar-height:64px;}
+    body{background:#f5f6fa;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+    .topbar{height:var(--topbar-height)} .sidebar{width:var(--sidebar-width)}
+    @media (min-width:992px){
+      .sidebar.offcanvas-lg{position:fixed;top:var(--topbar-height);left:0;height:calc(100vh - var(--topbar-height));
+        transform:none!important;visibility:visible!important;border-right:1px solid #e2e5ec;background:#fff}
+      .sidebar .offcanvas-header{display:none!important}
+      .main-content{padding-top:calc(var(--topbar-height) + 16px);padding-left:calc(var(--sidebar-width) + 16px);padding-right:16px}
+    }
+    @media (max-width:991.98px){.main-content{padding-top:calc(var(--topbar-height) + 16px);padding-left:12px;padding-right:12px}}
+    .sidebar-logo{font-weight:700;letter-spacing:.05em}
+    .sidebar .nav-link{display:flex;align-items:center;gap:.55rem;font-size:.95rem;padding:.55rem .75rem;border-radius:.6rem;color:#495057}
+    .sidebar .nav-link i{font-size:1.1rem}
+    .sidebar .nav-link.active,.sidebar .nav-link:hover{background:#0d6efd10;color:#0d6efd}
+    .table thead th{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#868e96;white-space:nowrap}
+    .app-footer{font-size:.8rem;color:#868e96;padding:1rem 0;margin-top:1rem}
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top topbar">
+  <div class="container-fluid">
+    <button class="btn btn-outline-secondary d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+      <i class="bi bi-list"></i>
+    </button>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="admin-dashboard.html">
+      <i class="bi bi-geo-alt-fill text-primary"></i><span class="fw-bold">Directory Admin</span>
+    </a>
+    <div class="ms-auto d-flex gap-2">
+      <form class="d-none d-md-flex">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control border-0 bg-light" placeholder="Search listings...">
+        </div>
+      </form>
+      <a class="btn btn-sm btn-primary" href="#"><i class="bi bi-plus-lg me-1"></i>New Listing</a>
+    </div>
+  </div>
+</nav>
+
+<div class="offcanvas-lg offcanvas-start sidebar" tabindex="-1" id="sidebarOffcanvas">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title"><i class="bi bi-geo-alt-fill text-primary me-1"></i>Directory Admin</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column px-3 px-lg-4 pt-3">
+    <div class="d-none d-lg-flex align-items-center mb-4">
+      <span class="sidebar-logo text-primary"><i class="bi bi-compass-fill me-2"></i>Listing Panel</span>
+    </div>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item mb-1"><a href="admin-dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+      <li class="nav-item mb-1"><a href="admin-listings.html" class="nav-link active"><i class="bi bi-building"></i>All Listings</a></li>
+      <li class="nav-item mb-1"><a href="admin-pending.html" class="nav-link"><i class="bi bi-hourglass-split"></i>Pending Approval</a></li>
+      <li class="nav-item mb-1"><a href="admin-categories.html" class="nav-link"><i class="bi bi-tags"></i>Categories</a></li>
+      <li class="nav-item mb-1"><a href="admin-locations.html" class="nav-link"><i class="bi bi-geo"></i>Locations</a></li>
+      <li class="nav-item mb-1"><a href="admin-users.html" class="nav-link"><i class="bi bi-people"></i>Users & Owners</a></li>
+      <li class="nav-item mb-1"><a href="admin-reviews.html" class="nav-link"><i class="bi bi-chat-dots"></i>Reviews</a></li>
+      <li class="nav-item mb-1"><a href="admin-settings.html" class="nav-link"><i class="bi bi-gear"></i>Site Settings</a></li>
+    </ul>
+    <div class="mt-3 small text-muted">v1.0</div>
+  </div>
+</div>
+
+<main class="main-content">
+  <div class="container-fluid py-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+      <div>
+        <h4 class="mb-1">All Listings</h4>
+        <p class="mb-0 text-muted small">Search, filter, and manage all directory listings.</p>
+      </div>
+      <div class="d-flex gap-2 mt-2 mt-md-0">
+        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-download me-1"></i>Export</button>
+        <button class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Listing</button>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-3">
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-lg-4">
+            <div class="input-group">
+              <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+              <input class="form-control" placeholder="Search by name, owner, phone...">
+            </div>
+          </div>
+          <div class="col-lg-2">
+            <select class="form-select">
+              <option>All Categories</option><option>Restaurant</option><option>Hotel</option><option>Shop</option><option>Service</option>
+            </select>
+          </div>
+          <div class="col-lg-2">
+            <select class="form-select">
+              <option>Status: All</option><option>Published</option><option>Pending</option><option>Draft</option><option>Rejected</option>
+            </select>
+          </div>
+          <div class="col-lg-2">
+            <select class="form-select">
+              <option>City: All</option><option>Dhaka</option><option>Chattogram</option><option>Sylhet</option><option>Khulna</option>
+            </select>
+          </div>
+          <div class="col-lg-2 d-grid">
+            <button class="btn btn-outline-primary">Apply Filters</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Listing</th><th>Category</th><th>Location</th><th>Status</th><th>Owner</th><th>Updated</th><th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-semibold">Urban Spice Restaurant</td><td>Restaurant</td><td>Banani, Dhaka</td><td><span class="badge bg-success-subtle text-success border">Published</span></td>
+                <td>Rahman Foods</td><td>Today</td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-secondary" href="#"><i class="bi bi-eye"></i></a>
+                  <a class="btn btn-sm btn-outline-primary" href="#"><i class="bi bi-pencil"></i></a>
+                  <a class="btn btn-sm btn-outline-danger" href="#"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Skyline Grand Hotel</td><td>Hotel</td><td>Gulshan, Dhaka</td><td><span class="badge bg-warning-subtle text-warning border">Pending</span></td>
+                <td>Skyline Group</td><td>Yesterday</td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-secondary" href="#"><i class="bi bi-eye"></i></a>
+                  <a class="btn btn-sm btn-outline-primary" href="#"><i class="bi bi-pencil"></i></a>
+                  <a class="btn btn-sm btn-outline-danger" href="#"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">GreenLeaf Super Shop</td><td>Shop</td><td>Dhanmondi, Dhaka</td><td><span class="badge bg-secondary-subtle text-secondary border">Draft</span></td>
+                <td>GreenLeaf Retail</td><td>2 days ago</td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-secondary" href="#"><i class="bi bi-eye"></i></a>
+                  <a class="btn btn-sm btn-outline-primary" href="#"><i class="bi bi-pencil"></i></a>
+                  <a class="btn btn-sm btn-outline-danger" href="#"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <small class="text-muted">Showing 1–3 of 1284</small>
+          <nav>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item disabled"><a class="page-link">Prev</a></li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-footer text-center">&copy; <span id="yearSpan"></span> Directory Admin</div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>document.getElementById('yearSpan').textContent=new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Listing;
+use App\Models\Category;
+use App\Models\City;
+use App\Models\ListingAddress;
+use App\Models\ListingHour;
+use App\Models\ListingPhotos;
+use App\Models\ListingOwner;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class ListingController extends Controller
+{
+
+    public function create()
+    {
+        $categories = Category::orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        return view('frontend.listing.onboarding', compact('categories'));
+    }
+
+    /**
+     * Handle onboarding form submit
+     */
+    public function store(Request $request)
+    {
+       
+        // 1) Validate input
+        $validated = $request->validate([
+            // Step 1 – business info
+            'name'         => 'required|string|max:255',
+            'type'         => 'required|string|max:50',
+            'category_id'  => 'nullable|exists:categories,id',
+            'tagline'      => 'nullable|string|max:255',
+            'description'  => 'required|string',
+
+            // Step 2 – contact & location
+            'email'        => 'required|email|max:255',
+            'phone'        => 'required|string|max:30',
+            'country'      => 'required|string|size:2',
+            'city'         => 'required|string|max:150',
+            'area'         => 'nullable|string|max:150',
+            'address_line1'=> 'required|string|max:255',
+            'address_line2'=> 'nullable|string|max:255',
+            'postal_code'  => 'nullable|string|max:20',
+            'website'      => 'nullable|url|max:255',
+
+            // Step 3 – details & hours & photos
+            'price_level'  => 'nullable|integer|min:1|max:4',
+            'highlights'   => 'nullable|string',
+            'opens_at'     => 'nullable|date_format:H:i',
+            'closes_at'    => 'nullable|date_format:H:i',
+            'open_days'    => 'nullable|string|max:50',
+            'photos'       => 'nullable|array|max:6',
+            'photos.*'     => 'file|image|max:3072', // 3MB each
+
+            // Step 4 – documents
+            'owner_name'      => 'required|string|max:255',
+            'nid_number'      => 'required|string|max:50',
+            'nid_front'       => 'required|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            'nid_back'        => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            'trade_license'   => 'required|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            'tax_document'    => 'nullable|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            'agreed_terms'    => 'accepted',
+        ]);
+
+        $listing = null;
+
+        DB::transaction(function () use ($request, $validated, &$listing) {
+            // 2) City: find or create
+            $city = City::firstOrCreate(
+                [
+                    'country_code' => $validated['country'],
+                    'name'         => $validated['city'],
+                ],
+                [
+                    'slug' => Str::slug($validated['city'] . '-' . $validated['country']),
+                ]
+            );
+
+            // 3) Generate slug (unique-ish)
+            $baseSlug = Str::slug($validated['name'] . '-' . $validated['city']);
+            $slug     = $baseSlug;
+            $counter  = 1;
+
+            while (Listing::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+
+            // 4) Create listing
+            $listing = Listing::create([
+                'user_id'      => Auth::id(),
+                'tracking_id'  => 'TRK-' . strtoupper(substr(md5((string) now()), 0, 5)),
+                'category_id'  => $validated['category_id'],
+                'city_id'      => $city->id,
+                'name'         => $validated['name'],
+                'slug'         => $slug,
+                'type'         => $validated['type'],
+                'tagline'      => $validated['tagline'] ?? null,
+                'description'  => $validated['description'],
+                'email'        => $validated['email'],
+                'phone'        => $validated['phone'],
+                'website'      => $validated['website'] ?? null,
+                'price_level'  => $validated['price_level'] ?? null,
+                'highlights'   => $validated['highlights'] ?? null,
+                'status'       => 'pending',
+                'is_claimed'   => Auth::check(), // if logged in, mark as claimed
+            ]);
+
+            // 5) Address
+            ListingAddress::create([
+                'listing_id'  => $listing->id,
+                'country_code'=> $validated['country'],
+                'city_id'     => $city->id,
+                'city_name'   => $validated['city'],
+                'area'        => $validated['area'] ?? null,
+                'line1'       => $validated['address_line1'],
+                'line2'       => $validated['address_line2'] ?? null,
+                'postal_code' => $validated['postal_code'] ?? null,
+            ]);
+
+            // 6) Opening hours – map open_days selection into days of week
+            $days = $this->mapOpenDaysToArray($validated['open_days'] ?? null);
+
+            if (!empty($days) && (!empty($validated['opens_at']) || !empty($validated['closes_at']))) {
+                foreach ($days as $dayOfWeek) {
+                    ListingHour::create([
+                        'listing_id' => $listing->id,
+                        'day_of_week'=> $dayOfWeek,
+                        'opens_at'   => $validated['opens_at'] ?? null,
+                        'closes_at'  => $validated['closes_at'] ?? null,
+                        'is_closed'  => false,
+                        'is_24_hours'=> false,
+                    ]);
+                }
+            }
+
+            // 7) Photos
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $photo) {
+                    if (!$photo->isValid()) {
+                        continue;
+                    }
+
+                    $path = $photo->store('listing_photos', 'public');
+
+                    ListingPhotos::create([
+                        'listing_id' => $listing->id,
+                        'path'       => $path,
+                        'alt_text'   => $listing->name . ' photo ' . ($index + 1),
+                        'is_primary' => $index === 0, // first photo as primary
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            // 8) Owner verification + documents
+            $nidFrontPath     = $request->file('nid_front')->store('listing_docs', 'public');
+            $nidBackPath      = $request->file('nid_back')
+                ? $request->file('nid_back')->store('listing_docs', 'public')
+                : null;
+            $tradeLicensePath = $request->file('trade_license')->store('listing_docs', 'public');
+            $taxDocPath       = $request->file('tax_document')
+                ? $request->file('tax_document')->store('listing_docs', 'public')
+                : null;
+
+            ListingOwner::create([
+                'listing_id'        => $listing->id,
+                'owner_name'        => $validated['owner_name'],
+                'nid_number'        => $validated['nid_number'],
+                'nid_front_path'    => $nidFrontPath,
+                'nid_back_path'     => $nidBackPath,
+                'trade_license_path'=> $tradeLicensePath,
+                'tax_document_path' => $taxDocPath,
+                'verification_status' => 'pending',
+                'agreed_terms'      => true,
+                'agreed_at'         => now(),
+            ]);
+        });
+
+        return view('thank-you')
+          
+            ->with('listing', $listing)
+            ->with('success', 'Your listing has been submitted for review. We will contact you after verification.');
+    }
+
+
+
+    public function children(Request $request)
+    {
+        $parentId = $request->query('parent_id');
+
+        if (!$parentId) {
+            return response()->json([]);
+        }
+
+        return Category::query()
+            ->where('parent_id', $parentId)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+    }
+
+
+
+    public function pending(Request $request)
+    {
+        $q          = trim((string) $request->get('q', ''));
+        $categoryId = $request->get('category_id');
+        $cityId     = $request->get('city_id');
+
+        // Treat empty string as null so no filter applies
+        $q = $q !== '' ? $q : null;
+
+        $listings = \App\Models\Listing::query()
+            ->where('status', 'pending')
+            ->with([
+                'category:id,name',
+                'city:id,name',
+                'owner:id,name,email', // add phone here if your users table has it
+                'address',
+                'primaryPhoto',
+            ])
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('name', 'like', "%{$q}%")
+                    ->orWhere('slug', 'like', "%{$q}%")
+                    ->orWhere('tracking_id', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhereHas('owner', function ($o) use ($q) {
+                        $o->where('name', 'like', "%{$q}%")
+                            ->orWhere('email', 'like', "%{$q}%");
+
+                        // If your users table has a phone column, keep this:
+                        if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'phone')) {
+                            $o->orWhere('phone', 'like', "%{$q}%");
+                        }
+                    });
+                });
+            })
+            ->when($categoryId, fn($query) => $query->where('category_id', $categoryId))
+            ->when($cityId, fn($query) => $query->where('city_id', $cityId))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $categories = \App\Models\Category::query()
+            ->whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['id','name']);
+
+        $cities = \App\Models\City::query()
+            ->orderBy('name')
+            ->get(['id','name']);
+
+        return view('backend.listing.pending-approval', compact('listings', 'categories', 'cities'));
+    }
+
+
+    public function show(Listing $listing)
+    {
+        // Only pending review page
+        abort_unless($listing->status === 'pending', 404);
+
+        $listing->load([
+            'category',
+            'city',
+            'owner',
+            'address',
+            'hours',
+            'photos',
+            'primaryPhoto',
+            'ownerVerification',
+        ]);
+
+        return view('backend.listing.listing-details', compact('listing'));
+    }
+
+    public function approve(Request $request, Listing $listing)
+    {
+        // You can add permission checks here (Gate/Policy)
+        $listing->update(['status' => 'active']);
+
+        return redirect()->route('listings.pending')->with('success', 'Listing approved and published.');
+    }
+
+    public function reject(Request $request, Listing $listing)
+    {
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        // Store rejection reason into meta (since you already have meta array)
+        $meta = $listing->meta ?? [];
+        $meta['rejection_reason'] = $data['reason'] ?? 'Rejected by admin.';
+        $meta['rejected_at'] = now()->toDateTimeString();
+
+        $listing->update([
+            'status' => 'rejected',
+            'meta'   => $meta,
+        ]);
+
+        return redirect()->route('listings.pending')->with('success', 'Listing rejected.');
+    }
+
+
+    /**
+     * Map "Everyday" / "Mon – Fri" / etc. into day_of_week integers
+     */
+    protected function mapOpenDaysToArray(?string $openDays): array
+    {
+        if (!$openDays) {
+            return [];
+        }
+
+        $openDays = trim($openDays);
+
+        return match ($openDays) {
+            'Everyday'        => [0, 1, 2, 3, 4, 5, 6],
+            'Mon – Fri'       => [1, 2, 3, 4, 5],
+            'Fri – Sat'       => [5, 6],
+            default           => [], // "Custom (we’ll contact you)" or unknown
+        };
+    }
+}

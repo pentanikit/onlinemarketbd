@@ -32,6 +32,11 @@
           </a>
         </li>
         <li class="nav-item mb-1">
+          <a href="{{ route('home_content.edit') }}" class="nav-link">
+            <i class="bi bi-hourglass-split"></i><span>Site Content</span>
+          </a>
+        </li>
+        <li class="nav-item mb-1">
           <a href="{{ route('categories.index') }}" class="nav-link">
             <i class="bi bi-tags"></i><span>Categories</span>
           </a>

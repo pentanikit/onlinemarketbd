@@ -17,7 +17,7 @@
             background-color: #ffffff;
             border: 1px solid #e5e5e5;
             padding: 15px 15px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.04);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
         }
 
         .hero-left-img {
@@ -202,7 +202,7 @@
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             margin-top: 20px;
             padding-top: 10px;
             font-size: 12px;
@@ -287,143 +287,138 @@
 @endpush
 @section('pages')
     <!-- Header -->
-<x-frontend.header />
-<div class="text-center my-4">
-    <h1 class="hero-title">Business Directory</h1>
-    <p class="hero-text">
-         Helping you find right product and service company<br>
-             for your online business
-    </p>
-</div>
-
-
-<!-- HERO SECTION -->
-<section class="py-0">
-    <div class="container" >
-        <div class="hero-card">
-            <div class="row align-items-center g-2">
-                 <img class="mx-auto" src="{{ asset('WhatsApp Image 2025-12-21 at 6.33.46 PM.jpeg') }}"  alt="" srcset="">
-            </div>
-        </div>
+    <x-frontend.header />
+    <div class="text-center my-4">
+        <h1 class="hero-title">Business Directory</h1>
+        <p class="hero-text">
+            Helping you find right product and service company<br>
+            for your online business
+        </p>
     </div>
-</section>
 
 
-<!-- CATEGORY STRIP -->
-<x-frontend.category />
-
-<!-- MANAGE LISTING + ABOUT US SECTION -->
-<section class="manage-listing-section">
-    <div class="container ">
-        <div class="row align-items-center text-center text-md-start mb-5 py-5">
-            <!-- Left image circle -->
-            <div class="col-md-7 d-flex justify-content-center mb-3 mb-md-0">
-                <div class="listing-photo-wrapper">
-                    <!-- replace this image with your own -->
-                    <img src="{{ asset('listing.png') }}" width="640" height="440" alt="Manage Listing" class="listing-photo rounded-circle">
-                </div>
-            </div>
-
-            <!-- Right content -->
-            <div class="col-md-5">
-                <h2 class="manage-title">
-                    Manage your <span class="highlight-free">free</span> listing.
-                </h2>
-                <p class="manage-subtext mt-2 mb-1">
-                    Update your business information in a few steps.<br>
-                    Make it easy for your customers to find you on Yellowpages.
-                     
-                </p>
-                <p class="manage-subtext">
-                    <span class="new-label">New!</span> Post a job opening on your free listing.
-                </p>
-                <button class="btn btn-primary listing-btn">
-                    Claim Your Listing
-                </button>
-                <div class="listing-call">
-                    or call <span>1-866-794-0889</span>
+    <!-- HERO SECTION -->
+    <section class="py-0">
+        <div class="container">
+            <div class="hero-card">
+                <div class="row align-items-center g-2">
+                    <img class="mx-auto" src="{{ asset('WhatsApp Image 2025-12-21 at 6.33.46 PM.jpeg') }}" alt=""
+                        srcset="">
                 </div>
             </div>
         </div>
-
-        <!-- About Us text -->
-        <div class="py-5">
-            <h3 class="about-title text-center">About Us</h3>
-            <p class="about-text">
-                Page layouts look better with something in each section. Web page designers, content writers,
-                and layout artists use lorem ipsum, also known as placeholder copy, to distinguish which areas
-                on a page will hold advertisements, editorials, and filler before the final written content and
-                website designs receive client approval.
-            </p>
-            <p class="about-text">
-                Page layouts look better with something in each section. Web page designers, content writers,
-                and layout artists use lorem ipsum, also known as placeholder copy, to distinguish which areas
-                on a page will hold advertisements, editorials, and filler before the final written content and
-                website designs receive client approval.
-            </p>
-        </div>
-
-         
-
-    </div>
-</section>
+    </section>
 
 
-<!-- MISSION & VISION SECTION -->
-<section class="mission-vision-section">
-    <div class="container">
+    <!-- CATEGORY STRIP -->
+    <x-frontend.category />
 
-        <!-- Mission -->
-        <div class="row align-items-center mv-block g-4 py-5">
-            <div class="col-md-6">
-                <h2 class="mv-title">Our Mission</h2>
-                <p class="mv-text">
-                    We’ve been around in one form or another for more than 125 years, always with one goal in
-                    mind — helping small businesses compete and win.
-                </p>
-                <p class="mv-text">
-                    We provide the technology, software and local business automation tools small business
-                    owners need to better manage their time, communicate with clients, and get paid, so they
-                    can take control of their business and be more successful.
-                </p>
-            </div>
-            <div class="col-md-6 text-center">
-                <div class="mv-image-wrapper">
-                    <!-- replace with your mission image -->
-                    <img src="{{ asset('mission.png') }}" alt="Mission Section Image">
+    @php
+        $content = \App\Models\SiteContent::where('key', 'home')->first();
+
+    @endphp
+
+    <!-- MANAGE LISTING + ABOUT US SECTION -->
+    <section class="manage-listing-section">
+        <div class="container ">
+            <div class="row align-items-center text-center text-md-start mb-5 py-5">
+                <!-- Left image circle -->
+                <div class="col-md-7 d-flex justify-content-center mb-3 mb-md-0">
+                    <div class="listing-photo-wrapper">
+                        <!-- replace this image with your own -->
+                      
+                            <img src="{{ asset('storage/' . $content->manage_image) }}" alt="Manage Listing"
+                                class="listing-img img-fluid" >
+                       
+
+                    </div>
+                </div>
+
+                <!-- Right content -->
+                <div class="col-md-5">
+                    <h2 class="manage-title">
+                        {{ $content->manage_title }}
+                    </h2>
+                    <p class="manage-subtext mt-2 mb-1">
+                        {{ $content->manage_body }}
+
+                    </p>
+                    <p class="manage-subtext">
+                        <span class="new-label">New!</span> Post a job opening on your free listing.
+                    </p>
+                    <a href="{{ $content->manage_cta_url }}" class="btn btn-primary listing-btn">
+                        {{ $content->manage_cta_text }}
+                    </a>
+                    <div class="listing-call">
+                        or call {{ $content->manage_phone }}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Vision -->
-        <div class="row align-items-center mv-block g-4 py-5">
-            <!-- Image left on desktop -->
-            <div class="col-md-6 order-2 order-md-1 text-center">
-                <div class="mv-image-wrapper">
-                    <!-- replace with your vision image -->
-                    <img src="{{ asset('vission.png') }}" alt="Vision Section Image">
+            <!-- About Us text -->
+            <div class="py-5">
+                <h3 class="about-title text-center">{{ $content->about_title }}</h3>
+
+                <p class="about-text">
+                    {{ $content->about_body }}
+                </p>
+            </div>
+
+
+
+        </div>
+    </section>
+
+
+    <!-- MISSION & VISION SECTION -->
+    <section class="mission-vision-section">
+        <div class="container">
+
+            <!-- Mission -->
+            <div class="row align-items-center mv-block g-4 py-5">
+                <div class="col-md-6">
+                    <h2 class="mv-title">{{ $content->mission_title }}</h2>
+
+                    <p class="mv-text">
+                        {{ $content->mission_body }}
+                    </p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="mv-image-wrapper">
+                        <!-- replace with your mission image -->
+                        <div class="mv-image-wrapper">
+                            <img src="{{ asset('storage/' . $content->mission_image) }}" alt="Mission Section Image"
+                                class="mv-img img-fluid">
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6 order-1 order-md-2">
-                <h2 class="mv-title">Our Vision</h2>
-                <p class="mv-text">
-                    We’ve been around in one form or another for more than 125 years, always with one goal in
-                    mind — helping small businesses compete and win.
-                </p>
-                <p class="mv-text">
-                    We provide the technology, software and local business automation tools small business
-                    owners need to better manage their time, communicate with clients, and get paid, so they
-                    can take control of their business and be more successful.
-                </p>
+
+            <!-- Vision -->
+            <div class="row align-items-center mv-block g-4 py-5">
+                <!-- Image left on desktop -->
+                <div class="col-md-6 order-2 order-md-1 text-center">
+                    <div class="mv-image-wrapper">
+                        <!-- replace with your vision image -->
+                        <img src="{{ asset('storage/' . $content->vision_image) }}"  class="mv-img img-fluid" alt="Vision Section Image">
+                    </div>
+                </div>
+                <div class="col-md-6 order-1 order-md-2">
+                    <h2 class="mv-title">{{ $content->vision_title }}</h2>
+
+                    <p class="mv-text">
+                        {{ $content->vision_body }}
+                    </p>
+                </div>
             </div>
+
         </div>
+    </section>
 
-    </div>
-</section>
+    <!-- FAQ SECTION -->
+    <x-frontend.faq />
 
-<!-- FAQ SECTION -->
-<x-frontend.faq />
-
-<!-- FOOTER -->
-<x-frontend.footer />
+    <!-- FOOTER -->
+    <x-frontend.footer />
 @endsection

@@ -168,7 +168,7 @@
                                         @endif
 
                                         <a class="btn btn-sm btn-outline-primary"
-                                           href="#">
+                                           href="{{ route('listings.edit', $listing->id) }}">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 
 class ListingController extends Controller
 {
@@ -270,7 +272,7 @@ class ListingController extends Controller
     public function show(Listing $listing)
     {
         // Only pending review page
-        abort_unless($listing->status === 'pending', 404);
+        // abort_unless($listing->status === 'pending', 404);
 
         $listing->load([
             'category',
@@ -494,6 +496,245 @@ class ListingController extends Controller
             'nearbyCities'
         ));
     }
+
+
+
+
+    public function edit(Listing $listing)
+    {
+        $listing->load(['category', 'city', 'address', 'hours', 'photos' => function($q){
+            $q->orderBy('sort_order');
+        }]);
+
+        $categories = Category::orderBy('name')->get(['id','name']);
+        $cities     = City::orderBy('name')->get(['id','name']);
+
+        // Build 7-day hours default structure (if missing)
+        $days = [
+            ['key'=>'sat', 'label'=>'Saturday'],
+            ['key'=>'sun', 'label'=>'Sunday'],
+            ['key'=>'mon', 'label'=>'Monday'],
+            ['key'=>'tue', 'label'=>'Tuesday'],
+            ['key'=>'wed', 'label'=>'Wednesday'],
+            ['key'=>'thu', 'label'=>'Thursday'],
+            ['key'=>'fri', 'label'=>'Friday'],
+        ];
+
+        // Map existing hours by day key (supports day or day_name)
+        $hoursMap = [];
+        foreach ($listing->hours as $h) {
+            $k = $h->day ?? null;
+            if ($k) $hoursMap[$k] = $h;
+        }
+
+        return view('backend.listing.edit', compact('listing','categories','cities','days','hoursMap'));
+    }
+
+
+    public function update(Request $request, Listing $listing)
+    {
+        // Only validate fields that exist in THIS blade form
+        $validated = $request->validate([
+            // MAIN INFO
+            'category_id' => 'required|exists:categories,id',
+            'city_id'     => 'required|exists:cities,id',
+            'name'        => 'required|string|max:255',
+            'slug'        => 'nullable|string|max:255',
+            'type'        => 'nullable|string|max:50',
+            'price_level' => 'nullable|integer|min:0|max:5',
+            'status'      => 'required|in:pending,active,inactive,rejected',
+            'tagline'     => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'highlights'  => 'nullable|string',
+
+            // CONTACT + MAP
+            'email'   => 'nullable|email|max:255',
+            'phone'   => 'nullable|string|max:30',
+            'website' => 'nullable|url|max:255',
+            'lat'     => 'nullable|numeric',
+            'lng'     => 'nullable|numeric',
+
+            // OWNER / SWITCH
+            'is_claimed' => 'nullable|boolean',
+
+            // PHOTOS
+            'primary_photo'    => 'nullable|integer',
+            'delete_photos'    => 'nullable|array',
+            'delete_photos.*'  => 'integer',
+            'new_photos'       => 'nullable|array|max:6',          // upload at a time (optional)
+            'new_photos.*'     => 'file|image|max:4096',           // 4MB each
+        ]);
+
+        DB::transaction(function () use ($request, $listing, $validated) {
+
+            // -----------------------------
+            // 1) SLUG handling (optional, unique auto-fix)
+            // -----------------------------
+            if ($request->filled('slug')) {
+                $baseSlug = Str::slug($request->input('slug'));
+            } else {
+                // if slug input not provided, keep existing
+                $baseSlug = $listing->slug;
+            }
+
+            // If baseSlug changed (or was provided), ensure uniqueness
+            if ($request->filled('slug')) {
+                $slug = $baseSlug ?: Str::slug($request->input('name'));
+                $try  = $slug;
+                $i    = 1;
+
+                while (
+                    Listing::where('slug', $try)
+                        ->where('id', '!=', $listing->id)
+                        ->exists()
+                ) {
+                    $try = $slug . '-' . $i++;
+                }
+
+                $listing->slug = $try;
+            }
+
+            // -----------------------------
+            // 2) LISTING fields update
+            // -----------------------------
+            $fillable = [
+                'category_id',
+                'city_id',
+                'name',
+                'type',
+                'tagline',
+                'description',
+                'email',
+                'phone',
+                'website',
+                'lat',
+                'lng',
+                'price_level',
+                'highlights',
+                'status',
+            ];
+
+            $listing->fill(Arr::only($validated, $fillable));
+
+            // checkbox: unchecked means not sent → treat as 0
+            $listing->is_claimed = $request->has('is_claimed');
+
+            $listing->save();
+
+            // -----------------------------
+            // 3) ADDRESS update (line/area/postcode)
+            // -----------------------------
+            $addressData = [
+                'line1'       => $request->input('address_line'),
+                'area'        => $request->input('area'),
+                'postal_code' => $request->input('postcode'),
+            ];
+
+            // Only touch address if any of these inputs exist in request
+            $addressTouched = $request->hasAny(['address_line', 'area', 'postcode']);
+
+            if ($addressTouched) {
+                // If your Listing has relation: $listing->address()
+                $listing->address()->updateOrCreate(
+                    ['listing_id' => $listing->id],
+                    [
+                        'line1'       => $addressData['line1'],
+                        'area'        => $addressData['area'],
+                        'postal_code' => $addressData['postal_code'],
+                    ]
+                );
+            }
+
+            // -----------------------------
+            // 4) PHOTOS: delete selected
+            // -----------------------------
+            $deleteIds = collect($request->input('delete_photos', []))
+                ->filter()
+                ->map(fn ($v) => (int) $v)
+                ->values();
+
+            if ($deleteIds->isNotEmpty()) {
+                $photosToDelete = $listing->photos()
+                    ->whereIn('id', $deleteIds)
+                    ->get();
+
+                foreach ($photosToDelete as $p) {
+                    if (!empty($p->path)) {
+                        Storage::disk('public')->delete($p->path);
+                    }
+                    $p->delete();
+                }
+            }
+
+            // -----------------------------
+            // 5) PHOTOS: set primary
+            // -----------------------------
+            if ($request->filled('primary_photo')) {
+                $primaryId = (int) $request->input('primary_photo');
+
+                // ensure this photo belongs to listing and is not deleted
+                $exists = $listing->photos()->where('id', $primaryId)->exists();
+
+                if ($exists) {
+                    $listing->photos()->update(['is_primary' => 0]);
+                    $listing->photos()->where('id', $primaryId)->update(['is_primary' => 1]);
+                }
+            } else {
+                // if no primary selected and none exists, keep first as primary
+                $hasPrimary = $listing->photos()->where('is_primary', 1)->exists();
+                if (!$hasPrimary) {
+                    $first = $listing->photos()->orderBy('sort_order')->orderBy('id')->first();
+                    if ($first) {
+                        $listing->photos()->update(['is_primary' => 0]);
+                        $first->update(['is_primary' => 1]);
+                    }
+                }
+            }
+
+            // -----------------------------
+            // 6) PHOTOS: upload new
+            // -----------------------------
+            if ($request->hasFile('new_photos')) {
+                $existingCount = $listing->photos()->count();
+                $maxTotal = 12; // you can change this global cap
+                $allowedToAdd = max(0, $maxTotal - $existingCount);
+
+                $files = $request->file('new_photos');
+                $files = array_slice($files, 0, $allowedToAdd);
+
+                $nextSort = (int) ($listing->photos()->max('sort_order') ?? -1) + 1;
+
+                foreach ($files as $idx => $photo) {
+                    if (!$photo || !$photo->isValid()) continue;
+
+                    $path = $photo->store('listing_photos', 'public');
+
+                    ListingPhotos::create([
+                        'listing_id' => $listing->id,
+                        'path'       => $path,
+                        'alt_text'   => $listing->name . ' photo',
+                        'is_primary' => 0,
+                        'sort_order' => $nextSort + $idx,
+                    ]);
+                }
+
+                // After adding, ensure one primary exists
+                $hasPrimary = $listing->photos()->where('is_primary', 1)->exists();
+                if (!$hasPrimary) {
+                    $first = $listing->photos()->orderBy('sort_order')->orderBy('id')->first();
+                    if ($first) {
+                        $listing->photos()->update(['is_primary' => 0]);
+                        $first->update(['is_primary' => 1]);
+                    }
+                }
+            }
+        });
+
+        return back()->with('success', 'Listing updated successfully.');
+    }
+
+
+
 
 
     /**

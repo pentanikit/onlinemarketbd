@@ -5,7 +5,7 @@ use App\Http\Controllers\ListingController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PageController;
-
+use App\Http\Controllers\SiteContentController;
 
 
 //Client
@@ -38,19 +38,23 @@ Route::prefix('admin')->group(function(){
    Route::get('listing', [AdminController::class, 'listing'])->name('admin.listing');
 //    Route::get('pending-listing', [AdminController::class, 'pending_listing'])->name('admin.pending-listing');
 
-
-
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
 
-    Route::get('/listings/pending', [ListingController::class, 'pending'])->name('listings.pending');
-    Route::get('/listings/pending/{listing}', [ListingController::class, 'show'])->name('listings.show');
+    Route::get('/pending-listings', [ListingController::class, 'pending'])->name('listings.pending');
+    Route::get('/listings/pending/{listing:id}', [ListingController::class, 'show'])->name('listings.show');
+
+    Route::get('/listings/edit/{listing}', [ListingController::class, 'edit'])->name('listings.edit');
+    Route::put('/listings/update/{listing}', [ListingController::class, 'update'])->name('listings.update');
 
     Route::post('/listings/{listing}/approve', [ListingController::class, 'approve'])->name('listings.approve');
     Route::post('/listings/{listing}/reject', [ListingController::class, 'reject'])->name('listings.reject');
+
+    Route::get('/home-content', [SiteContentController::class, 'editHome'])->name('home_content.edit');
+    Route::post('/home-content', [SiteContentController::class, 'updateHome'])->name('home_content.update');
 
 });
 

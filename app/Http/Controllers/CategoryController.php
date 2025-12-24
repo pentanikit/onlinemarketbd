@@ -167,7 +167,26 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        $category->delete(); // children will cascade delete because of FK cascadeOnDelete()
+        // Delete stored image file first (if exists)
+        if (!empty($category->image)) {
+            $path = ltrim($category->image, '/');
+
+            // If saved like "storage/categories/a.jpg", convert to "public/categories/a.jpg"
+            if (str_starts_with($path, 'storage/')) {
+                $path = 'public/' . substr($path, strlen('storage/'));
+            }
+            // If saved like "categories/a.jpg", treat it as public disk path
+            elseif (!str_starts_with($path, 'public/')) {
+                $path = 'public/' . $path;
+            }
+
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+        }
+
+        // Then delete DB row (children cascade via FK)
+        $category->delete();
 
         return redirect()->back()->with('success', 'Category deleted successfully.');
     }

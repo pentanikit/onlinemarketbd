@@ -3,7 +3,7 @@
         <div class="row g-2">
             @forelse ($categories as $item)
                 <div class="col-6 col-sm-4 col-md-2 col-lg-1-5 mb-2">
-                    <a href="{{ route('frontend.category.show', $item->slug) }}">
+                    <a style="text-decoration: none;" href="{{ route('frontend.category.show', $item->slug) }}">
                         <div class="category-card">
                             <div class="category-icon-wrapper">
                                 <img src="{{ asset('storage/' . $item->image) }}" alt="" width="60"

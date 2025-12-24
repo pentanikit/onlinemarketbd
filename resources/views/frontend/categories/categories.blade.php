@@ -1,7 +1,7 @@
 @extends('frontend.layout')
 
 @push('styles')
-       <style>
+    <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
             background-color: #ffffff;
@@ -387,29 +387,46 @@
     <x-frontend.header />
 
     <!-- CATEGORY NAV STRIP -->
-    <div class="category-top-nav">
+    <div class="category-top-nav filter-buttons">
         <div class="container">
-            @foreach($topCategories as $cat)
-                <a href="{{ route('frontend.category.show', $cat->slug) }}">
+            @foreach ($subCategories as $cat)
+                {{-- <a href="{{ route('frontend.category.show', $cat->slug) }}">
                     <i class="fa-solid fa-folder"></i> {{ $cat->name }}
+                </a> --}}
+                <a href="{{ route('frontend.category.show', $cat->slug) }}">
+                    <button class="btn btn-outline-secondary"><i class="fa-solid fa-folder"></i>{{ $cat->name }}</button>
                 </a>
             @endforeach
         </div>
     </div>
 
+    {{-- <div class="filter-buttons">
+        <div class="container">
+            @foreach ($subCategories as $cat)
+                <a href="{{ route('frontend.category.show', $cat->slug) }}">
+                    <button class="btn btn-outline-secondary">{{ $cat->name }}</button>
+                </a>
+            @endforeach
+        </div>
+
+
+    </div> --}}
+
     <!-- MAIN CONTENT -->
     <main class="container mb-4">
         <!-- Breadcrumb / title -->
         <div class="breadcrumb-custom">
-            @foreach($breadcrumb as $i => $bc)
-                @if($i > 0) &gt; @endif
+            @foreach ($breadcrumb as $i => $bc)
+                @if ($i > 0)
+                    &gt;
+                @endif
                 <a href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
             @endforeach
         </div>
 
         <h1 class="listing-title">
             {{ $category->name }}
-            @if(optional($listings)->total())
+            @if (optional($listings)->total())
                 <span style="font-size:14px; font-weight:600; color:#666;">({{ $listings->total() }})</span>
             @endif
         </h1>
@@ -423,7 +440,7 @@
                     <form method="GET" action="{{ route('frontend.category.show', $category->slug) }}">
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" value="{{ $q }}"
-                                   placeholder='"Fish Taco" "Caesar Salad" etc.'>
+                                placeholder='"Fish Taco" "Caesar Salad" etc.'>
                             <button class="btn btn-primary" type="submit">Find</button>
                         </div>
                     </form>
@@ -439,7 +456,7 @@
                                         $img = optional($listing->primaryPhoto)->path ?? null; // adjust if needed
                                     @endphp
 
-                                    @if($img)
+                                    @if ($img)
                                         <img src="{{ asset($img) }}" alt="{{ $listing->name }}">
                                     @else
                                         <img src="{{ asset('placeholder.png') }}" alt="No Image">
@@ -456,17 +473,17 @@
 
                                 <div class="listing-cats">
                                     {{ optional($listing->category)->name }}
-                                    @if(optional($listing->city)->name)
+                                    @if (optional($listing->city)->name)
                                         , {{ $listing->city->name }}
                                     @endif
                                 </div>
 
                                 <div class="listing-meta mt-1">
-                                    @if($listing->website)
+                                    @if ($listing->website)
                                         <a href="{{ $listing->website }}" target="_blank" class="me-2">Website</a>
                                     @endif
 
-                                    @if($listing->review_count)
+                                    @if ($listing->review_count)
                                         <span class="ms-1">
                                             <i class="fa-regular fa-star"></i>
                                             ({{ $listing->review_count }})
@@ -474,7 +491,7 @@
                                     @endif
                                 </div>
 
-                                @if($listing->tagline || $listing->description)
+                                @if ($listing->tagline || $listing->description)
                                     <p class="listing-desc">
                                         {{ \Illuminate\Support\Str::limit($listing->tagline ?: strip_tags($listing->description), 160) }}
                                     </p>
@@ -484,15 +501,15 @@
                             </div>
 
                             <div class="col-md-4 listing-right">
-                                @if($listing->phone)
+                                @if ($listing->phone)
                                     <div class="listing-phone">{{ $listing->phone }}</div>
                                 @endif
 
                                 <div class="listing-address">
-                                    @if(optional($listing->address)->address_line)
+                                    @if (optional($listing->address)->address_line)
                                         {{ $listing->address->address_line }}<br>
                                     @endif
-                                    @if(optional($listing->city)->name)
+                                    @if (optional($listing->city)->name)
                                         {{ $listing->city->name }}
                                     @endif
                                 </div>
@@ -562,7 +579,9 @@
                     @forelse($featured as $f)
                         <div class="side-featured-entry">
                             <strong>{{ $f->name }}</strong>
-                            @if($f->phone)<span>{{ $f->phone }}</span>@endif
+                            @if ($f->phone)
+                                <span>{{ $f->phone }}</span>
+                            @endif
                             <span>{{ optional($f->category)->name }}</span>
                         </div>
                     @empty

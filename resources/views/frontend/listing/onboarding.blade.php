@@ -379,10 +379,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Upload NID (Front) <span class="text-danger">*</span></label>
+                        <label class="form-label">Upload NID (Front) (Optional) <span class="text-danger">*</span></label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('nid_front') is-invalid @enderror"
-                                   name="nid_front" accept="image/*,application/pdf" required>
+                                   name="nid_front" accept="image/*,application/pdf" >
                             @error('nid_front') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div class="upload-hint mt-1">JPG, PNG or PDF. Max 5 MB.</div>
                         </div>
@@ -399,17 +399,17 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Trade License / Business Registration <span class="text-danger">*</span></label>
+                        <label class="form-label">Trade License / Business Registration (Optional) <span class="text-danger">*</span></label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('trade_license') is-invalid @enderror"
-                                   name="trade_license" accept="image/*,application/pdf" required>
+                                   name="trade_license" accept="image/*,application/pdf" >
                             @error('trade_license') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div class="upload-hint mt-1">Scanned copy or clear photo. Max 5 MB.</div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">TIN / VAT / Other Legal Document</label>
+                        <label class="form-label">TIN / VAT / Other Legal Document if any (Optional)</label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('tax_document') is-invalid @enderror"
                                    name="tax_document" accept="image/*,application/pdf">

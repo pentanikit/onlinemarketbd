@@ -32,8 +32,12 @@
                 <p class="footer-small mb-1">
                     Mirpur, Dhaka, Bangladesh
                 </p>
+                    @php
+                        $content = \App\Models\SiteContent::where('key', 'home')->first();
+
+                    @endphp
                 <p class="footer-small mb-1">
-                    Phone: +880 1700-000000
+                    Phone: {{ $content->manage_phone }}
                 </p>
                 <p class="footer-small mb-0">
                     Email: support@onlinemarketbd.com

@@ -396,7 +396,7 @@
 
 @section('pages')
     {{-- CATEGORY NAV STRIP --}}
-    <div class="category-top-nav">
+    {{-- <div class="category-top-nav">
         <div class="container">
             @foreach($topCategories as $cat)
                 <a href="{{ route('frontend.category.show', $cat->slug) }}">
@@ -404,14 +404,14 @@
                 </a>
             @endforeach
         </div>
-    </div>
+    </div> --}}
 
     <main class="container mb-4">
         {{-- Breadcrumb --}}
         <div class="breadcrumb-custom">
             @foreach($breadcrumb as $i => $bc)
                 @if($i > 0) &gt; @endif
-                <a href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
+                <a style="color: #ff7a1a;" href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
             @endforeach
         </div>
 

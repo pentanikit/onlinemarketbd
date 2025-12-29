@@ -287,7 +287,7 @@
                         </a>
 
                         {{-- Update these routes based on your project --}}
-                        <a href="{{ route('listingon') }}" class="btn btn-outline-dark ls-ty-btn">
+                        <a href="{{ route('listings.store') }}" class="btn btn-outline-dark ls-ty-btn">
                             Submit Another Listing
                         </a>
 

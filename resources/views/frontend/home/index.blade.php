@@ -147,76 +147,7 @@
             font-size: 15px;
         }
 
-        /* Footer */
-        .site-footer {
-            background-color: #0b1728;
-            color: #dfe6ef;
-            padding-top: 40px;
-            padding-bottom: 25px;
-            margin-top: 0;
-        }
 
-        .footer-logo {
-            font-weight: 700;
-            font-size: 22px;
-            color: #ffffff;
-        }
-
-        .footer-logo span {
-            color: #ffb347;
-        }
-
-        .footer-heading {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .footer-link {
-            font-size: 13px;
-            color: #dfe6ef;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-
-        .footer-small {
-            font-size: 12px;
-            color: #9fb0c5;
-        }
-
-        .footer-input-group .form-control {
-            font-size: 13px;
-            border-radius: 999px 0 0 999px;
-            border: none;
-        }
-
-        .footer-input-group .btn {
-            border-radius: 0 999px 999px 0;
-            font-size: 13px;
-            padding-inline: 16px;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            margin-top: 20px;
-            padding-top: 10px;
-            font-size: 12px;
-        }
-
-        .footer-social a {
-            color: #dfe6ef;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        .footer-social a:hover {
-            color: #ffffff;
-        }
 
         @media (max-width: 767.98px) {
             .hero-card {
@@ -267,13 +198,6 @@
                 margin-right: auto;
             }
 
-            .site-footer {
-                text-align: center;
-            }
-
-            .footer-input-group {
-                justify-content: center;
-            }
         }
 
         /* small helper for custom 1-5 width on large screens */
@@ -346,11 +270,11 @@
                     <p class="manage-subtext">
                         <span class="new-label">New!</span> Post a job opening on your free listing.
                     </p>
-                    <a href="{{ $content->manage_cta_url }}" class="btn btn-primary listing-btn">
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
-                    <div class="listing-call">
-                        or call {{ $content->manage_phone }}
+                    <div class="listing-call my-2">
+                        call {{ $content->manage_phone }}
                     </div>
                 </div>
             </div>
@@ -419,6 +343,5 @@
     <!-- FAQ SECTION -->
     <x-frontend.faq />
 
-    <!-- FOOTER -->
-    <x-frontend.footer />
+
 @endsection

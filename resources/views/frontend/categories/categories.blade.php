@@ -420,7 +420,7 @@
                 @if ($i > 0)
                     &gt;
                 @endif
-                <a href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
+                <a style="color: #ff7a1a;" href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
             @endforeach
         </div>
 
@@ -441,7 +441,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" value="{{ $q }}"
                                 placeholder='"Fish Taco" "Caesar Salad" etc.'>
-                            <button class="btn btn-primary" type="submit">Find</button>
+                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
                         </div>
                     </form>
                 </div>
@@ -547,8 +547,8 @@
                     </div>
 
                     @forelse($subCategories as $sub)
-                        <a href="{{ route('frontend.category.show', $sub->slug) }}" class="side-link">
-                            <span class="side-cuisine-icon"><i class="fa-solid fa-tag"></i></span>
+                        <a href="{{ route('frontend.category.show', $sub->slug) }}" class="side-link" style="color: black;">
+                            <span class="side-cuisine-icon"><i class="fa-solid fa-tag" style="color: #ff7a1a;"></i></span>
                             {{ $sub->name }}
                         </a>
                     @empty
@@ -564,11 +564,15 @@
                     <p class="side-manage-text">
                         Update your business information in a few steps. Make it easy for your customers to find you.
                     </p>
-                    <button class="btn side-btn-primary w-100 mb-1">
+                    <button class="btn side-btn w-100 mb-1" style="background-color: #ff7921; color:white; font-weight:700">
                         Claim Your Listing
                     </button>
+                        @php
+                            $content = \App\Models\SiteContent::where('key', 'home')->first();
+
+                        @endphp
                     <div class="side-phone-text">
-                        or call <span>1-866-794-0889</span>
+                        or call <span>{{ $content->manage_phone }}</span>
                     </div>
                 </div>
 

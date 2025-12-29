@@ -144,9 +144,20 @@
                         </table>
                     </div>
 
-                    <div class="mt-3">
-                        {{ $categories->links() }}
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                        @if(method_exists($categories, 'firstItem') && $categories->total() > 0)
+                            Showing {{ $categories->firstItem() }}–{{ $categories->lastItem() }} of {{ $categories->total() }}
+                        @else
+                            Showing 0 of 0
+                        @endif
+                    </small>
+
+                    <div>
+                        {{ $categories->appends(request()->query())->links() }}
                     </div>
+                </div>
                 </div>
             </div>
 

@@ -59,7 +59,7 @@
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
                             <input type="text" class="form-control" name="q" value=""
-                               placeholder='"Find the business" etc.'>
+                               placeholder="Find Now">
                         </div>
     
                         <div class="divider d-none d-md-block mx-2"></div>

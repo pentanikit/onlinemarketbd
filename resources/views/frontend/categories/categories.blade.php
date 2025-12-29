@@ -438,7 +438,7 @@
                     <form method="GET" action="{{ route('frontend.category.show', $category->slug) }}">
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" value="{{ $q }}"
-                                placeholder='"Fish Taco" "Caesar Salad" etc.'>
+                                placeholder="Find your business">
                             <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
                         </div>
                     </form>

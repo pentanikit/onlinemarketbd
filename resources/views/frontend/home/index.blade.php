@@ -94,17 +94,17 @@
 
         /* Mission & Vision */
         .mission-vision-section {
-            padding: 20px 0 70px;
+           
         }
 
         .mv-block {
-            margin-bottom: 60px;
+            
         }
 
         .mv-title {
             font-size: 32px;
             font-weight: 700;
-            margin-bottom: 16px;
+            
             color: #111;
         }
 
@@ -243,11 +243,11 @@
     @endphp
 
     <!-- MANAGE LISTING + ABOUT US SECTION -->
-    <section class="manage-listing-section">
+    <section class="manage-listing-section mb-3">
         <div class="container ">
-            <div class="row align-items-center text-center text-md-start mb-5 py-5">
+            <div class="row align-items-center text-center text-md-start">
                 <!-- Left image circle -->
-                <div class="col-md-7 d-flex justify-content-center mb-3 mb-md-0">
+                <div class="col-md-7 d-flex justify-content-center  mb-md-0">
                     <div class="listing-photo-wrapper">
                         <!-- replace this image with your own -->
                       
@@ -280,8 +280,8 @@
             </div>
 
             <!-- About Us text -->
-            <div class="py-5">
-                <h3 class="about-title text-center">{{ $content->about_title }}</h3>
+            <div class="my-3">
+                <h3 class="about-title text-center mv-title">{{ $content->about_title }}</h3>
 
                 <p class="about-text">
                     {{ $content->about_body }}
@@ -299,7 +299,7 @@
         <div class="container">
 
             <!-- Mission -->
-            <div class="row align-items-center mv-block g-4 py-5">
+            <div class="row align-items-center mv-block ">
                 <div class="col-md-6">
                     <h2 class="mv-title">{{ $content->mission_title }}</h2>
 
@@ -320,7 +320,7 @@
             </div>
 
             <!-- Vision -->
-            <div class="row align-items-center mv-block g-4 py-5">
+            <div class="row align-items-center mv-block ">
                 <!-- Image left on desktop -->
                 <div class="col-md-6 order-2 order-md-1 text-center">
                     <div class="mv-image-wrapper">

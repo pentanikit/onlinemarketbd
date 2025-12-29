@@ -387,18 +387,16 @@
     <x-frontend.header />
 
     <!-- CATEGORY NAV STRIP -->
-    <div class="category-top-nav filter-buttons">
+    {{-- <div class="category-top-nav filter-buttons">
         <div class="container">
             @foreach ($subCategories as $cat)
-                {{-- <a href="{{ route('frontend.category.show', $cat->slug) }}">
-                    <i class="fa-solid fa-folder"></i> {{ $cat->name }}
-                </a> --}}
+
                 <a href="{{ route('frontend.category.show', $cat->slug) }}">
                     <button class="btn btn-outline-secondary"><i class="fa-solid fa-folder"></i>{{ $cat->name }}</button>
                 </a>
             @endforeach
         </div>
-    </div>
+    </div> --}}
 
     {{-- <div class="filter-buttons">
         <div class="container">

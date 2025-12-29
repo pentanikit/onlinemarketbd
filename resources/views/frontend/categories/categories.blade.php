@@ -569,8 +569,8 @@
                             $content = \App\Models\SiteContent::where('key', 'home')->first();
 
                         @endphp
-                    <div class="side-phone-text">
-                        or call <span>{{ $content->manage_phone }}</span>
+                    <div class="side-phone-text" style="font-size: 22px;">
+                        <span style="font-weight:700;">C</span>all : <span>{{ $content->manage_phone }}</span>
                     </div>
                 </div>
 

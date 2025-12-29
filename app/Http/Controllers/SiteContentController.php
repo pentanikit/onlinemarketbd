@@ -34,7 +34,7 @@ class SiteContentController extends Controller
         $validated = $request->validate([
             'about_title'   => 'nullable|string|max:255',
             'about_body'    => 'nullable|string',
-
+            'hero_image'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'manage_title'     => 'nullable|string|max:255',
             'manage_body'      => 'nullable|string',
             'manage_cta_text'  => 'nullable|string|max:255',
@@ -56,7 +56,7 @@ class SiteContentController extends Controller
         DB::transaction(function () use ($request, $content, $validated) {
 
             // Remove file fields from mass-fill (we handle manually)
-            unset($validated['manage_image'], $validated['mission_image'], $validated['vision_image']);
+            unset($validated['manage_image'], $validated['mission_image'], $validated['vision_image'], $validated['hero_image']);
 
             $content->fill($validated);
 
@@ -75,6 +75,7 @@ class SiteContentController extends Controller
                 $content->{$dbColumn} = $path;
             };
 
+            $upload('hero_image', 'hero_image');
             $upload('manage_image',  'manage_image');
             $upload('mission_image', 'mission_image');
             $upload('vision_image',  'vision_image');

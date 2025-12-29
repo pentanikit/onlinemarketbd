@@ -12,11 +12,14 @@ class SiteContent extends Model
 
         'about_title','about_body',
 
+        'hero_image',
+
         'manage_title','manage_body','manage_cta_text','manage_cta_url','manage_phone','manage_image',
 
         'mission_title','mission_body','mission_image',
 
         'vision_title','vision_body','vision_image',
+
 
         'meta',
     ];

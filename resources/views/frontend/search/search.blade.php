@@ -432,7 +432,7 @@
 
     <!-- Breadcrumb / title -->
     <div class="breadcrumb-custom" style="color: #ff7a1a;">
-        <a href="{{ url('/') }}">Home</a>
+        <a style="color: #ff7a1a;" href="{{ url('/') }}">Home</a>
         @if($q) &gt; <span>{{ $q }}</span> @endif
         @if($city?->name) &gt; <span>{{ $city->name }}</span> @endif
     </div>

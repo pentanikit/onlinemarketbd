@@ -385,7 +385,10 @@
 
 @section('pages')
     <x-frontend.header />
+                        @php
+                            $content = \App\Models\SiteContent::where('key', 'home')->first();
 
+                        @endphp
     <!-- CATEGORY NAV STRIP -->
     {{-- <div class="category-top-nav filter-buttons">
         <div class="container">
@@ -565,10 +568,7 @@
                     <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
-                        @php
-                            $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-                        @endphp
                     <div class="side-phone-text" style="font-size: 22px;">
                         <span style="font-weight:700;">C</span>all : <span>{{ $content->manage_phone }}</span>
                     </div>

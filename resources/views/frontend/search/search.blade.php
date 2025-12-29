@@ -423,7 +423,10 @@
         @endforeach
     </div>
 </div> --}}
+                        @php
+                            $content = \App\Models\SiteContent::where('key', 'home')->first();
 
+                        @endphp
 <!-- MAIN CONTENT -->
 <main class="container mb-4">
 
@@ -548,10 +551,7 @@
             </div>
         </div>
 
-            @php
-                $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-            @endphp
         <!-- Right sidebar -->
         <div class="col-lg-4 mt-3 mt-lg-0">
 

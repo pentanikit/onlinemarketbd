@@ -562,9 +562,9 @@
                     <p class="side-manage-text">
                         Update your business information in a few steps. Make it easy for your customers to find you.
                     </p>
-                    <button class="btn side-btn w-100 mb-1" style="background-color: #ff7921; color:white; font-weight:700">
-                        Claim Your Listing
-                    </button>
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
+                        {{ $content->manage_cta_text }}
+                    </a>
                         @php
                             $content = \App\Models\SiteContent::where('key', 'home')->first();
 

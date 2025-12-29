@@ -147,6 +147,11 @@
             font-size: 15px;
         }
 
+        .manage-title span {
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: #ffeb3b;
+        }
 
 
         @media (max-width: 767.98px) {
@@ -173,9 +178,12 @@
                 display: none;
             }
 
-            .manage-title {
+            .manage-title span{
                 font-size: 24px;
                 text-align: center;
+                font-weight: 700;
+                text-decoration: underline;
+                text-decoration-color: #ffeb3b;
             }
 
             .manage-subtext {
@@ -248,7 +256,7 @@
             <div class="row align-items-center text-center text-md-start">
                 <!-- Left image circle -->
                 <div class="col-md-6 d-flex justify-content-center  mb-md-0">
-                    <div class="listing-photo-wrapper">
+                    <div class="listing-photo-wrapper text-center">
                         <!-- replace this image with your own -->
                       
                             <img src="{{ asset('storage/' . $content->manage_image) }}" width="350" height="340" alt="Manage Listing"
@@ -259,8 +267,8 @@
                 </div>
 
                 <!-- Right content -->
-                <div class="col-md-6">
-                    <h2 class="manage-title" style="font-weight: 700;">Manage your <span>free</span> listing.</h2>
+                <div class="col-md-6 text-center">
+                    <h2 class="manage-title">Manage your <span>free</span> listing.</h2>
                     {{-- <h2 class="manage-title" style="font-size:32px; font-weight:700">
                         {{ $content->manage_title }}
                     </h2> --}}

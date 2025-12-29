@@ -414,7 +414,7 @@
 </div> --}}
 
 <!-- CATEGORY NAV STRIP -->
-<div class="category-top-nav">
+{{-- <div class="category-top-nav">
     <div class="container">
         @foreach($topCategories as $cat)
             <a href="{{ route('frontend.category.show', $cat->slug) }}">
@@ -422,13 +422,13 @@
             </a>
         @endforeach
     </div>
-</div>
+</div> --}}
 
 <!-- MAIN CONTENT -->
 <main class="container mb-4">
 
     <!-- Breadcrumb / title -->
-    <div class="breadcrumb-custom">
+    <div class="breadcrumb-custom" style="color: #ff7a1a;">
         <a href="{{ url('/') }}">Home</a>
         @if($q) &gt; <span>{{ $q }}</span> @endif
         @if($city?->name) &gt; <span>{{ $city->name }}</span> @endif
@@ -446,12 +446,11 @@
             <!-- Menu search (same search again quick) -->
             <div class="menu-search-bar">
                 <form method="GET" action="{{ route('frontend.search') }}">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="q" value="{{ $q }}"
-                               placeholder='"Fish Taco" "Caesar Salad" etc.'>
-                        <input type="text" name="where" value="{{ $where }}">
-                        <button class="btn btn-primary" type="submit">Find</button>
-                    </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" value="{{ $q }}"
+                                placeholder="Find your business">
+                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
+                        </div>
                 </form>
             </div>
 
@@ -467,7 +466,7 @@
                                 @endphp
 
                                 @if($img)
-                                    <img src="{{ asset($img) }}" alt="{{ $listing->name }}">
+                                    <img src="{{ asset('storage').'/'.$img }}" alt="{{ $listing->name }}">
                                 @else
                                     <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                 @endif
@@ -476,7 +475,7 @@
 
                         <div class="col-md-6">
                             <div class="listing-name">
-                                <a href="#">
+                                <a style="color:#ff7a1a;" href="{{ route('frontend.listing.show', $listing->slug) }}">
                                     {{ $listings->firstItem() + $index }}. {{ $listing->name }}
                                 </a>
                             </div>
@@ -490,7 +489,7 @@
 
                             <div class="listing-meta mt-1">
                                 @if($listing->website)
-                                    <a href="{{ $listing->website }}" class="me-2" target="_blank">Website</a>
+                                    <a href="{{ $listing->website }}" style="color:#ff7a1a" class="me-2" target="_blank">Website</a>
                                 @endif
 
                                 @if($listing->review_count)
@@ -504,7 +503,7 @@
                                 </p>
                             @endif
 
-                            <a href="#" class="btn btn-order">View Details</a>
+                            <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a; color:white">View Details</a>
                         </div>
 
                         <div class="col-md-4 listing-right">
@@ -549,6 +548,10 @@
             </div>
         </div>
 
+            @php
+                $content = \App\Models\SiteContent::where('key', 'home')->first();
+
+            @endphp
         <!-- Right sidebar -->
         <div class="col-lg-4 mt-3 mt-lg-0">
 
@@ -559,8 +562,8 @@
                 </div>
 
                 @forelse($popularCategories as $pc)
-                    <a href="{{ route('frontend.category.show', $pc->slug) }}" class="side-link">
-                        <span class="side-cuisine-icon"><i class="fa-solid fa-tag"></i></span>
+                    <a href="{{ route('frontend.category.show', $pc->slug) }}" class="side-link" style="color: black;">
+                        <span class="side-cuisine-icon"><i class="fa-solid fa-tag" style="color:#ff7921;"></i></span>
                         {{ $pc->name }}
                         <span style="color:#777; font-size:12px;">({{ $pc->listings_count }})</span>
                     </a>
@@ -577,11 +580,11 @@
                 <p class="side-manage-text">
                     Update your business information in a few steps. Make it easy for your customers to find you.
                 </p>
-                <button class="btn side-btn-primary w-100 mb-1">
-                    Claim Your Listing
-                </button>
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
+                        {{ $content->manage_cta_text }}
+                    </a>
                 <div class="side-phone-text">
-                    or call <span>1-866-794-0889</span>
+                    call <span>{{ $content->manage_phone }}</span>
                 </div>
             </div>
 

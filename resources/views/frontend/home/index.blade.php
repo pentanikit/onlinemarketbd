@@ -247,7 +247,7 @@
         <div class="container ">
             <div class="row align-items-center text-center text-md-start">
                 <!-- Left image circle -->
-                <div class="col-md-7 d-flex justify-content-center  mb-md-0">
+                <div class="col-md-6 d-flex justify-content-center  mb-md-0">
                     <div class="listing-photo-wrapper">
                         <!-- replace this image with your own -->
                       
@@ -259,11 +259,11 @@
                 </div>
 
                 <!-- Right content -->
-                <div class="col-md-5">
-                    <h2>Manage your <span>free</span> listing.</h2>
-                    <h2 class="manage-title" style="font-size:32px; font-weight:700">
+                <div class="col-md-6">
+                    <h2 class="manage-title" style="font-weight: 700;">Manage your <span>free</span> listing.</h2>
+                    {{-- <h2 class="manage-title" style="font-size:32px; font-weight:700">
                         {{ $content->manage_title }}
-                    </h2>
+                    </h2> --}}
                     <p class="manage-subtext mt-2 mb-1">
                          {!! nl2br(e($content->manage_body)) !!}
                        

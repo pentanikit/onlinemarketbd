@@ -657,6 +657,7 @@
         primaryCategorySelect.value = '';
         primaryCategorySelect.disabled = true;
        
+        
     }
 
     async function loadPrimaryCategories(parentId, preselectId = null) {

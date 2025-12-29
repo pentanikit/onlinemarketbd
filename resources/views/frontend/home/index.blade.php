@@ -251,7 +251,7 @@
                     <div class="listing-photo-wrapper">
                         <!-- replace this image with your own -->
                       
-                            <img src="{{ asset('storage/' . $content->manage_image) }}" alt="Manage Listing"
+                            <img src="{{ asset('storage/' . $content->manage_image) }}" width="350" height="340" alt="Manage Listing"
                                 class="listing-img img-fluid" >
                        
 
@@ -260,16 +260,16 @@
 
                 <!-- Right content -->
                 <div class="col-md-5">
-                    <h2 class="manage-title">
+                    <h2>Manage your <span>free</span> listing.</h2>
+                    <h2 class="manage-title" style="font-size:32px; font-weight:700">
                         {{ $content->manage_title }}
                     </h2>
                     <p class="manage-subtext mt-2 mb-1">
-                        {{ $content->manage_body }}
+                         {!! nl2br(e($content->manage_body)) !!}
+                       
 
                     </p>
-                    <p class="manage-subtext">
-                        <span class="new-label">New!</span> Post a job opening on your free listing.
-                    </p>
+          
                     <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
@@ -280,11 +280,12 @@
             </div>
 
             <!-- About Us text -->
-            <div class="my-3">
+            <div class="my-5">
                 <h3 class="about-title text-center mv-title">{{ $content->about_title }}</h3>
 
                 <p class="about-text">
-                    {{ $content->about_body }}
+                    {!! nl2br(e($content->about_body)) !!}
+                    
                 </p>
             </div>
 
@@ -295,7 +296,7 @@
 
 
     <!-- MISSION & VISION SECTION -->
-    <section class="mission-vision-section">
+    {{-- <section class="mission-vision-section">
         <div class="container">
 
             <!-- Mission -->
@@ -311,7 +312,7 @@
                     <div class="mv-image-wrapper">
                         <!-- replace with your mission image -->
                         <div class="mv-image-wrapper">
-                            <img src="{{ asset('storage/' . $content->mission_image) }}" alt="Mission Section Image"
+                            <img src="{{ asset('storage/' . $content->mission_image) }}" width="350" height="340" alt="Mission Section Image"
                                 class="mv-img img-fluid">
                         </div>
 
@@ -325,7 +326,7 @@
                 <div class="col-md-6 order-2 order-md-1 text-center">
                     <div class="mv-image-wrapper">
                         <!-- replace with your vision image -->
-                        <img src="{{ asset('storage/' . $content->vision_image) }}"  class="mv-img img-fluid" alt="Vision Section Image">
+                        <img src="{{ asset('storage/' . $content->vision_image) }}" width="350" height="340" class="mv-img img-fluid" alt="Vision Section Image">
                     </div>
                 </div>
                 <div class="col-md-6 order-1 order-md-2">
@@ -338,7 +339,7 @@
             </div>
 
         </div>
-    </section>
+    </section> --}}
 
     <!-- FAQ SECTION -->
     <x-frontend.faq />

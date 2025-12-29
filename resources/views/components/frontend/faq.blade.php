@@ -1,6 +1,6 @@
 <section class="faq-section">
     <div class="container">
-        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <h2 class="faq-title" style="color: #ff7921;">Frequently Asked Questions</h2>
         <p class="faq-intro">
             Got questions about how Online Market BD works? Here are some quick answers to help you get started.
         </p>

@@ -22,7 +22,7 @@ class ListingController extends Controller
 
     public function create()
     {
-        $categories = Category::orderBy('sort_order')
+        $categories = Category::where('parent_id', null)->orderBy('sort_order')
             ->orderBy('name')
             ->get();
 

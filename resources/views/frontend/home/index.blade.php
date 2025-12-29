@@ -230,16 +230,7 @@
 
 
     <!-- HERO SECTION -->
-    <section class="py-0">
-        <div class="container">
-            <div class="hero-card">
-                <div class="row align-items-center g-2">
-                    <img class="mx-auto" src="{{ asset('WhatsApp Image 2025-12-21 at 6.33.46 PM.jpeg') }}" alt=""
-                        srcset="">
-                </div>
-            </div>
-        </div>
-    </section>
+    <x-frontend.hero />
 
 
     <!-- CATEGORY STRIP -->

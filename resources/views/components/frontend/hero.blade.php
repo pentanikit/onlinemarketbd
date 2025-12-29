@@ -1,15 +1,10 @@
-<section class="py-3">
-    <div class="container"  style="background-image: url({{ asset('Online-Market-BD-Banner-White-bg.jpg') }})">
-        <div class="hero-card">
-            <div class="row align-items-center g-4">
-                <div class="col-md-6 text-center text-md-start">
-                 
-                 
-                </div>
-                <div class="col-md-6 text-center text-md-start">
-
+    <section class="py-0">
+        <div class="container">
+            <div class="hero-card">
+                <div class="row align-items-center g-2">
+                    <img class="mx-auto" src="{{ asset('Online-Market-BD-Banner-White-bg.jpg') }}" alt=""
+                        srcset="">
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>

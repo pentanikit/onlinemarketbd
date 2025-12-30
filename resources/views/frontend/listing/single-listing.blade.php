@@ -466,7 +466,7 @@
                 <div class="side-card">
                     <div class="claim-box-title">Is this your business?</div>
                     <p class="mb-2">Customize this page.</p>
-                    <a href="{{ listings.create }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This Business</a>
+                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This Business</a>
                 </div>
 
                 {{-- Hours --}}

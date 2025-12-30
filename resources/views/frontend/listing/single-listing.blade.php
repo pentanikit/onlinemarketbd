@@ -476,28 +476,15 @@
 
                     @if($hoursByDay->count())
                         @foreach($hoursByDay as $day => $rows)
-                            @foreach($rows as $h)
-                                @php
-                                    // Adjust these field names if your ListingHour table differs
-                                    $open  = $h->open ?? $h->open_time ?? null;
-                                    $close = $h->close ?? $h->close_time ?? null;
-                                @endphp
-
-                                <div class="hours-row">
-                                    <span>{{ $day }}:</span>
-                                    <span>
-                                        @if($open && $close)
-                                            {{ $open }} - {{ $close }}
-                                        @else
-                                            Closed
-                                        @endif
-                                    </span>
-                                </div>
-                            @endforeach
+                            <div class="hours-row">
+                                <span>{{ $day }}:</span>
+                                <span>{{ $rows->first()->formatted_range }}</span>
+                            </div>
                         @endforeach
                     @else
                         <div class="text-muted" style="font-size:13px;">Hours not available</div>
                     @endif
+
                 </div>
 
                 {{-- Places near (dynamic based on same category) --}}
@@ -531,7 +518,7 @@
                                 @endphp
 
                                 @if($mainImg)
-                                    <img src="{{ asset('storage/'.$mainImg) }}" alt="{{ $listing->name }}">
+                                    <img style="object-fit:cover;" src="{{ asset('storage/'.$mainImg) }}" alt="{{ $listing->name }}">
                                 @else
                                     <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                 @endif
@@ -569,8 +556,8 @@
                                     <a href="#" class="review-link ms-2">
                                         ({{ $listing->review_count }}) reviews
                                     </a>
-                                @else
-                                    <a href="#" class="review-link ms-2">Be the first to review!</a>
+                                {{-- @else
+                                    <a href="#" class="review-link ms-2">Be the first to review!</a> --}}
                                 @endif
                             </div>
 
@@ -597,7 +584,7 @@
                     $menu = data_get($listing->meta, 'menu', []);
                 @endphp
 
-                <div class="menu-section mb-3">
+                {{-- <div class="menu-section mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div class="menu-title">Menu</div>
                     </div>
@@ -625,7 +612,7 @@
                             Menu not added yet.
                         </div>
                     @endif
-                </div>
+                </div> --}}
 
                 {{-- Gallery (dynamic from photos relation) --}}
                 @php

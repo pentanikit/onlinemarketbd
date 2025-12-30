@@ -492,10 +492,8 @@ class ListingController extends Controller
 
         // Hours: group by day (expects ListingHour has day/open/close OR similar)
         // If your columns differ, I’ll adjust once you paste ListingHour migration.
-        $hoursByDay = $listing->hours
-            ->groupBy(function ($h) {
-                return $h->day ?? $h->weekday ?? 'Day';
-            });
+        $hoursByDay = $listing->hours->sortBy('day_of_week')
+            ->groupBy(fn($h) => $h->day_name);
 
         // Nearby places: show nearby cities based on same category (simple, dynamic)
         $nearbyCities = collect();

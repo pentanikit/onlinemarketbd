@@ -405,6 +405,7 @@
             @endforeach
         </div>
     </div> --}}
+    <x-frontend.header />
 
     <main class="container mb-4">
         {{-- Breadcrumb --}}
@@ -465,7 +466,7 @@
                 <div class="side-card">
                     <div class="claim-box-title">Is this your business?</div>
                     <p class="mb-2">Customize this page.</p>
-                    <button class="btn btn-claim w-100">Claim This Business</button>
+                    <a href="{{ listings.create }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This Business</a>
                 </div>
 
                 {{-- Hours --}}
@@ -530,7 +531,7 @@
                                 @endphp
 
                                 @if($mainImg)
-                                    <img src="{{ asset($mainImg) }}" alt="{{ $listing->name }}">
+                                    <img src="{{ asset('storage/'.$mainImg) }}" alt="{{ $listing->name }}">
                                 @else
                                     <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                 @endif
@@ -650,7 +651,7 @@
                             <div class="col-md-4 col-6 {{ $i === 2 ? 'd-none d-md-block' : '' }}">
                                 <div class="gallery-thumb">
                                     @if($p)
-                                        <img src="{{ asset($p) }}" alt="Gallery {{ $i+1 }}">
+                                        <img src="{{ asset('storage/'.$p) }}" alt="Gallery {{ $i+1 }}">
                                     @else
                                         <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                     @endif

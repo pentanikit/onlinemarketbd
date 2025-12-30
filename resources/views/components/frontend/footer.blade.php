@@ -1,11 +1,14 @@
 <footer class="site-footer">
     <div class="container">
+        @php
+            $content = \App\Models\SiteContent::where('key', 'home')->first();
+        @endphp
         <div class="row gy-4">
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-2">
                     {{-- <div class="logo-icon me-2"></div>
                     <div class="footer-logo">Online<span>marketbd</span></div> --}}
-                     <img src="{{ asset('Online-Market-BD-Logo.png') }}" width="220" height="60" alt="" srcset="">
+                     <img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="" srcset="">
                 </div>
                 <p class="footer-small mb-2">
                     A smart directory for small businesses across Bangladesh. Discover local services,
@@ -32,10 +35,7 @@
                 <p class="footer-small mb-1">
                     Mirpur, Dhaka, Bangladesh
                 </p>
-                    @php
-                        $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-                    @endphp
                 <p class="footer-small mb-1">
                     Phone: {{ $content->manage_phone }}
                 </p>

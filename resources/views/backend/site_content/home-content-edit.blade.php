@@ -55,7 +55,33 @@
                         <div class="card border-0 shadow-sm rounded-3 mb-3">
                             <div class="card-body">
                                   <div class="col-12">
-                                  <label class="form-label small">Image</label>
+                                  <label class="form-label small">Site Logo Image</label>
+                                  <input type="file"
+                                        class="form-control @error('logo_image') is-invalid @enderror"
+                                        name="logo_image"
+                                        accept="image/png,image/jpeg,image/webp"
+                                        data-preview="#previewManage">
+                                  @error('logo_image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
+                                  <div class="mt-2 d-flex align-items-center gap-3">
+                                    <div class="rounded-3 border bg-light overflow-hidden" style="width: 180px; height: 92px;">
+                                      <img id="previewManage"
+                                          src="{{ asset('storage').'/'.$content->logo_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
+                                          alt="Manage Image Preview"
+                                          style="width:100%;height:100%;object-fit:cover;">
+                                    </div>
+                                    <div class="small text-muted">
+                                      Recommended: <span class="fw-semibold">1200×600</span> (or similar wide ratio). <br>
+                                      Allowed: JPG, PNG, WEBP (max 4MB).
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card border-0 shadow-sm rounded-3 mb-3">
+                            <div class="card-body">
+                                  <div class="col-12">
+                                  <label class="form-label small">Hero Image</label>
                                   <input type="file"
                                         class="form-control @error('manage_image') is-invalid @enderror"
                                         name="hero_image"
@@ -66,7 +92,7 @@
                                   <div class="mt-2 d-flex align-items-center gap-3">
                                     <div class="rounded-3 border bg-light overflow-hidden" style="width: 180px; height: 92px;">
                                       <img id="previewManage"
-                                          src="{{ $content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
+                                          src="{{ asset('storage').'/'.$content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
                                           alt="Manage Image Preview"
                                           style="width:100%;height:100%;object-fit:cover;">
                                     </div>
@@ -193,7 +219,7 @@
                                             <div class="rounded-3 border bg-light overflow-hidden"
                                                 style="width: 180px; height: 92px;">
                                                 <img id="previewManage"
-                                                    src="{{ $content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
+                                                    src="{{ asset('storage').'/'.$content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
                                                     alt="Manage Image Preview"
                                                     style="width:100%;height:100%;object-fit:cover;">
                                             </div>
@@ -253,7 +279,7 @@
                                     <div class="col-12">
                                         <div class="rounded-3 border bg-light overflow-hidden" style="max-width: 420px;">
                                             <img id="previewMission"
-                                                src="{{ $content->mission_image ?: 'https://via.placeholder.com/900x900?text=Mission+Image' }}"
+                                                src="{{ asset('storage').'/'.$content->mission_image ?: 'https://via.placeholder.com/900x900?text=Mission+Image' }}"
                                                 alt="Mission Image Preview" style="width:100%;height:auto;display:block;">
                                         </div>
                                         <div class="form-text">Recommended: square (e.g. 900×900) for circle frame designs.
@@ -306,7 +332,7 @@
                                     <div class="col-12">
                                         <div class="rounded-3 border bg-light overflow-hidden" style="max-width: 420px;">
                                             <img id="previewVision"
-                                                src="{{ $content->vision_image ?: 'https://via.placeholder.com/900x900?text=Vision+Image' }}"
+                                                src="{{ asset('storage').'/'.$content->vision_image ?: 'https://via.placeholder.com/900x900?text=Vision+Image' }}"
                                                 alt="Vision Image Preview" style="width:100%;height:auto;display:block;">
                                         </div>
                                         <div class="form-text">Recommended: square (e.g. 900×900). Keep the subject

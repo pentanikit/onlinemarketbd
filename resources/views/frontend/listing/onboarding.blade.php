@@ -1,83 +1,279 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Business Onboarding – Online Market BD</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('frontend.layout')
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+@push('styles')
+        <style>
 
-    <style>
-        body { background: #f5f7fb; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-        .site-header { border-bottom: 1px solid #e5e9f0; background: #fff; }
-        .logo-text { font-weight: 700; font-size: 22px; color: #00306b; }
-        .logo-text span { color: #ff7a1a; }
-        .logo-icon { width: 28px; height: 32px; border: 3px solid #00306b; border-radius: 6px; border-top-width: 6px; margin-right: 6px; position: relative; }
-        .logo-icon::before { content: ""; position: absolute; width: 60%; height: 9px; border: 3px solid #00306b; border-radius: 10px; border-bottom: none; top: -10px; left: 50%; transform: translateX(-50%); }
 
-        .wizard-wrapper { max-width: 980px; margin: 30px auto 40px; }
-        .wizard-card { background: #ffffff; border-radius: 16px; box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08); border: 1px solid #e5e9f0; }
-        .wizard-header { padding: 18px 24px 12px; border-bottom: 1px solid #eef1f7; }
-        .wizard-title { font-size: 20px; font-weight: 600; }
-        .wizard-subtitle { font-size: 13px; color: #6b7280; }
+        /* Wizard layout */
+        .wizard-wrapper {
+            max-width: 980px;
+            margin: 30px auto 40px;
+        }
 
-        .stepper { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
-        .stepper-step { flex: 1; text-align: center; position: relative; }
-        .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #d1d5db; background: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #6b7280; position: relative; z-index: 2; }
-        .stepper-label { margin-top: 4px; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
-        .stepper-step::before { content: ""; position: absolute; height: 2px; background: #e5e7eb; top: 15px; left: -50%; right: 50%; z-index: 1; }
-        .stepper-step:first-child::before { content: none; }
-        .stepper-step.active .stepper-circle { border-color: #2563eb; background: #2563eb; color: #ffffff; }
-        .stepper-step.completed .stepper-circle { background: #16a34a; border-color: #16a34a; color: white; }
-        .stepper-step.completed .stepper-circle i { font-size: 14px; }
-        .stepper-step.active .stepper-label { color: #111827; font-weight: 600; }
-        .stepper-step.completed .stepper-label { color: #16a34a; }
+        .wizard-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e9f0;
+        }
 
-        .wizard-body { padding: 20px 24px 6px; }
-        .step-panel { display: none; }
-        .step-panel.active { display: block; }
+        .wizard-header {
+            padding: 18px 24px 12px;
+            border-bottom: 1px solid #eef1f7;
+        }
 
-        .form-section-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .form-section-help { font-size: 12px; color: #6b7280; margin-bottom: 16px; }
-        .form-label { font-size: 13px; font-weight: 500; }
-        .form-text { font-size: 11px; }
-        .border-dashed { border-style: dashed !important; }
-        .upload-hint { font-size: 12px; color: #6b7280; }
+        .wizard-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
 
-        .summary-box { background: #f9fafb; border-radius: 8px; padding: 12px 14px; font-size: 13px; }
-        .summary-box dt { font-weight: 600; color: #374151; }
-        .summary-box dd { margin-bottom: 6px; color: #4b5563; }
+        .wizard-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
 
-        .wizard-footer { padding: 14px 24px 18px; border-top: 1px solid #eef1f7; display: flex; justify-content: space-between; gap: 12px; }
-        .btn-step-next { min-width: 120px; }
-        .btn-soft { background: #eff6ff; border-color: #dbeafe; color: #1d4ed8; }
-        .btn-soft:hover { background: #dbeafe; border-color: #bfdbfe; color: #1d4ed8; }
+        /* Stepper */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 14px;
+        }
 
+        .stepper-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .stepper-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            background: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stepper-label {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .stepper-step::before {
+            content: "";
+            position: absolute;
+            height: 2px;
+            background: #e5e7eb;
+            top: 15px;
+            left: -50%;
+            right: 50%;
+            z-index: 1;
+        }
+
+        .stepper-step:first-child::before {
+            content: none;
+        }
+
+        .stepper-step.active .stepper-circle {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .stepper-step.completed .stepper-circle {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: white;
+        }
+
+        .stepper-step.completed .stepper-circle i {
+            font-size: 14px;
+        }
+
+        .stepper-step.active .stepper-label {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .stepper-step.completed .stepper-label {
+            color: #16a34a;
+        }
+
+        /* Panels */
+        .wizard-body {
+            padding: 20px 24px 6px;
+        }
+
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-section-help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-text {
+            font-size: 11px;
+        }
+
+        .border-dashed {
+            border-style: dashed !important;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .summary-box {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 13px;
+        }
+
+        .summary-box dt {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .summary-box dd {
+            margin-bottom: 6px;
+            color: #4b5563;
+        }
+
+        .wizard-footer {
+            padding: 14px 24px 18px;
+            border-top: 1px solid #eef1f7;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .btn-step-next {
+            min-width: 120px;
+        }
+
+        .btn-soft {
+            background: #eff6ff;
+            border-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-soft:hover {
+            background: #dbeafe;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        /* Mobile tweaks */
         @media (max-width: 767.98px) {
-            .wizard-wrapper { margin: 18px auto 26px; padding-inline: 8px; }
-            .wizard-card { border-radius: 12px; }
-            .wizard-header { padding-inline: 16px; }
-            .wizard-body, .wizard-footer { padding-inline: 16px; }
-            .stepper-label { font-size: 10px; }
-            .stepper-circle { width: 26px; height: 26px; font-size: 12px; }
+            .wizard-wrapper {
+                margin: 18px auto 26px;
+                padding-inline: 8px;
+            }
+            .wizard-card {
+                border-radius: 12px;
+            }
+            .wizard-header {
+                padding-inline: 16px;
+            }
+            .wizard-body,
+            .wizard-footer {
+                padding-inline: 16px;
+            }
+            .stepper-label {
+                font-size: 10px;
+            }
+            .stepper-circle {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
         }
     </style>
-</head>
-<body>
+@endpush
 
-<header class="site-header py-2">
-    <nav class="navbar navbar-expand-md container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <div class="logo-icon"></div>
-            <span class="logo-text">Online<span>marketbd</span></span>
-        </a>
-    </nav>
-</header>
+@section('pages')
 
-<div class="wizard-wrapper">
+    <div style="background-color: #0b1728; color: white;">
+        @php
+            $content = \App\Models\SiteContent::where('key', 'home')->first();
+        @endphp
+        <!-- HEADER -->
+        <div class="container ">
+            <header class="site-header">
+                <nav class="navbar navbar-expand-md container p-0">
+                    <!-- Logo -->
+                    <a class="navbar-brand d-flex align-items-center" href="{{ route('clientHome') }}">
+                        {{-- <div class="logo-icon"></div>
+                        <div class="logo-text">
+                            Online<span>marketbd</span>
+                        </div> --}}
+                        <img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="" srcset="">
+                    </a>
+    
+                    <!-- Hamburger (mobile only) -->
+                    <button class="navbar-toggler d-block d-md-none border-0  custom-hamburger" type="button" data-bs-toggle="offcanvas" style="color: #ff7921"
+                        data-bs-target="#mainOffcanvas" aria-controls="mainOffcanvas" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+    
+                    
+                </nav>
+            </header>
+        </div>
+        <!-- OFFCANVAS MENU (MOBILE) -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mainOffcanvasLabel">Menu</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-regular fa-user me-2"></i>About Us</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-bullseye me-2"></i>Mission</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vission</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="wizard-wrapper">
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -153,7 +349,7 @@
                                 required>
                             <option value="">Select type</option>
                             @foreach($categories as $typeCat) {{-- parent_id NULL categories --}}
-                                <option value="{{ $typeCat->name }}" {{ old('business_type_id') == $typeCat->id ? 'selected' : '' }}>
+                                <option value="{{ $typeCat->id }}" {{ old('business_type_id') == $typeCat->id ? 'selected' : '' }}>
                                     {{ $typeCat->name }}
                                 </option>
                             @endforeach
@@ -260,7 +456,7 @@
 
                     <div class="col-md-3">
                         <label class="form-label">Website</label>
-                        <input type="url" class="form-control @error('website') is-invalid @enderror"
+                        <input type="text" class="form-control @error('website') is-invalid @enderror"
                                name="website" value="{{ old('website') }}" placeholder="https://example.com">
                         @error('website') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -374,7 +570,7 @@
                     <div class="col-md-6">
                         <label class="form-label">NID Number <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('nid_number') is-invalid @enderror"
-                               name="nid_number" value="{{ old('nid_number') }}" required>
+                               name="nid_number" value="{{ old('nid_number') }}" >
                         @error('nid_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -721,8 +917,4 @@
     });
 })();
 </script>
-
-</body>
-</html>
-
-  
+@endsection

@@ -282,12 +282,12 @@
                     <div class="ls-ty-divider"></div>
 
                     <div class="ls-ty-actions d-flex flex-column flex-sm-row gap-2">
-                        <a href="#" class="btn btn-dark ls-ty-btn">
+                        <a href="{{ url('/') }}" class="btn btn-dark ls-ty-btn">
                             Back to Home
                         </a>
 
                         {{-- Update these routes based on your project --}}
-                        <a href="{{ route('listings.store') }}" class="btn btn-outline-dark ls-ty-btn">
+                        <a href="{{ route('listings.create') }}" class="btn btn-outline-dark ls-ty-btn">
                             Submit Another Listing
                         </a>
 

@@ -1,4 +1,7 @@
     <div style="background-color: #0b1728; color: white;">
+        @php
+            $content = \App\Models\SiteContent::where('key', 'home')->first();
+        @endphp
         <!-- HEADER -->
         <div class="container ">
             <header class="site-header">
@@ -9,7 +12,7 @@
                         <div class="logo-text">
                             Online<span>marketbd</span>
                         </div> --}}
-                        <img src="{{ asset('Online-Market-BD-Logo.png') }}" width="220" height="60" alt="" srcset="">
+                        <img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="" srcset="">
                     </a>
     
                     <!-- Hamburger (mobile only) -->

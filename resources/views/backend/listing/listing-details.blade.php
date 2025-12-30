@@ -82,7 +82,7 @@
                 <div class="small text-muted">Website</div>
                 <div class="fw-semibold">
                   @if($listing->website)
-                    <a href="{{ $listing->website }}" target="_blank" rel="noopener">{{ $listing->website }}</a>
+                    <a href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank" >{{ $listing->website }}</a>
                   @else
                     —
                   @endif

@@ -26,7 +26,7 @@ Route::get('/category/{category:slug}', [CategoryController::class, 'show'])
 
 Route::get('/search', [ListingController::class, 'search'])->name('frontend.search');
 
-Route::get('/listing/{listing:slug}', [ListingController::class, 'show'])
+Route::get('/listing/{listing:slug}', [ListingController::class, 'single_listing'])
     ->name('frontend.listing.show');
 
 

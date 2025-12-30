@@ -481,7 +481,7 @@
 
                                 <div class="listing-meta mt-1">
                                     @if ($listing->website)
-                                        <a href="{{ $listing->website }}" target="_blank" class="me-2">Website</a>
+                                        <a style="color: #ff7a1a;" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank" class="me-2">Website</a>
                                     @endif
 
                                     @if ($listing->review_count)
@@ -498,7 +498,7 @@
                                     </p>
                                 @endif
 
-                                <a href="#" class="btn btn-order">View Details</a>
+                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a;">View Details</a>
                             </div>
 
                             <div class="col-md-4 listing-right">

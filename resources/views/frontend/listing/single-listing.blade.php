@@ -427,7 +427,7 @@
                     @endif
 
                     @if($listing->website)
-                        <a class="side-link-btn d-block text-decoration-none" href="{{ $listing->website }}" target="_blank">
+                        <a class="side-link-btn d-block text-decoration-none" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank">
                             <i class="fa-solid fa-globe"></i>
                             <span>Visit Website</span>
                         </a>

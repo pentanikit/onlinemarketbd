@@ -485,7 +485,7 @@
                         <label class="form-label">Price Level</label>
                         <select class="form-select @error('price_level') is-invalid @enderror" name="price_level">
                             <option value="">Select</option>
-                            @foreach([1 => '$ – Budget', 2 => '$$ – Moderate', 3 => '$$$ – Premium', 4 => '$$$$ – Luxury'] as $val => $label)
+                            @foreach(['Low' => 'Low Level', 'Mid' => 'Mid Level', 'High Level' => 'High Level', 'Luxury' => 'Luxury Level'] as $val => $label)
                                 <option value="{{ $val }}" {{ old('price_level') == $val ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
@@ -568,7 +568,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">NID Number <span class="text-danger">*</span></label>
+                        <label class="form-label">NID Number (Optional) </label>
                         <input type="text" class="form-control @error('nid_number') is-invalid @enderror"
                                name="nid_number" value="{{ old('nid_number') }}" >
                         @error('nid_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -585,7 +585,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Upload NID (Back)</label>
+                        <label class="form-label">Upload NID (Back) (Optional)</label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('nid_back') is-invalid @enderror"
                                    name="nid_back" accept="image/*,application/pdf">
@@ -595,7 +595,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Trade License / Business Registration (Optional) <span class="text-danger">*</span></label>
+                        <label class="form-label">Trade License / Business Registration (Optional) </label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('trade_license') is-invalid @enderror"
                                    name="trade_license" accept="image/*,application/pdf" >

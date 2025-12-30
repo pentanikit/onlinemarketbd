@@ -458,7 +458,7 @@
                                     @endphp
 
                                     @if ($img)
-                                        <img src="{{ asset($img) }}" alt="{{ $listing->name }}">
+                                        <img src="{{ asset('storage/'.$img) }}" alt="{{ $listing->name }}">
                                     @else
                                         <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                     @endif
@@ -467,7 +467,7 @@
 
                             <div class="col-md-6">
                                 <div class="listing-name">
-                                    <a href="#">
+                                    <a href="{{ route('frontend.listing.show', $listing->slug) }}">
                                         {{ $listings->firstItem() + $index }}. {{ $listing->name }}
                                     </a>
                                 </div>

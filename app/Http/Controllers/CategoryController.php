@@ -93,56 +93,56 @@ class CategoryController extends Controller
 
     public function show(Request $request, Category $category)
     {
-        // Top nav (parent categories)
         $topCategories = Category::parents()
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get(['id','name','slug','image']);
 
-        // Sidebar "Popular Cuisines" → sub categories of current parent (if any)
         $currentParent = $category->parent_id ? $category->parent : $category;
+
         $subCategories = Category::query()
             ->where('parent_id', $currentParent->id)
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get(['id','name','slug','image']);
 
-        // Filters
         $q      = trim((string) $request->get('q', ''));
-        $cityId = $request->get('city_id'); // optional if you use city filter
+        $cityId = $request->get('city_id');
 
-        // Main listings query (active only)
+        // ✅ Category scope: if parent => include all children + itself, else => only itself
+        $categoryIds = $category->parent_id
+            ? [$category->id]
+            : Category::where('parent_id', $category->id)->pluck('id')->push($category->id)->all();
+
         $listings = Listing::query()
             ->active()
-            ->where('category_id', $category->id)
+            ->whereIn('category_id', $categoryIds)
             ->with([
                 'category:id,name,slug',
                 'city:id,name,slug',
-                'address', // adjust select if needed
-                'primaryPhoto:id,listing_id,path,is_primary', // adjust column names
+                'address',
+                'primaryPhoto:id,listing_id,path,is_primary',
             ])
             ->when($cityId, fn($qq) => $qq->where('city_id', $cityId))
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where(function ($w) use ($q) {
                     $w->where('name', 'like', "%{$q}%")
-                      ->orWhere('tagline', 'like', "%{$q}%")
-                      ->orWhere('description', 'like', "%{$q}%");
+                    ->orWhere('tagline', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%");
                 });
             })
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
 
-        // Featured listings (example: highest rating within same category)
         $featured = Listing::query()
             ->active()
-            ->where('category_id', $category->id)
+            ->whereIn('category_id', $categoryIds)
             ->orderByDesc('avg_rating')
             ->orderByDesc('review_count')
             ->limit(3)
             ->get(['id','name','phone','slug','category_id']);
 
-        // Breadcrumb pieces (simple)
         $breadcrumb = [
             ['label' => 'Home', 'url' => url('/')],
             ['label' => $currentParent->name, 'url' => route('frontend.category.show', $currentParent->slug)],
@@ -163,6 +163,7 @@ class CategoryController extends Controller
             'cityId'
         ));
     }
+
 
 
     public function destroy(Category $category)

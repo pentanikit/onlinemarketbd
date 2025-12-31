@@ -25,7 +25,7 @@
                     <div class="ms-auto top-links d-none d-md-flex align-items-center" >
                         <a href="#" style="color: white;"><i class="fa-regular fa-user"></i>About Us</a>
                         <a href="#" style="color: white;"><i class="fa-solid fa-bullseye"></i>Mission</a>
-                        <a href="#" style="color: white;"><i class="fa-regular fa-circle-dot"></i>Vission</a>
+                        <a href="#" style="color: white;"><i class="fa-regular fa-circle-dot"></i>Vision</a>
                     </div>
                 </nav>
             </header>
@@ -45,7 +45,7 @@
                         <a class="nav-link" href="#"><i class="fa-solid fa-bullseye me-2"></i>Mission</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vission</a>
+                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vision</a>
                     </li>
                 </ul>
             </div>

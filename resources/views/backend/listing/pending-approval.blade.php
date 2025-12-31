@@ -157,12 +157,20 @@
           </table>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <small class="text-muted">
-            Showing {{ $listings->firstItem() ?? 0 }}–{{ $listings->lastItem() ?? 0 }} of {{ $listings->total() }}
-          </small>
-          <div>{{ $listings->links() }}</div>
-        </div>
+<div class="list-pagination-bar mt-3">
+    <small class="text-muted">
+        @if(method_exists($listings, 'firstItem') && $listings->total() > 0)
+            Showing {{ $listings->firstItem() }}–{{ $listings->lastItem() }} of {{ $listings->total() }}
+        @else
+            Showing 0 of 0
+        @endif
+    </small>
+
+    <div class="list-pagination-links">
+        {{ $listings->appends(request()->query())->onEachSide(1)->links() }}
+    </div>
+</div>
+
       </div>
     </div>
 

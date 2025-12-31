@@ -498,7 +498,7 @@
                                     </p>
                                 @endif
 
-                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a;">View Details</a>
+                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a; color:white;">View Details</a>
                             </div>
 
                             <div class="col-md-4 listing-right">

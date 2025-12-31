@@ -32,195 +32,275 @@ class ListingController extends Controller
     /**
      * Handle onboarding form submit
      */
-    public function store(Request $request)
-    {
-        // ✅ 1) Validate input (including file-safe validation)
-        $validated = $request->validate([
-            // Step 1 – business info
-            'name'         => ['required', 'string', 'max:255'],
-            'type'         => ['required', 'string', 'max:50'],
-            'category_id'  => ['nullable', 'exists:categories,id'],
-            'tagline'      => ['nullable', 'string', 'max:255'],
-            'description'  => ['required', 'string'],
+public function store(Request $request)
+{
+    // ✅ 1) Validate input (including ListingInfo arrays + docs)
+    $validated = $request->validate([
+        // Step 1 – business info
+        'name'        => ['required', 'string', 'max:255'],
+        'type'        => ['required', 'integer', 'exists:categories,id'], // business type (parent category id)
+        'category_id' => ['nullable', 'integer', 'exists:categories,id'],
 
-            // Step 2 – contact & location
-            'email'        => ['required', 'email:rfc,dns', 'max:255'],
-            'phone'        => ['required', 'string', 'max:30'],
-            'country'      => ['required', 'string', 'size:2'],
-            'city'         => ['required', 'string', 'max:150'],
-            'area'         => ['nullable', 'string', 'max:150'],
-            'address_line1'=> ['required', 'string', 'max:255'],
-            'address_line2'=> ['nullable', 'string', 'max:255'],
-            'postal_code'  => ['nullable', 'string', 'max:20'],
-            'website'      => ['nullable', 'max:255'],
+        // ListingInfo
+        'tagline'     => ['nullable', 'string', 'max:255'],
+        'description'       => ['nullable', 'string'],
 
-            // Step 3 – details & hours & photos
-            'price_level'  => ['nullable', 'string', 'max:50'],
-            'highlights'   => ['nullable', 'string'],
+        // Step 2 – contact & location (Listing table fields)
+        'email'         => ['required', 'email:rfc,dns', 'max:255'],
+        'phone'         => ['required', 'string', 'max:30'],
+        'country'       => ['required', 'string', 'size:2'],
+        'city'          => ['required', 'string', 'max:150'],
+        'area'          => ['nullable', 'string', 'max:150'],
+        'address_line1' => ['required', 'string', 'max:255'],
+        'address_line2' => ['nullable', 'string', 'max:255'],
+        'postal_code'   => ['nullable', 'string', 'max:20'],
+        'website'       => ['nullable', 'string', 'max:255'],
 
-            // Open/Close times (both optional, but format must match if present)
-            'opens_at'     => ['nullable', 'date_format:H:i'],
-            'closes_at'    => ['nullable', 'date_format:H:i'],
+        // ListingInfo extras
+        'fax'              => ['nullable', 'string', 'max:50'],
+        'other_emails'     => ['nullable', 'array', 'max:10'],
+        'other_emails.*'   => ['nullable', 'email:rfc,dns', 'max:255'],
+        'other_phones'     => ['nullable', 'array', 'max:10'],
+        'other_phones.*'   => ['nullable', 'string', 'max:30'],
 
-            // If you're storing open_days as string like "sat-sun" or "all", keep string rule.
-            'open_days'    => ['nullable', 'string', 'max:50'],
+        // ListingInfo arrays
+        'services'         => ['nullable', 'array', 'max:50'],
+        'services.*'       => ['nullable', 'string', 'max:100'],
 
-            // Photos (array upload)
-            'photos'       => ['nullable', 'array', 'max:10'],
-            'photos.*'     => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5072'], // ~5MB
+        'payment_methods'   => ['nullable', 'array', 'max:20'],
+        'payment_methods.*' => ['nullable', 'string', 'max:60'],
 
-            // Step 4 – documents
-            'owner_name'      => ['required', 'string', 'max:255'],
-            'nid_number'      => ['nullable', 'string', 'max:50'],
+        'accreditations'   => ['nullable', 'array', 'max:20'],
+        'accreditations.*' => ['nullable', 'string', 'max:80'],
 
-            // docs are optional, validate only if present
-            'nid_front'       => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
-            'nid_back'        => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
-            'trade_license'   => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
-            'tax_document'    => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
+        'social_profiles'            => ['nullable', 'array', 'max:20'],
+        'social_profiles.*.platform' => ['nullable', 'string', 'max:30'],
+        'social_profiles.*.url'      => ['nullable', 'url', 'max:255'],
 
-            'agreed_terms'    => ['accepted'],
-        ], [
-            'agreed_terms.accepted' => 'You must accept the terms and conditions.',
+        // Step 3 – listing details & hours & photos (Listing table fields)
+        'price_level'  => ['nullable', 'string', 'max:50'],
+        'highlights'   => ['nullable', 'string'],
+
+        'opens_at'     => ['nullable', 'date_format:H:i'],
+        'closes_at'    => ['nullable', 'date_format:H:i'],
+        'open_days'    => ['nullable', 'string', 'max:50'],
+
+        'photos'       => ['nullable', 'array', 'max:10'],
+        'photos.*'     => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5072'], // ~5MB
+
+        // Step 4 – documents
+        'owner_name'      => ['nullable', 'string', 'max:255'],
+        'nid_number'      => ['nullable', 'string', 'max:50'],
+
+        'nid_front'       => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
+        'nid_back'        => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
+        'trade_license'   => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
+        'tax_document'    => ['nullable', 'file', 'mimes:jpeg,jpg,png,pdf', 'max:5120'],
+
+        'agreed_terms'    => ['accepted'],
+    ], [
+        'agreed_terms.accepted' => 'You must accept the terms and conditions.',
+    ]);
+
+    // ✅ helper: clean string arrays (remove empty)
+    $cleanArray = function ($arr): array {
+        $arr = is_array($arr) ? $arr : [];
+        $arr = array_map(fn($v) => trim((string)$v), $arr);
+        $arr = array_values(array_filter($arr, fn($v) => $v !== ''));
+        return $arr;
+    };
+
+    $services       = $cleanArray($request->input('services', []));
+    $otherEmails    = $cleanArray($request->input('other_emails', []));
+    $otherPhones    = $cleanArray($request->input('other_phones', []));
+    $paymentMethods = $cleanArray($request->input('payment_methods', []));
+    $accreditations = $cleanArray($request->input('accreditations', []));
+
+    // ✅ sanitize socials (skip empty rows)
+    $socialProfilesRaw = (array) $request->input('social_profiles', []);
+    $socialProfiles = [];
+    foreach ($socialProfilesRaw as $row) {
+        $platform = trim((string)($row['platform'] ?? ''));
+        $url      = trim((string)($row['url'] ?? ''));
+        if ($platform === '' && $url === '') continue;
+        $socialProfiles[] = [
+            'platform' => $platform !== '' ? $platform : null,
+            'url'      => $url !== '' ? $url : null,
+        ];
+    }
+
+    // ✅ helper: store file safely
+    $storeFile = function (Request $request, string $key, string $dir, string $disk = 'public'): ?string {
+        if (!$request->hasFile($key)) return null;
+        $file = $request->file($key);
+        if (!$file || !$file->isValid()) return null;
+        return $file->store($dir, $disk);
+    };
+
+    $listing = null;
+
+    DB::transaction(function () use (
+        $request,
+        $validated,
+        &$listing,
+        $storeFile,
+        $services,
+        $otherEmails,
+        $otherPhones,
+        $paymentMethods,
+        $accreditations,
+        $socialProfiles
+    ) {
+        // ✅ 2) City: find or create
+        $city = City::firstOrCreate(
+            [
+                'country_code' => strtoupper($validated['country']),
+                'name'         => $validated['city'],
+            ],
+            [
+                'slug' => Str::slug($validated['city'] . '-' . strtoupper($validated['country'])),
+            ]
+        );
+
+        // ✅ 3) Generate slug (unique)
+        $baseSlug = Str::slug($validated['name'] . '-' . $validated['city']);
+        $slug     = $baseSlug;
+        $counter  = 1;
+
+        while (Listing::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
+
+        // ✅ 4) Create listing
+        $listing = Listing::create([
+            'user_id'      => Auth::id(), // can be null if guest
+            'tracking_id'  => 'TRK-' . strtoupper(substr(md5((string) now()), 0, 5)),
+            'category_id'  => $validated['category_id'] ?? null,
+            'city_id'      => $city->id,
+
+            'name'         => $validated['name'],
+            'slug'         => $slug,
+
+            // IMPORTANT:
+            // if listings.type column is INT, store as int.
+            // if it is VARCHAR, you can keep as (string).
+            'type'         => $validated['type'],
+
+            // keep on listing if you want (optional)
+            'tagline'      => $validated['tagline'] ?? null,
+            'description'  => $validated['description'], // maps "about" -> listing description
+
+            'email'        => $validated['email'],
+            'phone'        => $validated['phone'],
+            'website'      => $validated['website'] ?? null,
+
+            'price_level'  => $validated['price_level'] ?? null,
+            'highlights'   => $validated['highlights'] ?? null,
+
+            'status'       => 'pending',
+            'is_claimed'   => Auth::check(),
         ]);
 
-        // Small helper: store file safely
-        $storeFile = function (Request $request, string $key, string $dir, string $disk = 'public'): ?string {
-            if (!$request->hasFile($key)) return null;
-            $file = $request->file($key);
-            if (!$file || !$file->isValid()) return null;
-            return $file->store($dir, $disk);
-        };
+        // ✅ 4.1) Create ListingInfo (UPDATED MODEL FIELDS)
+        \App\Models\ListingInfo::create([
+            'listing_id'      => $listing->id,
+            'tagline'         => $validated['tagline'] ?? null,
+            'about'           => $validated['description'],
+            'fax'             => $validated['fax'] ?? null,
 
-        $listing = null;
+            'services'        => !empty($services) ? $services : [],
+            'social_profiles' => !empty($socialProfiles) ? $socialProfiles : [],
+            'other_emails'    => !empty($otherEmails) ? $otherEmails : [],
+            'other_phones'    => !empty($otherPhones) ? $otherPhones : [],
+            'payment_methods' => !empty($paymentMethods) ? $paymentMethods : [],
+            'accreditations'  => !empty($accreditations) ? $accreditations : [],
+        ]);
 
-        DB::transaction(function () use ($request, $validated, &$listing, $storeFile) {
+        // ✅ 5) Address
+        ListingAddress::create([
+            'listing_id'   => $listing->id,
+            'country_code' => strtoupper($validated['country']),
+            'city_id'      => $city->id,
+            'city_name'    => $validated['city'],
+            'area'         => $validated['area'] ?? null,
+            'line1'        => $validated['address_line1'],
+            'line2'        => $validated['address_line2'] ?? null,
+            'postal_code'  => $validated['postal_code'] ?? null,
+        ]);
 
-            // ✅ 2) City: find or create
-            $city = City::firstOrCreate(
-                [
-                    'country_code' => strtoupper($validated['country']),
-                    'name'         => $validated['city'],
-                ],
-                [
-                    'slug' => Str::slug($validated['city'] . '-' . strtoupper($validated['country'])),
-                ]
-            );
+        // ✅ 6) Opening hours
+        $days   = $this->mapOpenDaysToArray($validated['open_days'] ?? null);
+        $opens  = $validated['opens_at'] ?? null;
+        $closes = $validated['closes_at'] ?? null;
 
-            // ✅ 3) Generate slug (unique)
-            $baseSlug = Str::slug($validated['name'] . '-' . $validated['city']);
-            $slug     = $baseSlug;
-            $counter  = 1;
-
-            while (Listing::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter++;
+        if (!empty($days) && ($opens || $closes)) {
+            foreach ($days as $dayOfWeek) {
+                ListingHour::create([
+                    'listing_id'  => $listing->id,
+                    'day_of_week' => $dayOfWeek,
+                    'opens_at'    => $opens,
+                    'closes_at'   => $closes,
+                    'is_closed'   => false,
+                    'is_24_hours' => false,
+                ]);
             }
+        }
 
-            // ✅ 4) Create listing
-            $listing = Listing::create([
-                'user_id'      => Auth::id(),
-                'tracking_id'  => 'TRK-' . strtoupper(substr(md5((string) now()), 0, 5)),
-                'category_id'  => $validated['category_id'] ?? null,
-                'city_id'      => $city->id,
-                'name'         => $validated['name'],
-                'slug'         => $slug,
-                'type'         => $validated['type'],
-                'tagline'      => $validated['tagline'] ?? null,
-                'description'  => $validated['description'],
-                'email'        => $validated['email'],
-                'phone'        => $validated['phone'],
-                'website'      => $validated['website'] ?? null,
-                'price_level'  => $validated['price_level'] ?? null,
-                'highlights'   => $validated['highlights'] ?? null,
-                'status'       => 'pending',
-                'is_claimed'   => Auth::check(),
-            ]);
+        // ✅ 7) Photos
+        if ($request->hasFile('photos')) {
+            $files = $request->file('photos');
+            if (!is_array($files)) $files = [$files];
 
-            // ✅ 5) Address
-            ListingAddress::create([
-                'listing_id'   => $listing->id,
-                'country_code' => strtoupper($validated['country']),
-                'city_id'      => $city->id,
-                'city_name'    => $validated['city'],
-                'area'         => $validated['area'] ?? null,
-                'line1'        => $validated['address_line1'],
-                'line2'        => $validated['address_line2'] ?? null,
-                'postal_code'  => $validated['postal_code'] ?? null,
-            ]);
+            $sort = 0;
+            foreach ($files as $photo) {
+                if (!$photo || !$photo->isValid()) continue;
 
-            // ✅ 6) Opening hours
-            $days = $this->mapOpenDaysToArray($validated['open_days'] ?? null);
+                // keep per listing folder (clean)
+                $path = $photo->store('listing_photos/' . $listing->id, 'public');
 
-            $opens  = $validated['opens_at'] ?? null;
-            $closes = $validated['closes_at'] ?? null;
+                ListingPhotos::create([
+                    'listing_id' => $listing->id,
+                    'path'       => $path,
+                    'alt_text'   => $listing->name . ' photo ' . ($sort + 1),
+                    'is_primary' => $sort === 0,
+                    'sort_order' => $sort,
+                ]);
 
-            // If days selected but both times empty => skip.
-            // If one time given and other not given => still save as given (or you can enforce both needed).
-            if (!empty($days) && ($opens || $closes)) {
-                foreach ($days as $dayOfWeek) {
-                    ListingHour::create([
-                        'listing_id' => $listing->id,
-                        'day_of_week'=> $dayOfWeek,
-                        'opens_at'   => $opens,
-                        'closes_at'  => $closes,
-                        'is_closed'  => false,
-                        'is_24_hours'=> false,
-                    ]);
-                }
+                $sort++;
             }
+        }
 
-            // ✅ 7) Photos (multiple)
-            if ($request->hasFile('photos')) {
-                $files = $request->file('photos');
+        // ✅ 8) Docs (FULL HANDLING)
+        // store in per listing folder
+        $docsDir = 'listing_docs/' . $listing->id;
 
-                // Ensure it's always an array
-                if (!is_array($files)) {
-                    $files = [$files];
-                }
+        $nidFrontPath     = $storeFile($request, 'nid_front', $docsDir);
+        $nidBackPath      = $storeFile($request, 'nid_back', $docsDir);
+        $tradeLicensePath = $storeFile($request, 'trade_license', $docsDir);
+        $taxDocPath       = $storeFile($request, 'tax_document', $docsDir);
 
-                $sort = 0;
-                foreach ($files as $photo) {
-                    if (!$photo || !$photo->isValid()) continue;
+        // Save owner row (even if only name/nid given)
+        ListingOwner::create([
+            'listing_id'          => $listing->id,
+            'owner_name'          => $validated['owner_name'] ?? null,
+            'nid_number'          => $validated['nid_number'] ?? null,
 
-                    $path = $photo->store('listing_photos', 'public');
+            'nid_front_path'      => $nidFrontPath,
+            'nid_back_path'       => $nidBackPath,
+            'trade_license_path'  => $tradeLicensePath,
+            'tax_document_path'   => $taxDocPath,
 
-                    ListingPhotos::create([
-                        'listing_id' => $listing->id,
-                        'path'       => $path,
-                        'alt_text'   => $listing->name . ' photo ' . ($sort + 1),
-                        'is_primary' => $sort === 0, // first valid photo becomes primary
-                        'sort_order' => $sort,
-                    ]);
+            'verification_status' => 'pending',
+            'agreed_terms'        => true,
+            'agreed_at'           => now(),
+        ]);
+    });
 
-                    $sort++;
-                }
-            }
+    return view('thank-you')
+        ->with('listing', $listing)
+        ->with('success', 'Your listing has been submitted for review. We will contact you after verification.');
+}
 
-            // ✅ 8) Owner verification + documents (ONLY if files exist)
-            $nidFrontPath     = $storeFile($request, 'nid_front', 'listing_docs');
-            $nidBackPath      = $storeFile($request, 'nid_back', 'listing_docs');
-            $tradeLicensePath = $storeFile($request, 'trade_license', 'listing_docs');
-            $taxDocPath       = $storeFile($request, 'tax_document', 'listing_docs');
-
-            // Create owner row (even if docs are missing, still save owner info)
-            ListingOwner::create([
-                'listing_id'          => $listing->id,
-                'owner_name'          => $validated['owner_name'],
-                'nid_number'          => $validated['nid_number'] ?? null,
-                'nid_front_path'      => $nidFrontPath,
-                'nid_back_path'       => $nidBackPath,
-                'trade_license_path'  => $tradeLicensePath,
-                'tax_document_path'   => $taxDocPath,
-                'verification_status' => 'pending',
-                'agreed_terms'        => true,
-                'agreed_at'           => now(),
-            ]);
-        });
-
-        return view('thank-you')
-            ->with('listing', $listing)
-            ->with('success', 'Your listing has been submitted for review. We will contact you after verification.');
-    }
 
 
 

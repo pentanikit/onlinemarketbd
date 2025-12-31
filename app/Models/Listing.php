@@ -80,6 +80,11 @@ class Listing extends Model
         return $this->hasOne(ListingOwner::class);
     }
 
+    public function info()
+    {
+        return $this->hasOne(ListingInfo::class);
+    }
+
     /* Common scopes */
 
     public function scopeActive($query)

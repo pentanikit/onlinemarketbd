@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
@@ -53,6 +54,8 @@ class CategoryController extends Controller
         }
 
         Category::create($data);
+
+        Cache::forget('top_categories_v1');
 
         return redirect()->back()->with('success', 'Category created successfully.');
     }

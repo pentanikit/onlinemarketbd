@@ -5,6 +5,7 @@ namespace App\View\Components\Frontend;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Category as Cat;
 
 class Category extends Component
@@ -15,7 +16,11 @@ class Category extends Component
     public $categories;
     public function __construct()
     {
-        $this->categories = Cat::where('parent_id', null)->orderBy('sort_order')->get();
+            $this->categories = Cache::rememberForever('top_categories_v1', function () {
+                return Cat::whereNull('parent_id')
+                    ->orderBy('sort_order')
+                    ->get();
+            });
     }
 
     /**

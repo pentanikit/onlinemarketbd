@@ -266,7 +266,7 @@
                         <a class="nav-link" href="#"><i class="fa-solid fa-bullseye me-2"></i>Mission</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vission</a>
+                        <a class="nav-link" href="#"><i class="fa-regular fa-circle-dot me-2"></i>Vision</a>
                     </li>
                 </ul>
             </div>
@@ -561,9 +561,9 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label">Owner’s Full Name (As per NID) <span class="text-danger">*</span></label>
+                        <label class="form-label">Owner’s Full Name (As per NID) <span class="text-danger">(Optional)</span></label>
                         <input type="text" class="form-control @error('owner_name') is-invalid @enderror"
-                               name="owner_name" value="{{ old('owner_name') }}" required>
+                               name="owner_name" value="{{ old('owner_name') }}" >
                         @error('owner_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -575,7 +575,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Upload NID (Front) (Optional) <span class="text-danger">*</span></label>
+                        <label class="form-label">Upload NID (Front)  <span class="text-danger">(Optional)</span></label>
                         <div class="border rounded border-dashed p-3 bg-light">
                             <input type="file" class="form-control @error('nid_front') is-invalid @enderror"
                                    name="nid_front" accept="image/*,application/pdf" >

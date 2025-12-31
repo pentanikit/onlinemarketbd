@@ -391,6 +391,95 @@
                 margin: 0 auto 10px;
             }
         }
+
+        .yp-page-title {
+            font-weight: 800;
+        }
+
+        .yp-info-wrap {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 10px;
+        }
+
+        /* Each row block */
+        .yp-info-block {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 24px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .yp-info-label {
+            font-weight: 800;
+            font-size: 13px;
+            color: #111;
+        }
+
+        .yp-info-value {
+            font-size: 14px;
+            color: #222;
+        }
+
+        .yp-paragraph {
+            line-height: 1.7;
+            color: #333;
+        }
+
+        /* Links */
+        .yp-link {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .yp-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Small badge */
+        .yp-badge {
+            background: #1a73e8;
+            color: #fff;
+            border-radius: 2px;
+            padding: 4px 7px;
+            font-size: 12px;
+        }
+
+        /* Social */
+        .yp-social {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 2px;
+            background: #2d5bd1;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .yp-social:hover {
+            filter: brightness(1.05);
+            color: #fff;
+        }
+
+        /* =========================
+            Responsive
+        ========================= */
+        @media (max-width: 992px) {
+            .yp-info-block {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .yp-loc-group {
+                max-width: none;
+            }
+
+            .yp-search-group {
+                min-width: 180px;
+            }
+        }
     </style>
 @endpush
 
@@ -398,7 +487,7 @@
     {{-- CATEGORY NAV STRIP --}}
     {{-- <div class="category-top-nav">
         <div class="container">
-            @foreach($topCategories as $cat)
+            @foreach ($topCategories as $cat)
                 <a href="{{ route('frontend.category.show', $cat->slug) }}">
                     <i class="fa-solid fa-folder"></i> {{ $cat->name }}
                 </a>
@@ -410,8 +499,10 @@
     <main class="container mb-4">
         {{-- Breadcrumb --}}
         <div class="breadcrumb-custom">
-            @foreach($breadcrumb as $i => $bc)
-                @if($i > 0) &gt; @endif
+            @foreach ($breadcrumb as $i => $bc)
+                @if ($i > 0)
+                    &gt;
+                @endif
                 <a style="color: #ff7a1a;" href="{{ $bc['url'] }}">{{ $bc['label'] }}</a>
             @endforeach
         </div>
@@ -423,34 +514,42 @@
 
                 {{-- Contact card --}}
                 <div class="side-card">
-                    @if($listing->phone)
+                    @if ($listing->phone)
                         <div class="side-main-phone">{{ $listing->phone }}</div>
                     @endif
 
-                    @if($listing->website)
-                        <a class="side-link-btn d-block text-decoration-none" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank">
+                    @if ($listing->website)
+                        <a class="side-link-btn d-block text-decoration-none"
+                            href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
+                            target="_blank">
                             <i class="fa-solid fa-globe"></i>
                             <span>Visit Website</span>
                         </a>
                     @endif
 
                     @php
-                        $addr = optional($listing->address)->address_line
-                                ?? optional($listing->address)->address
-                                ?? optional($listing->address)->full_address;
+                        $addr =
+                            optional($listing->address)->address_line ??
+                            (optional($listing->address)->line2 ?? optional($listing->address)->line1);
 
-                        $mapQ = trim(($listing->name ?? '') . ' ' . ($addr ?? '') . ' ' . (optional($listing->city)->name ?? ''));
+                        $mapQ = trim(
+                            ($listing->name ?? '') . ' ' . ($addr ?? '') . ' ' . (optional($listing->city)->name ?? ''),
+                        );
                         $mapUrl = $mapQ ? 'https://www.google.com/maps/search/?api=1&query=' . urlencode($mapQ) : null;
                     @endphp
 
-                    @if($mapUrl)
+                    @if ($mapUrl)
                         <a class="side-link-btn d-block text-decoration-none" href="{{ $mapUrl }}" target="_blank">
                             <i class="fa-solid fa-location-dot"></i>
                             <span>
                                 Map &amp; Directions<br>
                                 <small>
-                                    @if($addr){!! nl2br(e($addr)) !!}@endif
-                                    @if(optional($listing->city)->name)<br>{{ $listing->city->name }}@endif
+                                    @if ($addr)
+                                        {!! nl2br(e($addr)) !!}
+                                    @endif
+                                    @if (optional($listing->city)->name)
+                                        <br>{{ $listing->city->name }}
+                                    @endif
                                 </small>
                             </span>
                         </a>
@@ -466,7 +565,8 @@
                 <div class="side-card">
                     <div class="claim-box-title">Is this your business?</div>
                     <p class="mb-2">Customize this page.</p>
-                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This Business</a>
+                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This
+                        Business</a>
                 </div>
 
                 {{-- Hours --}}
@@ -474,8 +574,8 @@
                     <h5>Hours</h5>
                     <div class="hours-label">Regular Hours</div>
 
-                    @if($hoursByDay->count())
-                        @foreach($hoursByDay as $day => $rows)
+                    @if ($hoursByDay->count())
+                        @foreach ($hoursByDay as $day => $rows)
                             <div class="hours-row">
                                 <span>{{ $day }}:</span>
                                 <span>{{ $rows->first()->formatted_range }}</span>
@@ -512,13 +612,14 @@
                             <div class="listing-thumb-main">
                                 @php
                                     // ⚠️ if your photo column isn't "path", change it here
-                                    $mainImg = optional($listing->primaryPhoto)->path
-                                               ?? optional($listing->photos->first())->path
-                                               ?? null;
+                                    $mainImg =
+                                        optional($listing->primaryPhoto)->path ??
+                                        (optional($listing->photos->first())->path ?? null);
                                 @endphp
 
-                                @if($mainImg)
-                                    <img style="object-fit:cover;" src="{{ asset('storage/'.$mainImg) }}" alt="{{ $listing->name }}">
+                                @if ($mainImg)
+                                    <img style="object-fit:cover;" src="{{ asset('storage/' . $mainImg) }}"
+                                        alt="{{ $listing->name }}">
                                 @else
                                     <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                 @endif
@@ -530,7 +631,7 @@
 
                             <div class="listing-cats">
                                 {{ optional($listing->category)->name ?? 'Uncategorized' }}
-                                @if(optional($listing->category?->parent)->name)
+                                @if (optional($listing->category?->parent)->name)
                                     , {{ $listing->category->parent->name }}
                                 @endif
                             </div>
@@ -544,19 +645,19 @@
                                         $empty = 5 - $full;
                                     @endphp
 
-                                    @for($i=0; $i<$full; $i++)
+                                    @for ($i = 0; $i < $full; $i++)
                                         <i class="fa-solid fa-star"></i>
                                     @endfor
-                                    @for($i=0; $i<$empty; $i++)
+                                    @for ($i = 0; $i < $empty; $i++)
                                         <i class="fa-regular fa-star"></i>
                                     @endfor
                                 </div>
 
-                                @if((int)$listing->review_count > 0)
+                                @if ((int) $listing->review_count > 0)
                                     <a href="#" class="review-link ms-2">
                                         ({{ $listing->review_count }}) reviews
                                     </a>
-                                {{-- @else
+                                    {{-- @else
                                     <a href="#" class="review-link ms-2">Be the first to review!</a> --}}
                                 @endif
                             </div>
@@ -568,7 +669,7 @@
                                 </span>
                             </div>
 
-                            @if($listing->tagline)
+                            @if ($listing->tagline)
                                 <div class="listing-meta-small mt-2">
                                     {{ $listing->tagline }}
                                 </div>
@@ -577,42 +678,7 @@
                     </div>
                 </div>
 
-                {{-- "Menu" (dynamic from meta if you store it) --}}
-                @php
-                    // If you want menu from DB, store it in meta like:
-                    // meta['menu'] = [ ['title'=>'Appetizers','items'=>[...] ], ... ]
-                    $menu = data_get($listing->meta, 'menu', []);
-                @endphp
 
-                {{-- <div class="menu-section mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="menu-title">Menu</div>
-                    </div>
-
-                    @if(!empty($menu))
-                        <div class="row g-3">
-                            @foreach($menu as $block)
-                                <div class="col-md-4">
-                                    <div class="menu-card">
-                                        <h6>{{ data_get($block, 'title', 'Menu') }}</h6>
-                                        <ul>
-                                            @foreach((array) data_get($block, 'items', []) as $item)
-                                                <li>{{ $item }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                        <button class="btn btn-outline-secondary btn-view-menu mt-2">
-                            <i class="fa-solid fa-utensils"></i> View Full Menu
-                        </button>
-                    @else
-                        <div class="text-muted" style="font-size:13px;">
-                            Menu not added yet.
-                        </div>
-                    @endif
-                </div> --}}
 
                 {{-- Gallery (dynamic from photos relation) --}}
                 @php
@@ -625,9 +691,7 @@
                         <div class="gallery-title">
                             Gallery <small>View all ({{ $totalPhotos }})</small>
                         </div>
-                        <button class="btn btn-outline-secondary btn-add-photo">
-                            <i class="fa-regular fa-image me-1"></i>Add Photos
-                        </button>
+
                     </div>
 
                     <div class="row g-2">
@@ -637,8 +701,8 @@
                             @endphp
                             <div class="col-md-4 col-6 {{ $i === 2 ? 'd-none d-md-block' : '' }}">
                                 <div class="gallery-thumb">
-                                    @if($p)
-                                        <img src="{{ asset('storage/'.$p) }}" alt="Gallery {{ $i+1 }}">
+                                    @if ($p)
+                                        <img src="{{ asset('storage/' . $p) }}" alt="Gallery {{ $i + 1 }}">
                                     @else
                                         <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                     @endif
@@ -653,6 +717,105 @@
                         @endforelse
                     </div>
                 </div>
+
+                <!-- Right Main Content -->
+                <section class="col-12 col-lg-8">
+                    <h4 class="yp-page-title mb-3">More Info</h4>
+
+                    <div class="yp-info-wrap">
+
+                        <!-- Serving Area -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">Serving Your Local Area</div>
+                            <div class="yp-info-value">
+                                <span class="badge yp-badge me-2"><i class="fa-solid fa-star"></i></span>
+                                <a class="yp-link" href="#">Call Today</a>
+                            </div>
+                        </div>
+
+                        <!-- General Info -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">General Info</div>
+                            <div class="yp-info-value yp-paragraph">
+                                {!! nl2br(e($listing->description)) !!}
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">Email</div>
+                            <div class="yp-info-value">
+                                <a class="yp-link" href="#">Email Business</a>
+                            </div>
+                        </div>
+
+                        <!-- Services/Products -->
+                        {{-- <div class="yp-info-block">
+                            <div class="yp-info-label">Services/Products</div>
+                            <div class="yp-info-value yp-paragraph">
+                                Water Leaks, BBB, Kitchen &amp; Bath Plumbing, Complete Backhoe Service, Drain Cleaning,
+                                Sewer Repair &amp; Replacement, Backflow Prevention, Boiler Repair &amp; Replacement,
+                                Water Lines,
+                                Electronic Leak Detection, Gas, Water Heaters, Gutter Cleaning, Serving Pittsburgh and
+                                Surrounding Areas,
+                                Sewer Video Inspection, Installation, Serving Pittsburgh And Surrounding Areas,
+                                Emergency Service Available,
+                                Dye Testing, Plumbing Contractors Commercial, Emergency Cleanup, Electric Snaker
+                                Service, Rooter Service,
+                                Sewer, Financing Available, Fully Insured, Sewer Lines, Gas, Emergency Plumber, Septic
+                                Systems &amp; Tanks,
+                                Kitchen Fixtures, Faucets, Sewer Lines &amp; Sewer Systems, Remodeling, Bathroom
+                                Fixtures, Mechanical Services,
+                                Plumbing Fixtures, Water Lines, Sewer, Air Conditioning, Fully Insured, Bathtubs &amp;
+                                Showers, Heating, Gas,
+                                Sewer Pumps, Gas, Water Heaters.
+                            </div>
+                        </div> --}}
+
+                        <!-- Payment -->
+                        {{-- <div class="yp-info-block">
+                            <div class="yp-info-label">Payment method</div>
+                            <div class="yp-info-value">Discover, Visa, Master Card</div>
+                        </div> --}}
+
+                        <!-- Accreditation -->
+                        {{-- <div class="yp-info-block">
+                            <div class="yp-info-label">Accreditation</div>
+                            <div class="yp-info-value">
+                                <div>Insured</div>
+                                <div>Licensed</div>
+                                <div>Better Business Bureau</div>
+                            </div>
+                        </div> --}}
+
+                        <!-- Other Link -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">Other Link</div>
+                            <div class="yp-info-value">
+                                <a style="color: #ff7a1a;" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank" class="me-2 yp-link">{{ $listing->website }}</a>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">Social Links</div>
+                            <div class="yp-info-value">
+                                <a class="yp-social" href="#" aria-label="Facebook">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">Category</div>
+                            <div class="yp-info-value">
+                                <a class="yp-link" href="#">{{ $listing->category->name }}</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
 
             </div>
         </div>

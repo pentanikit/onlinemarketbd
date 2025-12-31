@@ -385,10 +385,10 @@
 
 @section('pages')
     <x-frontend.header />
-                        @php
-                            $content = \App\Models\SiteContent::where('key', 'home')->first();
+    @php
+        $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-                        @endphp
+    @endphp
     <!-- CATEGORY NAV STRIP -->
     {{-- <div class="category-top-nav filter-buttons">
         <div class="container">

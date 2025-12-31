@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -84,6 +85,8 @@ class Category extends Model
 
             $cat->slug = self::makeUniqueSlug($cat->slug, $cat->id);
         });
+        static::saved(fn () => Cache::forget('top_categories_v1'));
+        static::deleted(fn () => Cache::forget('top_categories_v1'));
     }
 
     private static function makeUniqueSlug(string $baseSlug, ?int $ignoreId = null): string
@@ -103,4 +106,7 @@ class Category extends Model
 
         return $slug;
     }
+
+
+
 }

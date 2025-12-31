@@ -18,7 +18,7 @@
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
     />
-
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
     <style>
                 /* Footer */
         .site-footer {

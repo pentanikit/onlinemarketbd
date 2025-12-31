@@ -519,11 +519,11 @@
                     @endif
 
                     @if ($listing->website)
-                        <a class="side-link-btn d-block text-decoration-none"
+                        <a class="side-link-btn d-block text-decoration-none" 
                             href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
                             target="_blank">
-                            <i class="fa-solid fa-globe"></i>
-                            <span>Visit Website</span>
+                            <i class="fa-solid fa-globe" style="color:#ff7a1a;"></i>
+                            <span style="color:#ff7a1a;">Visit Website</span>
                         </a>
                     @endif
 
@@ -540,32 +540,25 @@
 
                     @if ($mapUrl)
                         <a class="side-link-btn d-block text-decoration-none" href="{{ $mapUrl }}" target="_blank">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <span>
-                                Map &amp; Directions<br>
-                                <small>
-                                    @if ($addr)
-                                        {!! nl2br(e($addr)) !!}
-                                    @endif
-                                    @if (optional($listing->city)->name)
-                                        <br>{{ $listing->city->name }}
-                                    @endif
-                                </small>
+                            <i class="fa-solid fa-location-dot" style="color:#ff7a1a;"></i>
+                            <span style="color:#ff7a1a;">
+                               {!! nl2br(e($addr)) !!}<br>
+
                             </span>
                         </a>
                     @endif
 
-                    <div class="side-link-btn">
+                    {{-- <div class="side-link-btn">
                         <i class="fa-regular fa-star"></i>
                         <span>Write a Review</span>
-                    </div>
+                    </div> --}}
                 </div>
 
                 {{-- Claim business --}}
                 <div class="side-card">
                     <div class="claim-box-title">Is this your business?</div>
                     <p class="mb-2">Customize this page.</p>
-                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a;">Claim This
+                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a; color:white;">Claim This
                         Business</a>
                 </div>
 
@@ -728,24 +721,18 @@
                         <div class="yp-info-block">
                             <div class="yp-info-label">Serving Your Local Area</div>
                             <div class="yp-info-value">
-                                <span class="badge yp-badge me-2"><i class="fa-solid fa-star"></i></span>
-                                <a class="yp-link" href="#">Call Today</a>
+                                <span class="badge yp-badge me-2" style="background-color:#ff7a1a;"><i class="fa-solid fa-star" style="color:#f7f5f4;"></i></span>
+                                <a class="yp-link" href="#" style="color:#ff7a1a;">Call Today</a>
                             </div>
                         </div>
 
-                        <!-- General Info -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">General Info</div>
-                            <div class="yp-info-value yp-paragraph">
-                                {!! nl2br(e($listing->description)) !!}
-                            </div>
-                        </div>
+
 
                         <!-- Email -->
                         <div class="yp-info-block">
                             <div class="yp-info-label">Email</div>
                             <div class="yp-info-value">
-                                <a class="yp-link" href="#">Email Business</a>
+                                <a class="yp-link" href="#" style="color:#ff7a1a;">Email Business</a>
                             </div>
                         </div>
 
@@ -799,9 +786,9 @@
                         <!-- Social Links -->
                         <div class="yp-info-block">
                             <div class="yp-info-label">Social Links</div>
-                            <div class="yp-info-value">
-                                <a class="yp-social" href="#" aria-label="Facebook">
-                                    <i class="fa-brands fa-facebook-f"></i>
+                            <div class="yp-info-value" >
+                                <a class="yp-social" href="#" aria-label="Facebook" style="background-color:#ff7a1a;">
+                                    <i class="fa-brands fa-facebook-f" style="color:#f8f6f5;"></i>
                                 </a>
                             </div>
                         </div>
@@ -810,7 +797,15 @@
                         <div class="yp-info-block">
                             <div class="yp-info-label">Category</div>
                             <div class="yp-info-value">
-                                <a class="yp-link" href="#">{{ $listing->category->name }}</a>
+                                <a class="yp-link" href="#" style="color:#ff7a1a;">{{ $listing->category->name }}</a>
+                            </div>
+                        </div>
+
+                        <!-- General Info -->
+                        <div class="yp-info-block">
+                            <div class="yp-info-label">General Info</div>
+                            <div class="yp-info-value yp-paragraph">
+                                {!! nl2br(e($listing->description)) !!}
                             </div>
                         </div>
 

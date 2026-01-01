@@ -93,18 +93,14 @@
 
 
         /* Mission & Vision */
-        .mission-vision-section {
-           
-        }
+        .mission-vision-section {}
 
-        .mv-block {
-            
-        }
+        .mv-block {}
 
         .mv-title {
             font-size: 32px;
             font-weight: 700;
-            
+
             color: #111;
         }
 
@@ -178,7 +174,7 @@
                 display: none;
             }
 
-            .manage-title span{
+            .manage-title span {
                 font-size: 24px;
                 text-align: center;
                 font-weight: 700;
@@ -249,10 +245,10 @@
                 <div class="col-md-6 d-flex justify-content-center  mb-md-0">
                     <div class="listing-photo-wrapper text-center">
                         <!-- replace this image with your own -->
-                      
-                            <img src="{{ asset('storage/' . $content->manage_image) }}" width="350" height="340" alt="Manage Listing"
-                                class="listing-img img-fluid" >
-                       
+
+                        <img src="{{ asset('storage/' . $content->manage_image) }}" width="350" height="340"
+                            alt="Manage Listing" class="listing-img img-fluid">
+
 
                     </div>
                 </div>
@@ -264,12 +260,13 @@
                         {{ $content->manage_title }}
                     </h2> --}}
                     <p class="manage-subtext mt-2 mb-1">
-                         {!! nl2br(e($content->manage_body)) !!}
-                       
+                        {!! nl2br(e($content->manage_body)) !!}
+
 
                     </p>
-          
-                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
+
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn"
+                        style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
                     <div class="listing-call my-2">
@@ -284,7 +281,7 @@
 
                 <p class="about-text">
                     {!! nl2br(e($content->about_body)) !!}
-                    
+
                 </p>
             </div>
 
@@ -342,6 +339,4 @@
 
     <!-- FAQ SECTION -->
     <x-frontend.faq />
-
-
 @endsection

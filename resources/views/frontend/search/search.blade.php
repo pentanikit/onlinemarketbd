@@ -384,10 +384,9 @@
 @endpush
 
 @section('pages')
-
-<x-frontend.header />
-<!-- YELLOW SEARCH BAR -->
-{{-- <div class="header-search-bar">
+    <x-frontend.header />
+    <!-- YELLOW SEARCH BAR -->
+    {{-- <div class="header-search-bar">
     <div class="container">
         <form class="row g-2 align-items-start" method="GET" action="{{ route('frontend.search') }}">
             <div class="col-md-5">
@@ -413,202 +412,216 @@
     </div>
 </div> --}}
 
-<!-- CATEGORY NAV STRIP -->
-{{-- <div class="category-top-nav">
+    <!-- CATEGORY NAV STRIP -->
+    {{-- <div class="category-top-nav">
     <div class="container">
-        @foreach($topCategories as $cat)
+        @foreach ($topCategories as $cat)
             <a href="{{ route('frontend.category.show', $cat->slug) }}">
                 <i class="fa-solid fa-folder"></i> {{ $cat->name }}
             </a>
         @endforeach
     </div>
 </div> --}}
-                        @php
-                            $content = \App\Models\SiteContent::where('key', 'home')->first();
+    @php
+        $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-                        @endphp
-<!-- MAIN CONTENT -->
-<main class="container mb-4">
+    @endphp
+    <!-- MAIN CONTENT -->
+    <main class="container mb-4">
 
-    <!-- Breadcrumb / title -->
-    <div class="breadcrumb-custom" style="color: #ff7a1a;">
-        <a style="color: #ff7a1a;" href="{{ url('/') }}">Home</a>
-        @if($q) &gt; <span>{{ $q }}</span> @endif
-        @if($city?->name) &gt; <span>{{ $city->name }}</span> @endif
-    </div>
+        <!-- Breadcrumb / title -->
+        <div class="breadcrumb-custom" style="color: #ff7a1a;">
+            <a style="color: #ff7a1a;" href="{{ url('/') }}">Home</a>
+            @if ($q)
+                &gt; <span>{{ $q }}</span>
+            @endif
+            @if ($city?->name)
+                &gt; <span>{{ $city->name }}</span>
+            @endif
+        </div>
 
-    <h1 class="listing-title">
-        {{ $pageTitle }}
-        <span style="font-size:14px; font-weight:600; color:#666;">({{ $listings->total() }})</span>
-    </h1>
+        <h1 class="listing-title">
+            {{ $pageTitle }}
+            <span style="font-size:14px; font-weight:600; color:#666;">({{ $listings->total() }})</span>
+        </h1>
 
-    <div class="row">
-        <!-- Left: listings -->
-        <div class="col-lg-8">
+        <div class="row">
+            <!-- Left: listings -->
+            <div class="col-lg-8">
 
-            <!-- Menu search (same search again quick) -->
-            <div class="menu-search-bar">
-                <form method="GET" action="{{ route('frontend.search') }}">
+                <!-- Menu search (same search again quick) -->
+                <div class="menu-search-bar">
+                    <form method="GET" action="{{ route('frontend.search') }}">
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" value="{{ $q }}"
                                 placeholder="Find your business">
-                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
+                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;"
+                                type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
                         </div>
-                </form>
-            </div>
+                    </form>
+                </div>
 
-            @forelse($listings as $index => $listing)
-                <div class="listing-card">
-                    <div class="row">
-                        <div class="col-md-2 d-flex justify-content-center">
-                            <div class="listing-thumb">
-                                @php
-                                   
+                @forelse($listings as $index => $listing)
+                    <div class="listing-card">
+                        <div class="row">
+                            <div class="col-md-2 d-flex justify-content-center">
+                                <div class="listing-thumb">
+                                    @php
 
-                                    $img = optional($listing->primaryPhoto)->path ?? null;
-                                @endphp
+                                        $img = optional($listing->primaryPhoto)->path ?? null;
+                                    @endphp
 
-                                @if($img)
-                                    <img src="{{ asset('storage').'/'.$img }}" alt="{{ $listing->name }}">
-                                @else
-                                    <img src="{{ asset('placeholder.png') }}" alt="No Image">
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="listing-name">
-                                <a style="color:#ff7a1a;" href="{{ route('frontend.listing.show', $listing->slug) }}">
-                                    {{ $listings->firstItem() + $index }}. {{ $listing->name }}
-                                </a>
+                                    @if ($img)
+                                        <img src="{{ asset('storage') . '/' . $img }}" alt="{{ $listing->name }}">
+                                    @else
+                                        <img src="{{ asset('placeholder.png') }}" alt="No Image">
+                                    @endif
+                                </div>
                             </div>
 
-                            <div class="listing-cats">
-                                {{ optional($listing->category)->name ?? 'Uncategorized' }}
-                                @if(optional($listing->city)->name)
-                                    , {{ $listing->city->name }}
+                            <div class="col-md-6">
+                                <div class="listing-name">
+                                    <a style="color:#ff7a1a;" href="{{ route('frontend.listing.show', $listing->slug) }}">
+                                        {{ $listings->firstItem() + $index }}. {{ $listing->name }}
+                                    </a>
+                                </div>
+
+                                <div class="listing-cats">
+                                    {{ optional($listing->category)->name ?? 'Uncategorized' }}
+                                    @if (optional($listing->city)->name)
+                                        , {{ $listing->city->name }}
+                                    @endif
+                                </div>
+
+                                <div class="listing-meta mt-1">
+                                    @if ($listing->website)
+                                        <a href="{{ $listing->website }}" style="color:#ff7a1a" class="me-2"
+                                            target="_blank">Website</a>
+                                    @endif
+
+                                    @if ($listing->review_count)
+                                        <span><i class="fa-regular fa-star"></i> ({{ $listing->review_count }})</span>
+                                    @endif
+                                </div>
+
+                                @if ($listing->tagline || $listing->description)
+                                    <p class="listing-desc">
+                                        {{ \Illuminate\Support\Str::limit($listing->tagline ?: strip_tags($listing->description), 160) }}
+                                    </p>
                                 @endif
+
+                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn"
+                                    style="background-color: #ff7a1a; color:white">View Details</a>
                             </div>
 
-                            <div class="listing-meta mt-1">
-                                @if($listing->website)
-                                    <a href="{{ $listing->website }}" style="color:#ff7a1a" class="me-2" target="_blank">Website</a>
+                            <div class="col-md-4 listing-right">
+                                @if ($listing->phone)
+                                    <div class="listing-phone">{{ $listing->phone }}</div>
                                 @endif
 
-                                @if($listing->review_count)
-                                    <span><i class="fa-regular fa-star"></i> ({{ $listing->review_count }})</span>
-                                @endif
-                            </div>
+                                <div class="listing-address">
+                                    @php
+                                        // address field names vary, so keep it safe:
+                                        $addr =
+                                            optional($listing->address)->address_line ??
+                                            (optional($listing->address)->address ??
+                                                optional($listing->address)->full_address);
+                                    @endphp
 
-                            @if($listing->tagline || $listing->description)
-                                <p class="listing-desc">
-                                    {{ \Illuminate\Support\Str::limit($listing->tagline ?: strip_tags($listing->description), 160) }}
-                                </p>
-                            @endif
+                                    @if ($addr)
+                                        {!! nl2br(e($addr)) !!}<br>
+                                    @endif
 
-                            <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a; color:white">View Details</a>
-                        </div>
+                                    @if (optional($listing->city)->name)
+                                        {{ $listing->city->name }}
+                                    @endif
+                                </div>
 
-                        <div class="col-md-4 listing-right">
-                            @if($listing->phone)
-                                <div class="listing-phone">{{ $listing->phone }}</div>
-                            @endif
-
-                            <div class="listing-address">
-                                @php
-                                    // address field names vary, so keep it safe:
-                                    $addr = optional($listing->address)->address_line
-                                            ?? optional($listing->address)->address
-                                            ?? optional($listing->address)->full_address;
-                                @endphp
-
-                                @if($addr)
-                                    {!! nl2br(e($addr)) !!}<br>
-                                @endif
-
-                                @if(optional($listing->city)->name)
-                                    {{ $listing->city->name }}
-                                @endif
-                            </div>
-
-                            <div class="mt-2 badge-status-closed">
-                                {{ strtoupper($listing->status) }}
+                                <div class="mt-2 badge-status-closed">
+                                    {{ strtoupper($listing->status) }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="listing-card">
-                    <strong>No listings found</strong>
-                    <div class="text-muted" style="font-size:13px;">
-                        Try a different keyword or location.
-                    </div>
-                </div>
-            @endforelse
-
-            <div class="mt-3">
-                {{ $listings->links() }}
-            </div>
-        </div>
-
-
-        <!-- Right sidebar -->
-        <div class="col-lg-4 mt-3 mt-lg-0">
-
-            <!-- Popular Categories (dynamic) -->
-            <div class="side-card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="side-title">Popular Categories</div>
-                </div>
-
-                @forelse($popularCategories as $pc)
-                    <a href="{{ route('frontend.category.show', $pc->slug) }}" class="side-link" style="color: black;">
-                        <span class="side-cuisine-icon"><i class="fa-solid fa-tag" style="color:#ff7921;"></i></span>
-                        {{ $pc->name }}
-                        <span style="color:#777; font-size:12px;">({{ $pc->listings_count }})</span>
-                    </a>
                 @empty
-                    <div class="text-muted" style="font-size:13px;">No category stats</div>
+                    <div class="listing-card">
+                        <strong>No listings found</strong>
+                        <div class="text-muted" style="font-size:13px;">
+                            Try a different keyword or location.
+                        </div>
+                    </div>
                 @endforelse
+
+                <div class="mt-3">
+                    {{ $listings->links() }}
+                </div>
+
+
+
+
             </div>
 
-            <!-- Manage free listing (static) -->
-            <div class="side-card">
-                <div class="side-manage-title">
-                    Manage your <span>free</span> listing
+
+            <!-- Right sidebar -->
+            <div class="col-lg-4 mt-3 mt-lg-0">
+
+                <!-- Popular Categories (dynamic) -->
+                <div class="side-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="side-title">Popular Categories</div>
+                    </div>
+
+                    @forelse($popularCategories as $pc)
+                        <a href="{{ route('frontend.category.show', $pc->slug) }}" class="side-link" style="color: black;">
+                            <span class="side-cuisine-icon"><i class="fa-solid fa-tag" style="color:#ff7921;"></i></span>
+                            {{ $pc->name }}
+                            <span style="color:#777; font-size:12px;">({{ $pc->listings_count }})</span>
+                        </a>
+                    @empty
+                        <div class="text-muted" style="font-size:13px;">No category stats</div>
+                    @endforelse
                 </div>
-                <p class="side-manage-text">
-                    Update your business information in a few steps. Make it easy for your customers to find you.
-                </p>
-                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
+
+                <!-- Manage free listing (static) -->
+                <div class="side-card">
+                    <div class="side-manage-title">
+                        Manage your <span>free</span> listing
+                    </div>
+                    <p class="side-manage-text">
+                        Update your business information in a few steps. Make it easy for your customers to find you.
+                    </p>
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn"
+                        style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
-                <div class="side-phone-text">
-                    call <span>{{ $content->manage_phone }}</span>
-                </div>
-            </div>
-
-            <!-- Featured Listings (dynamic) -->
-            <div class="side-card">
-                <div class="side-title">Featured Listings</div>
-
-                @forelse($featured as $f)
-                    <div class="side-featured-entry">
-                        <strong>{{ $f->name }}</strong>
-                        @if($f->phone)<span>{{ $f->phone }}</span>@endif
-                        <span>
-                            {{ optional($f->category)->name ?? '' }}
-                            @if($f->avg_rating)
-                                • ⭐ {{ number_format($f->avg_rating, 1) }}
-                            @endif
-                        </span>
+                    <div class="side-phone-text">
+                        call <span>{{ $content->manage_phone }}</span>
                     </div>
-                @empty
-                    <div class="text-muted" style="font-size:13px;">No featured listings yet.</div>
-                @endforelse
-            </div>
+                </div>
 
+                <!-- Featured Listings (dynamic) -->
+                <div class="side-card">
+                    <div class="side-title">Featured Listings</div>
+
+                    @forelse($featured as $f)
+                        <div class="side-featured-entry">
+                            <strong>{{ $f->name }}</strong>
+                            @if ($f->phone)
+                                <span>{{ $f->phone }}</span>
+                            @endif
+                            <span>
+                                {{ optional($f->category)->name ?? '' }}
+                                @if ($f->avg_rating)
+                                    • ⭐ {{ number_format($f->avg_rating, 1) }}
+                                @endif
+                            </span>
+                        </div>
+                    @empty
+                        <div class="text-muted" style="font-size:13px;">No featured listings yet.</div>
+                    @endforelse
+                </div>
+
+            </div>
         </div>
-    </div>
-</main>
+    </main>
 @endsection

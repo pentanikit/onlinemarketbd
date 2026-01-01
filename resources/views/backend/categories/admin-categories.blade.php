@@ -8,29 +8,24 @@
                     <p class="mb-0 text-muted small">Manage listing categories and sub-categories.</p>
                 </div>
 
-                <button
-                    class="btn btn-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#categoryModal"
-                    data-mode="create"
-                    data-action="{{ route('categories.store') }}"
-                >
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" data-mode="create"
+                    data-action="{{ route('categories.store') }}">
                     <i class="bi bi-plus-lg me-1"></i> Add New
                 </button>
             </div>
 
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <strong>Done!</strong> {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
-            @if($errors->any())
+            @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Fix these:</strong>
                     <ul class="mb-0 mt-2">
-                        @foreach($errors->all() as $e)
+                        @foreach ($errors->all() as $e)
                             <li>{{ $e }}</li>
                         @endforeach
                     </ul>
@@ -45,14 +40,18 @@
                             <div class="col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                                    <input name="q" value="{{ request('q') }}" class="form-control" placeholder="Search categories...">
+                                    <input name="q" value="{{ request('q') }}" class="form-control"
+                                        placeholder="Search categories...">
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <select class="form-select" name="type">
-                                    <option value="all" {{ request('type', 'all') === 'all' ? 'selected' : '' }}>Type: All</option>
-                                    <option value="primary" {{ request('type') === 'primary' ? 'selected' : '' }}>Primary</option>
-                                    <option value="sub" {{ request('type') === 'sub' ? 'selected' : '' }}>Sub-category</option>
+                                    <option value="all" {{ request('type', 'all') === 'all' ? 'selected' : '' }}>Type:
+                                        All</option>
+                                    <option value="primary" {{ request('type') === 'primary' ? 'selected' : '' }}>Primary
+                                    </option>
+                                    <option value="sub" {{ request('type') === 'sub' ? 'selected' : '' }}>Sub-category
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-lg-3 d-grid">
@@ -82,14 +81,14 @@
                                         <td class="fw-semibold">
                                             <div class="d-flex align-items-center gap-2">
                                                 {{-- NOTE: you can update this later to show category image thumbnail --}}
-                                                @if($cat->icon_class)
+                                                @if ($cat->icon_class)
                                                     <span class="text-muted"><i class="{{ $cat->icon_class }}"></i></span>
                                                 @else
                                                     <span class="text-muted"><i class="bi bi-tag"></i></span>
                                                 @endif
                                                 <div>
                                                     {{ $cat->name }}
-                                                    @if($cat->parent_id)
+                                                    @if ($cat->parent_id)
                                                         <div class="small text-muted">Sub-category</div>
                                                     @else
                                                         <div class="small text-muted">Primary</div>
@@ -107,24 +106,19 @@
                                             {{ $cat->listings_count ?? 0 }}
                                         </td>
                                         <td class="text-end">
-                                            <button
-                                                class="btn btn-sm btn-outline-primary"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#categoryModal"
-                                                data-mode="edit"
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                data-bs-target="#categoryModal" data-mode="edit"
                                                 data-action="{{ route('categories.update', $cat->id) }}"
-                                                data-id="{{ $cat->id }}"
-                                                data-name="{{ $cat->name }}"
-                                                data-slug="{{ $cat->slug }}"
-                                                data-parent_id="{{ $cat->parent_id }}"
+                                                data-id="{{ $cat->id }}" data-name="{{ $cat->name }}"
+                                                data-slug="{{ $cat->slug }}" data-parent_id="{{ $cat->parent_id }}"
                                                 data-sort_order="{{ $cat->sort_order }}"
-                                                data-image_url="{{ $cat->image ? asset('storage/'.$cat->image) : '' }}"
-                                            >
+                                                data-image_url="{{ $cat->image ? asset('storage/' . $cat->image) : '' }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
 
-                                            <form action="{{ route('categories.destroy', $cat->id) }}" method="POST" class="d-inline"
-                                                  onsubmit="return confirm('Delete this category? Child categories will also be deleted (cascade).');">
+                                            <form action="{{ route('categories.destroy', $cat->id) }}" method="POST"
+                                                class="d-inline"
+                                                onsubmit="return confirm('Delete this category? Child categories will also be deleted (cascade).');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger" type="submit">
@@ -145,19 +139,9 @@
                     </div>
 
 
-<div class="list-pagination-bar mt-3">
-    <small class="text-muted">
-        @if(method_exists($listings, 'firstItem') && $listings->total() > 0)
-            Showing {{ $listings->firstItem() }}–{{ $listings->lastItem() }} of {{ $listings->total() }}
-        @else
-            Showing 0 of 0
-        @endif
-    </small>
-
-    <div class="list-pagination-links">
-        {{ $listings->appends(request()->query())->onEachSide(1)->links() }}
-    </div>
-</div>
+                <div class="mt-3">
+                    {{ $listings->links() }}
+                </div>
 
                 </div>
             </div>
@@ -170,7 +154,8 @@
     <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form id="categoryForm" method="POST" action="{{ route('categories.store') }}" enctype="multipart/form-data">
+                <form id="categoryForm" method="POST" action="{{ route('categories.store') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="_method" id="categoryMethod" value="POST">
 
@@ -182,7 +167,8 @@
                     <div class="modal-body">
                         <div class="mb-2">
                             <label class="form-label small">Name</label>
-                            <input name="name" id="catName" class="form-control" placeholder="e.g. Restaurants" required>
+                            <input name="name" id="catName" class="form-control" placeholder="e.g. Restaurants"
+                                required>
                         </div>
 
                         <div class="mb-2">
@@ -195,7 +181,7 @@
                             <label class="form-label small">Parent (optional)</label>
                             <select name="parent_id" id="catParent" class="form-select">
                                 <option value="">— None —</option>
-                                @foreach($parents as $p)
+                                @foreach ($parents as $p)
                                     <option value="{{ $p->id }}">{{ $p->name }}</option>
                                 @endforeach
                             </select>
@@ -203,25 +189,22 @@
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label small">Category image <span class="text-muted">(optional)</span></label>
-                            <input
-                                type="file"
-                                name="image"
-                                id="catImage"
-                                class="form-control"
-                                accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                            >
+                            <label class="form-label small">Category image <span
+                                    class="text-muted">(optional)</span></label>
+                            <input type="file" name="image" id="catImage" class="form-control"
+                                accept="image/png,image/jpeg,image/webp,image/svg+xml">
                             <div class="form-text">PNG/JPG/WEBP/SVG. Recommended: square (e.g. 256×256).</div>
 
                             {{-- Preview UI --}}
                             <div class="mt-2" id="catImagePreviewWrap" style="display:none;">
                                 <div class="d-flex align-items-center gap-2">
                                     <img id="catImagePreview" alt="Preview"
-                                         style="width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid rgba(0,0,0,.12);">
+                                        style="width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid rgba(0,0,0,.12);">
                                     <div class="small">
                                         <div class="fw-semibold" id="catImagePreviewTitle">Preview</div>
                                         <div class="text-muted" id="catImageMeta"></div>
-                                        <button type="button" class="btn btn-sm btn-outline-danger mt-1" id="catImageRemoveBtn">
+                                        <button type="button" class="btn btn-sm btn-outline-danger mt-1"
+                                            id="catImageRemoveBtn">
                                             Remove
                                         </button>
                                     </div>
@@ -231,7 +214,8 @@
 
                         <div class="mb-0">
                             <label class="form-label small">Sort order</label>
-                            <input name="sort_order" id="catSort" type="number" min="0" class="form-control" placeholder="0">
+                            <input name="sort_order" id="catSort" type="number" min="0" class="form-control"
+                                placeholder="0">
                         </div>
                     </div>
 
@@ -245,26 +229,26 @@
     </div>
 
     <script>
-        (function () {
+        (function() {
             const modal = document.getElementById('categoryModal');
             if (!modal) return;
 
-            const form   = document.getElementById('categoryForm');
+            const form = document.getElementById('categoryForm');
             const method = document.getElementById('categoryMethod');
-            const title  = document.getElementById('categoryModalTitle');
+            const title = document.getElementById('categoryModalTitle');
 
-            const nameEl   = document.getElementById('catName');
-            const slugEl   = document.getElementById('catSlug');
+            const nameEl = document.getElementById('catName');
+            const slugEl = document.getElementById('catSlug');
             const parentEl = document.getElementById('catParent');
-            const sortEl   = document.getElementById('catSort');
-            const imgEl    = document.getElementById('catImage');
+            const sortEl = document.getElementById('catSort');
+            const imgEl = document.getElementById('catImage');
 
             // Preview elements
-            const previewWrap  = document.getElementById('catImagePreviewWrap');
-            const previewImg   = document.getElementById('catImagePreview');
-            const previewMeta  = document.getElementById('catImageMeta');
+            const previewWrap = document.getElementById('catImagePreviewWrap');
+            const previewImg = document.getElementById('catImagePreview');
+            const previewMeta = document.getElementById('catImageMeta');
             const previewTitle = document.getElementById('catImagePreviewTitle');
-            const removeBtn    = document.getElementById('catImageRemoveBtn');
+            const removeBtn = document.getElementById('catImageRemoveBtn');
 
             let objectUrl = null;
 
@@ -280,8 +264,14 @@
             }
 
             function showPreviewFromFile(file) {
-                if (!file) { hidePreview(); return; }
-                if (!file.type || !file.type.startsWith('image/')) { hidePreview(); return; }
+                if (!file) {
+                    hidePreview();
+                    return;
+                }
+                if (!file.type || !file.type.startsWith('image/')) {
+                    hidePreview();
+                    return;
+                }
 
                 if (objectUrl) URL.revokeObjectURL(objectUrl);
                 objectUrl = URL.createObjectURL(file);
@@ -294,7 +284,10 @@
             }
 
             function showPreviewFromUrl(url) {
-                if (!url) { hidePreview(); return; }
+                if (!url) {
+                    hidePreview();
+                    return;
+                }
                 hidePreview(); // ensure clean state
                 previewImg.src = url;
                 previewMeta.textContent = 'Current image';
@@ -303,20 +296,20 @@
             }
 
             if (imgEl) {
-                imgEl.addEventListener('change', function () {
+                imgEl.addEventListener('change', function() {
                     const file = this.files && this.files[0] ? this.files[0] : null;
                     showPreviewFromFile(file);
                 });
             }
 
             if (removeBtn) {
-                removeBtn.addEventListener('click', function () {
+                removeBtn.addEventListener('click', function() {
                     if (imgEl) imgEl.value = '';
                     hidePreview();
                 });
             }
 
-            modal.addEventListener('show.bs.modal', function (event) {
+            modal.addEventListener('show.bs.modal', function(event) {
                 const btn = event.relatedTarget;
                 if (!btn) return;
 
@@ -352,7 +345,7 @@
                 }
             });
 
-            modal.addEventListener('hidden.bs.modal', function () {
+            modal.addEventListener('hidden.bs.modal', function() {
                 hidePreview();
                 if (imgEl) imgEl.value = '';
             });

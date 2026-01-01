@@ -464,8 +464,8 @@
         }
 
         /* =========================
-            Responsive
-        ========================= */
+                Responsive
+            ========================= */
         @media (max-width: 992px) {
             .yp-info-block {
                 grid-template-columns: 1fr;
@@ -519,7 +519,7 @@
                     @endif
 
                     @if ($listing->website)
-                        <a class="side-link-btn d-block text-decoration-none" 
+                        <a class="side-link-btn d-block text-decoration-none"
                             href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
                             target="_blank">
                             <i class="fa-solid fa-globe" style="color:#ff7a1a;"></i>
@@ -542,7 +542,7 @@
                         <a class="side-link-btn d-block text-decoration-none" href="{{ $mapUrl }}" target="_blank">
                             <i class="fa-solid fa-location-dot" style="color:#ff7a1a;"></i>
                             <span style="color:#ff7a1a;">
-                               {!! nl2br(e($addr)) !!}<br>
+                                {!! nl2br(e($addr)) !!}<br>
 
                             </span>
                         </a>
@@ -558,7 +558,8 @@
                 <div class="side-card">
                     <div class="claim-box-title">Is this your business?</div>
                     <p class="mb-2">Customize this page.</p>
-                    <a href="{{ route('listings.create') }}" class="btn w-100" style="background-color:#ff7a1a; color:white;">Claim This
+                    <a href="{{ route('listings.create') }}" class="btn w-100"
+                        style="background-color:#ff7a1a; color:white;">Claim This
                         Business</a>
                 </div>
 
@@ -721,7 +722,8 @@
                         <div class="yp-info-block">
                             <div class="yp-info-label">Serving Your Local Area</div>
                             <div class="yp-info-value">
-                                <span class="badge yp-badge me-2" style="background-color:#ff7a1a;"><i class="fa-solid fa-star" style="color:#f7f5f4;"></i></span>
+                                <span class="badge yp-badge me-2" style="background-color:#ff7a1a;"><i
+                                        class="fa-solid fa-star" style="color:#f7f5f4;"></i></span>
                                 <a class="yp-link" href="#" style="color:#ff7a1a;">Call Today</a>
                             </div>
                         </div>
@@ -779,15 +781,18 @@
                         <div class="yp-info-block">
                             <div class="yp-info-label">Other Link</div>
                             <div class="yp-info-value">
-                                <a style="color: #ff7a1a;" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank" class="me-2 yp-link">{{ $listing->website }}</a>
+                                <a style="color: #ff7a1a;"
+                                    href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
+                                    target="_blank" class="me-2 yp-link">{{ $listing->website }}</a>
                             </div>
                         </div>
 
                         <!-- Social Links -->
                         <div class="yp-info-block">
                             <div class="yp-info-label">Social Links</div>
-                            <div class="yp-info-value" >
-                                <a class="yp-social" href="#" aria-label="Facebook" style="background-color:#ff7a1a;">
+                            <div class="yp-info-value">
+                                <a class="yp-social" href="#" aria-label="Facebook"
+                                    style="background-color:#ff7a1a;">
                                     <i class="fa-brands fa-facebook-f" style="color:#f8f6f5;"></i>
                                 </a>
                             </div>
@@ -797,7 +802,8 @@
                         <div class="yp-info-block">
                             <div class="yp-info-label">Category</div>
                             <div class="yp-info-value">
-                                <a class="yp-link" href="#" style="color:#ff7a1a;">{{ $listing->category->name }}</a>
+                                <a class="yp-link" href="#"
+                                    style="color:#ff7a1a;">{{ $listing->category->name }}</a>
                             </div>
                         </div>
 

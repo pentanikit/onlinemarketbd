@@ -388,7 +388,7 @@
     @php
         $content = \App\Models\SiteContent::where('key', 'home')->first();
 
-     @endphp
+    @endphp
     <!-- CATEGORY NAV STRIP -->
     {{-- <div class="category-top-nav filter-buttons">
         <div class="container">
@@ -442,7 +442,8 @@
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" value="{{ $q }}"
                                 placeholder="Find your business">
-                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
+                            <button class="btn" style="background-color: #ff7921; color:white; font-weight:700;"
+                                type="submit"><i class="fa-solid fa-magnifying-glass"></i> Find</button>
                         </div>
                     </form>
                 </div>
@@ -458,7 +459,7 @@
                                     @endphp
 
                                     @if ($img)
-                                        <img src="{{ asset('storage/'.$img) }}" alt="{{ $listing->name }}">
+                                        <img src="{{ asset('storage/' . $img) }}" alt="{{ $listing->name }}">
                                     @else
                                         <img src="{{ asset('placeholder.png') }}" alt="No Image">
                                     @endif
@@ -481,7 +482,9 @@
 
                                 <div class="listing-meta mt-1">
                                     @if ($listing->website)
-                                        <a style="color: #ff7a1a;" href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://','https://']) ? $listing->website : 'https://'.$listing->website }}" target="_blank" class="me-2">Website</a>
+                                        <a style="color: #ff7a1a;"
+                                            href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
+                                            target="_blank" class="me-2">Website</a>
                                     @endif
 
                                     @if ($listing->review_count)
@@ -498,7 +501,8 @@
                                     </p>
                                 @endif
 
-                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn" style="background-color: #ff7a1a; color:white;">View Details</a>
+                                <a href="{{ route('frontend.listing.show', $listing->slug) }}" class="btn"
+                                    style="background-color: #ff7a1a; color:white;">View Details</a>
                             </div>
 
                             <div class="col-md-4 listing-right">
@@ -548,7 +552,8 @@
                     </div>
 
                     @forelse($subCategories as $sub)
-                        <a href="{{ route('frontend.category.show', $sub->slug) }}" class="side-link" style="color: black;">
+                        <a href="{{ route('frontend.category.show', $sub->slug) }}" class="side-link"
+                            style="color: black;">
                             <span class="side-cuisine-icon"><i class="fa-solid fa-tag" style="color: #ff7a1a;"></i></span>
                             {{ $sub->name }}
                         </a>
@@ -565,7 +570,8 @@
                     <p class="side-manage-text">
                         Update your business information in a few steps. Make it easy for your customers to find you.
                     </p>
-                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn" style="background-color: #ff7a1a; color:white; font-weight:700;">
+                    <a href="{{ $content->manage_cta_url }}" class="btn listing-btn"
+                        style="background-color: #ff7a1a; color:white; font-weight:700;">
                         {{ $content->manage_cta_text }}
                     </a>
 

@@ -144,8 +144,7 @@
                                         $owner =
                                             $listing->user?->name ??
                                             ($listing->meta['owner_name'] ??
-                                                null ??
-                                                ($listing->meta['company_name'] ?? '—'));
+                                                (null ?? ($listing->meta['company_name'] ?? '—')));
                                     @endphp
 
                                     <tr>
@@ -205,20 +204,9 @@
                     </div>
 
                     {{-- Pagination --}}
-                    <div class="list-pagination-bar mt-3">
-                        <small class="text-muted">
-                            @if (method_exists($listings, 'firstItem') && $listings->total() > 0)
-                                Showing {{ $listings->firstItem() }}–{{ $listings->lastItem() }} of
-                                {{ $listings->total() }}
-                            @else
-                                Showing 0 of 0
-                            @endif
-                        </small>
-
-                        <div class="list-pagination-links">
-                            {{ $listings->appends(request()->query())->onEachSide(1)->links() }}
-                        </div>
-                    </div>
+                <div class="mt-3">
+                    {{ $listings->links() }}
+                </div>
 
                 </div>
             </div>

@@ -241,8 +241,8 @@
                         <div class="logo-text">
                             Online<span>marketbd</span>
                         </div> --}}
-                        <img src="{{ asset('storage') . '/' . $content->logo_image }}" width="220" height="60" alt=""
-                            srcset="">
+                        <img src="{{ asset('storage') . '/' . $content->logo_image }}" width="220" height="60"
+                            alt="" srcset="">
                     </a>
 
                     <!-- Hamburger (mobile only) -->

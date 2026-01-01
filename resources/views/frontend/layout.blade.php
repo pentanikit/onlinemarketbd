@@ -94,6 +94,57 @@
                 justify-content: center;
             }
         }
+
+
+                /* Pagination bar wrapper */
+        .list-pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            /* ✅ prevents breaking on small screens */
+        }
+
+        /* Keep Laravel pagination neat */
+        .list-pagination-links nav {
+            margin: 0;
+            /* remove default spacing */
+        }
+
+        .list-pagination-links .pagination {
+            margin: 0;
+            display: flex;
+            gap: 6px;
+            /* nicer spacing */
+            flex-wrap: wrap;
+            /* ✅ wrap instead of overflow */
+            justify-content: flex-end;
+        }
+
+        .list-pagination-links .page-item {
+            margin: 0;
+        }
+
+        .list-pagination-links .page-link {
+            border-radius: 10px;
+            padding: .45rem .7rem;
+            line-height: 1;
+        }
+
+        /* On small screens: stack + center the pagination */
+        @media (max-width: 575.98px) {
+            .list-pagination-bar {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .list-pagination-links .pagination {
+                justify-content: center;
+            }
+        }
+
+
     </style>
 
     @stack('styles')

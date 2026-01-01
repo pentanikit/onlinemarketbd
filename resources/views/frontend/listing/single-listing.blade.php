@@ -1091,7 +1091,7 @@
                                                 @endphp
 
                                                 @if($img)
-                                                    <img src="{{ Storage::url($img) }}" alt="{{ $s->primaryPhoto?->alt_text ?? $s->name }}">
+                                                    <img src="{{ asset('storage/'.$img) }}" alt="{{ $s->primaryPhoto?->alt_text ?? $s->name }}">
                                                 @else
                                                     <div class="yp-suggested-thumb--placeholder">
                                                         <i class="fa-regular fa-image"></i>

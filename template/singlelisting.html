@@ -493,6 +493,124 @@
                 min-width: 180px;
             }
         }
+
+
+
+        /* Reviews card (match your existing cards) */
+.yp-reviews-card{
+    border: 1px solid #e1e4ea;
+    border-radius: 4px;
+    background: #fff;
+    padding: 14px 16px;
+}
+
+.yp-reviews-title{
+    font-weight: 800;
+    font-size: 15px;
+    color: #111;
+}
+
+.yp-review-action{
+    font-size: 13px;
+}
+
+.yp-review-score{
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: #111;
+}
+
+.yp-review-stars{
+    color: #ccc;
+    font-size: 14px;
+}
+
+.yp-review-meta{
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+}
+
+.yp-review-empty{
+    font-size: 13px;
+    color: #555;
+    background: #f7f7f7;
+    border: 1px dashed #dcdcdc;
+    border-radius: 4px;
+    padding: 10px 12px;
+}
+
+.yp-review-btn{
+    font-size: 13px;
+}
+
+/* Review list (if you enable the example block) */
+.yp-review-item{
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.yp-review-name{
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+}
+
+.yp-review-date{
+    font-size: 12px;
+    color: #777;
+}
+
+.yp-review-text{
+    font-size: 13px;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+
+/* Suggested Listings inside right card */
+.yp-suggested-title{
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+}
+
+.yp-suggested-card{
+    display: block;
+    text-decoration: none;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: #fff;
+}
+
+.yp-suggested-card:hover{
+    border-color: #e1e4ea;
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.06);
+}
+
+.yp-suggested-name{
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.yp-suggested-meta{
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+}
+
+.yp-suggested-btn{
+    font-size: 13px;
+}
+
+
     </style>
 </head>
 
@@ -683,48 +801,94 @@
                 </div>
 
                 <!-- Menu -->
-                <div class="menu-section mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="menu-title">Menu</div>
-                    </div>
+<!-- Reviews (replaces Menu section) -->
+<div class="menu-section mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="menu-title">Reviews</div>
 
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="menu-card">
-                                <h6>Appetizers</h6>
-                                <ul>
-                                    <li>Fried Zucchini</li>
-                                    <li>Fried Cheese Sticks</li>
-                                    <li>Fried Calamari Rings</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="menu-card">
-                                <h6>Salads</h6>
-                                <ul>
-                                    <li>House Garden Salad</li>
-                                    <li>Caesar Salad</li>
-                                    <li>Spinach Salad</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="menu-card">
-                                <h6>Pasta</h6>
-                                <ul>
-                                    <li>Choice of Rigatoni, Linguine or Angel Hair</li>
-                                    <li>Lasagna</li>
-                                    <li>Angel Hair</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+        <button class="btn btn-outline-secondary btn-view-menu">
+            <i class="fa-regular fa-pen-to-square me-1"></i> Write a Review
+        </button>
+    </div>
 
-                    <button class="btn btn-outline-secondary btn-view-menu mt-2">
-                        <i class="fa-solid fa-utensils"></i> View Full Menu
-                    </button>
+    <!-- Reviews summary (optional, compact) -->
+    <div class="listing-meta-small mb-2">
+        <i class="fa-regular fa-star"></i> 0 Reviews • Be the first to review!
+    </div>
+
+    <div class="row g-3">
+        <!-- Review Card 1 -->
+        <div class="col-md-4">
+            <div class="menu-card">
+                <h6 class="d-flex justify-content-between align-items-center">
+                    <span><i class="fa-regular fa-user me-1"></i> John D.</span>
+                    <small class="text-muted">2 days ago</small>
+                </h6>
+
+                <div class="rating-stars mb-2" style="color:#f4b400;">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
                 </div>
+
+                <div class="yp-paragraph mb-0">
+                    Great service and friendly staff. Quick response time and fair pricing.
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Card 2 -->
+        <div class="col-md-4">
+            <div class="menu-card">
+                <h6 class="d-flex justify-content-between align-items-center">
+                    <span><i class="fa-regular fa-user me-1"></i> Sarah K.</span>
+                    <small class="text-muted">1 week ago</small>
+                </h6>
+
+                <div class="rating-stars mb-2" style="color:#f4b400;">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+
+                <div class="yp-paragraph mb-0">
+                    Good experience overall. Work was done properly, just took a bit longer than expected.
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Card 3 -->
+        <div class="col-md-4">
+            <div class="menu-card">
+                <h6 class="d-flex justify-content-between align-items-center">
+                    <span><i class="fa-regular fa-user me-1"></i> Rahim A.</span>
+                    <small class="text-muted">3 weeks ago</small>
+                </h6>
+
+                <div class="rating-stars mb-2" style="color:#f4b400;">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <div class="yp-paragraph mb-0">
+                    Excellent! Very professional and solved the issue quickly. Highly recommended.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-outline-secondary btn-view-menu mt-2">
+        <i class="fa-regular fa-star me-1"></i> View All Reviews
+    </button>
+</div>
+
 
                 <!-- Gallery -->
                 <div class="gallery-section">
@@ -758,113 +922,177 @@
                 </div>
 
                 <!-- Right Main Content -->
-                <section class="col-12 col-lg-8">
-                    <h4 class="yp-page-title mb-3">More Info</h4>
+<!-- More Info + Reviews (2-column layout) -->
+<section class="col-12">
+    <div class="row g-3">
+        <!-- LEFT: More Info -->
+        <div class="col-lg-8">
+            <h4 class="yp-page-title mb-3">More Info</h4>
 
-                    <div class="yp-info-wrap">
+            <div class="yp-info-wrap">
 
-                        <!-- Serving Area -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Serving Your Local Area</div>
-                            <div class="yp-info-value">
-                                <span class="badge yp-badge me-2"><i class="fa-solid fa-star"></i></span>
-                                <a class="yp-link" href="#">Call Today</a>
-                            </div>
-                        </div>
-
-                        <!-- General Info -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">General Info</div>
-                            <div class="yp-info-value yp-paragraph">
-                                Davey Plumbing, LLC has the solution to any commercial or residential plumbing issue in
-                                the Pittsburgh area.
-                                We are gas line-certified plumbers and capable of handling all sewer and water lines
-                                needs.
-                                Solving plumbing problems in the Pittsburgh area since 2003! Trust our plumbing experts
-                                for your appliance
-                                installation and connection, sewer and water line work, backhoe service, and sewer
-                                camera inspection.
-                                Our Master and Journeymen plumbers can assist you in hooking up your washers,
-                                dishwashers, showers, sinks,
-                                and more! Call us for the plumbing service you need.
-                            </div>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Email</div>
-                            <div class="yp-info-value">
-                                <a class="yp-link" href="#">Email Business</a>
-                            </div>
-                        </div>
-
-                        <!-- Services/Products -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Services/Products</div>
-                            <div class="yp-info-value yp-paragraph">
-                                Water Leaks, BBB, Kitchen &amp; Bath Plumbing, Complete Backhoe Service, Drain Cleaning,
-                                Sewer Repair &amp; Replacement, Backflow Prevention, Boiler Repair &amp; Replacement,
-                                Water Lines,
-                                Electronic Leak Detection, Gas, Water Heaters, Gutter Cleaning, Serving Pittsburgh and
-                                Surrounding Areas,
-                                Sewer Video Inspection, Installation, Serving Pittsburgh And Surrounding Areas,
-                                Emergency Service Available,
-                                Dye Testing, Plumbing Contractors Commercial, Emergency Cleanup, Electric Snaker
-                                Service, Rooter Service,
-                                Sewer, Financing Available, Fully Insured, Sewer Lines, Gas, Emergency Plumber, Septic
-                                Systems &amp; Tanks,
-                                Kitchen Fixtures, Faucets, Sewer Lines &amp; Sewer Systems, Remodeling, Bathroom
-                                Fixtures, Mechanical Services,
-                                Plumbing Fixtures, Water Lines, Sewer, Air Conditioning, Fully Insured, Bathtubs &amp;
-                                Showers, Heating, Gas,
-                                Sewer Pumps, Gas, Water Heaters.
-                            </div>
-                        </div>
-
-                        <!-- Payment -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Payment method</div>
-                            <div class="yp-info-value">Discover, Visa, Master Card</div>
-                        </div>
-
-                        <!-- Accreditation -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Accreditation</div>
-                            <div class="yp-info-value">
-                                <div>Insured</div>
-                                <div>Licensed</div>
-                                <div>Better Business Bureau</div>
-                            </div>
-                        </div>
-
-                        <!-- Other Link -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Other Link</div>
-                            <div class="yp-info-value">
-                                <a class="yp-link" href="#">daveyplumbingpittsburgh.com</a>
-                            </div>
-                        </div>
-
-                        <!-- Social Links -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Social Links</div>
-                            <div class="yp-info-value">
-                                <a class="yp-social" href="#" aria-label="Facebook">
-                                    <i class="fa-brands fa-facebook-f"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Category -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Category</div>
-                            <div class="yp-info-value">
-                                <a class="yp-link" href="#">Plumbers</a>
-                            </div>
-                        </div>
-
+                <!-- Serving Area -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Serving Your Local Area</div>
+                    <div class="yp-info-value">
+                        <span class="badge yp-badge me-2"><i class="fa-solid fa-star"></i></span>
+                        <a class="yp-link" href="#">Call Today</a>
                     </div>
-                </section>
+                </div>
+
+                <!-- General Info -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">General Info</div>
+                    <div class="yp-info-value yp-paragraph">
+                        Davey Plumbing, LLC has the solution to any commercial or residential plumbing issue in
+                        the Pittsburgh area.
+                        We are gas line-certified plumbers and capable of handling all sewer and water lines needs.
+                        Solving plumbing problems in the Pittsburgh area since 2003! Trust our plumbing experts
+                        for your appliance installation and connection, sewer and water line work, backhoe service,
+                        and sewer camera inspection.
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Email</div>
+                    <div class="yp-info-value">
+                        <a class="yp-link" href="#">Email Business</a>
+                    </div>
+                </div>
+
+                <!-- Services/Products -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Services/Products</div>
+                    <div class="yp-info-value yp-paragraph">
+                        Water Leaks, Drain Cleaning, Sewer Repair &amp; Replacement, Backflow Prevention, Boiler Repair,
+                        Gas, Water Heaters, Emergency Service Available, Sewer Video Inspection, Installation, and more.
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Payment method</div>
+                    <div class="yp-info-value">Discover, Visa, Master Card</div>
+                </div>
+
+                <!-- Accreditation -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Accreditation</div>
+                    <div class="yp-info-value">
+                        <div>Insured</div>
+                        <div>Licensed</div>
+                        <div>Better Business Bureau</div>
+                    </div>
+                </div>
+
+                <!-- Other Link -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Other Link</div>
+                    <div class="yp-info-value">
+                        <a class="yp-link" href="#">daveyplumbingpittsburgh.com</a>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Social Links</div>
+                    <div class="yp-info-value">
+                        <a class="yp-social" href="#" aria-label="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="yp-info-block">
+                    <div class="yp-info-label">Category</div>
+                    <div class="yp-info-value">
+                        <a class="yp-link" href="#">Plumbers</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT: Reviews -->
+        <div class="col-lg-4">
+            <div class="yp-reviews-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="yp-reviews-title">Reviews</div>
+                    <a href="#" class="yp-link yp-review-action">
+                        <i class="fa-regular fa-pen-to-square me-1"></i>Write
+                    </a>
+                </div>
+
+                <!-- Summary -->
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="yp-review-score">0.0</div>
+                    <div>
+                        <div class="yp-review-stars">
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </div>
+                        <div class="yp-review-meta">No reviews yet</div>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div class="yp-review-empty">
+                    Be the first to review this business.
+                </div>
+
+                <button class="btn btn-outline-secondary w-100 mt-3 yp-review-btn">
+                    <i class="fa-regular fa-star me-1"></i> Write a Review
+                </button>
+
+<!-- Suggested Listings (replaces example review list) -->
+<div class="yp-suggested-wrap mt-3">
+    <div class="yp-suggested-title mb-2">Suggested Listings</div>
+
+    <a href="#" class="yp-suggested-card">
+        <div class="yp-suggested-name">Mario’s Italian Kitchen</div>
+        <div class="yp-suggested-meta">
+            <i class="fa-solid fa-location-dot me-1"></i>Washington, PA
+        </div>
+        <div class="yp-suggested-meta">
+            <i class="fa-regular fa-star me-1"></i>4.6 (128 reviews)
+        </div>
+    </a>
+
+    <a href="#" class="yp-suggested-card">
+        <div class="yp-suggested-name">Bella Roma Trattoria</div>
+        <div class="yp-suggested-meta">
+            <i class="fa-solid fa-location-dot me-1"></i>Canonsburg, PA
+        </div>
+        <div class="yp-suggested-meta">
+            <i class="fa-regular fa-star me-1"></i>4.3 (74 reviews)
+        </div>
+    </a>
+
+    <a href="#" class="yp-suggested-card">
+        <div class="yp-suggested-name">Pasta &amp; Co.</div>
+        <div class="yp-suggested-meta">
+            <i class="fa-solid fa-location-dot me-1"></i>Meadow Lands, PA
+        </div>
+        <div class="yp-suggested-meta">
+            <i class="fa-regular fa-star me-1"></i>4.8 (211 reviews)
+        </div>
+    </a>
+
+    <button class="btn btn-outline-secondary w-100 mt-2 yp-suggested-btn">
+        <i class="fa-solid fa-list me-1"></i> View More Listings
+    </button>
+</div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
             </div>
         </div>
     </main>

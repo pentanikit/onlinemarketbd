@@ -85,6 +85,12 @@ class Listing extends Model
         return $this->hasOne(ListingInfo::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(ListingReview::class);
+    }
+
+
     /* Common scopes */
 
     public function scopeActive($query)
@@ -102,4 +108,10 @@ class Listing extends Model
 
         return $query->where('status', 'active');
     }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->where('status', ListingReview::STATUS_APPROVED);
+    }
+
 }

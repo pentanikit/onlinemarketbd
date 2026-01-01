@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SiteContentController;
+use App\Http\Controllers\ListingReviewController;
 
 
 //Client
@@ -28,6 +29,9 @@ Route::get('/search', [ListingController::class, 'search'])->name('frontend.sear
 
 Route::get('/listing/{listing:slug}', [ListingController::class, 'single_listing'])
     ->name('frontend.listing.show');
+
+Route::post('/listings/{listing:slug}/reviews', [ListingReviewController::class, 'store'])
+    ->name('listings.reviews.store');
 
 
 //admin routes

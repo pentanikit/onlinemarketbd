@@ -464,8 +464,8 @@
         }
 
         /* =========================
-                Responsive
-            ========================= */
+                        Responsive
+                    ========================= */
         @media (max-width: 992px) {
             .yp-info-block {
                 grid-template-columns: 1fr;
@@ -479,6 +479,164 @@
             .yp-search-group {
                 min-width: 180px;
             }
+        }
+
+
+
+        /* Reviews card (match your existing cards) */
+        .yp-reviews-card {
+            border: 1px solid #e1e4ea;
+            border-radius: 4px;
+            background: #fff;
+            padding: 14px 16px;
+        }
+
+        .yp-reviews-title {
+            font-weight: 800;
+            font-size: 15px;
+            color: #111;
+        }
+
+        .yp-review-action {
+            font-size: 13px;
+        }
+
+        .yp-review-score {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+            color: #111;
+        }
+
+        .yp-review-stars {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .yp-review-meta {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        .yp-review-empty {
+            font-size: 13px;
+            color: #555;
+            background: #f7f7f7;
+            border: 1px dashed #dcdcdc;
+            border-radius: 4px;
+            padding: 10px 12px;
+        }
+
+        .yp-review-btn {
+            font-size: 13px;
+        }
+
+        /* Review list (if you enable the example block) */
+        .yp-review-item {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .yp-review-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        .yp-review-date {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .yp-review-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+
+
+        /* Suggested Listings inside right card */
+        .yp-suggested-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        .yp-suggested-card {
+            display: block;
+            text-decoration: none;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+
+        .yp-suggested-card:hover {
+            border-color: #e1e4ea;
+            box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .06);
+        }
+
+        .yp-suggested-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .yp-suggested-meta {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .yp-suggested-btn {
+            font-size: 13px;
+        }
+
+
+        /* Suggested card with thumbnail */
+        .yp-suggested-card--media {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .yp-suggested-thumb {
+            width: 54px;
+            height: 54px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #f5f5f5;
+            flex: 0 0 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .yp-suggested-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .yp-suggested-thumb--placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .yp-suggested-body {
+            min-width: 0;
+            /* prevents overflow */
         }
     </style>
 @endpush
@@ -497,6 +655,12 @@
     <x-frontend.header />
 
     <main class="container mb-4">
+        @if(session('success'))
+            <div class="alert alert-success py-2 mb-3">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- Breadcrumb --}}
         <div class="breadcrumb-custom">
             @foreach ($breadcrumb as $i => $bc)
@@ -548,10 +712,6 @@
                         </a>
                     @endif
 
-                    {{-- <div class="side-link-btn">
-                        <i class="fa-regular fa-star"></i>
-                        <span>Write a Review</span>
-                    </div> --}}
                 </div>
 
                 {{-- Claim business --}}
@@ -672,6 +832,70 @@
                     </div>
                 </div>
 
+                <!-- Reviews (replaces Menu section) -->
+
+                <div class="menu-section mb-3" id="reviews">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="menu-title">Reviews</div>
+
+                        <button type="button" class="btn btn-outline-secondary btn-view-menu" data-bs-toggle="modal"
+                            data-bs-target="#reviewModal">
+                            <i class="fa-regular fa-pen-to-square me-1"></i> Write a Review
+                        </button>
+                    </div>
+
+                    <!-- Reviews summary -->
+                    <div class="listing-meta-small mb-2">
+                        <i class="fa-regular fa-star"></i>
+                        {{ $allApprovedCount }} Reviews
+                        @if ($allApprovedCount == 0)
+                            • Be the first to review!
+                        @else
+                            • Avg {{ number_format($avgRating, 1) }}
+                        @endif
+                    </div>
+
+                    <div class="row g-3">
+                        @forelse($latestReviews as $r)
+                            <div class="col-md-4">
+                                <div class="menu-card">
+                                    <h6 class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fa-regular fa-user me-1"></i> {{ $r->name }}</span>
+                                        <small class="text-muted">{{ $r->created_at->diffForHumans() }}</small>
+                                    </h6>
+
+                                    <div class="rating-stars mb-2" style="color:#f4b400;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= (int) $r->rating)
+                                                <i class="fa-solid fa-star"></i>
+                                            @else
+                                                <i class="fa-regular fa-star"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+
+                                    <div class="yp-paragraph mb-0">
+                                        {{ \Illuminate\Support\Str::limit($r->comment, 140) }}
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-12">
+                                <div class="menu-card">
+                                    <div class="yp-paragraph mb-0">
+                                        No reviews yet. Be the first to review this business.
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    @if ($allApprovedCount > 3)
+                        <a href="#reviews" class="btn btn-outline-secondary btn-view-menu mt-2">
+                            <i class="fa-regular fa-star me-1"></i> View All Reviews
+                        </a>
+                    @endif
+                </div>
 
 
                 {{-- Gallery (dynamic from photos relation) --}}
@@ -680,7 +904,7 @@
                     $totalPhotos = $listing->photos->count();
                 @endphp
 
-                <div class="gallery-section">
+                <div class="gallery-section mb-5">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="gallery-title">
                             Gallery <small>View all ({{ $totalPhotos }})</small>
@@ -713,33 +937,40 @@
                 </div>
 
                 <!-- Right Main Content -->
-                <section class="col-12 col-lg-8">
-                    <h4 class="yp-page-title mb-3">More Info</h4>
+                <section class="col-12">
+                    <div class="row g-3">
+                        <!-- LEFT: More Info -->
+                        <div class="col-lg-8">
+                            <h4 class="yp-page-title mb-3">More Info</h4>
 
-                    <div class="yp-info-wrap">
+                            <div class="yp-info-wrap">
 
-                        <!-- Serving Area -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Serving Your Local Area</div>
-                            <div class="yp-info-value">
-                                <span class="badge yp-badge me-2" style="background-color:#ff7a1a;"><i
-                                        class="fa-solid fa-star" style="color:#f7f5f4;"></i></span>
-                                <a class="yp-link" href="#" style="color:#ff7a1a;">Call Today</a>
-                            </div>
-                        </div>
+                                <!-- Serving Area -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">Serving Your Local Area</div>
+                                    <div class="yp-info-value">
+
+                                        <a class="btn btn-warning btn-sm fw-semibold" href="tel:{{ $listing->phone }}"
+                                            style="background:#ff7a1a;border-color:#ff7a1a;color:#fff;">
+                                            <i class="fa-solid fa-phone me-1"></i> Call Today
+                                        </a>
+
+                                    </div>
+                                </div>
 
 
 
-                        <!-- Email -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Email</div>
-                            <div class="yp-info-value">
-                                <a class="yp-link" href="#" style="color:#ff7a1a;">Email Business</a>
-                            </div>
-                        </div>
+                                <!-- Email -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">Email</div>
+                                    <div class="yp-info-value">
+                                        <a class="yp-link" href="#"
+                                            style="color:#ff7a1a;">{{ $listing->email }}</a>
+                                    </div>
+                                </div>
 
-                        <!-- Services/Products -->
-                        {{-- <div class="yp-info-block">
+                                <!-- Services/Products -->
+                                {{-- <div class="yp-info-block">
                             <div class="yp-info-label">Services/Products</div>
                             <div class="yp-info-value yp-paragraph">
                                 Water Leaks, BBB, Kitchen &amp; Bath Plumbing, Complete Backhoe Service, Drain Cleaning,
@@ -761,64 +992,243 @@
                             </div>
                         </div> --}}
 
-                        <!-- Payment -->
-                        {{-- <div class="yp-info-block">
-                            <div class="yp-info-label">Payment method</div>
-                            <div class="yp-info-value">Discover, Visa, Master Card</div>
-                        </div> --}}
 
-                        <!-- Accreditation -->
-                        {{-- <div class="yp-info-block">
-                            <div class="yp-info-label">Accreditation</div>
-                            <div class="yp-info-value">
-                                <div>Insured</div>
-                                <div>Licensed</div>
-                                <div>Better Business Bureau</div>
-                            </div>
-                        </div> --}}
 
-                        <!-- Other Link -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Other Link</div>
-                            <div class="yp-info-value">
-                                <a style="color: #ff7a1a;"
-                                    href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
-                                    target="_blank" class="me-2 yp-link">{{ $listing->website }}</a>
-                            </div>
-                        </div>
+                                <!-- Other Link -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">Other Link</div>
+                                    <div class="yp-info-value">
+                                        <a style="color: #ff7a1a;"
+                                            href="{{ \Illuminate\Support\Str::startsWith($listing->website, ['http://', 'https://']) ? $listing->website : 'https://' . $listing->website }}"
+                                            target="_blank" class="me-2 yp-link">{{ $listing->website }}</a>
+                                    </div>
+                                </div>
 
-                        <!-- Social Links -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Social Links</div>
-                            <div class="yp-info-value">
-                                <a class="yp-social" href="#" aria-label="Facebook"
-                                    style="background-color:#ff7a1a;">
-                                    <i class="fa-brands fa-facebook-f" style="color:#f8f6f5;"></i>
-                                </a>
-                            </div>
-                        </div>
+                                <!-- Social Links -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">Social Links</div>
+                                    <div class="yp-info-value">
+                                        <a class="yp-social" href="#" aria-label="Facebook"
+                                            style="background-color:#ff7a1a;">
+                                            <i class="fa-brands fa-facebook-f" style="color:#f8f6f5;"></i>
+                                        </a>
+                                    </div>
+                                </div>
 
-                        <!-- Category -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">Category</div>
-                            <div class="yp-info-value">
-                                <a class="yp-link" href="#"
-                                    style="color:#ff7a1a;">{{ $listing->category->name }}</a>
+                                <!-- Category -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">Category</div>
+                                    <div class="yp-info-value">
+                                        <a class="yp-link" href="#"
+                                            style="color:#ff7a1a;">{{ $listing->category->name }}</a>
+                                    </div>
+                                </div>
+
+                                <!-- General Info -->
+                                <div class="yp-info-block">
+                                    <div class="yp-info-label">General Info</div>
+                                    <div class="yp-info-value yp-paragraph">
+                                        {!! nl2br(e(\Illuminate\Support\Str::words(strip_tags($listing->description), 300, '...'))) !!}
+
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
-                        <!-- General Info -->
-                        <div class="yp-info-block">
-                            <div class="yp-info-label">General Info</div>
-                            <div class="yp-info-value yp-paragraph">
-                                {!! nl2br(e($listing->description)) !!}
+                        <!-- RIGHT: Reviews -->
+                        <div class="col-lg-4">
+                            <div class="yp-reviews-card">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="yp-reviews-title">Reviews</div>
+
+                                    <button type="button" class="btn btn-link p-0 yp-link yp-review-action"
+                                        data-bs-toggle="modal" data-bs-target="#reviewModal">
+                                        <i class="fa-regular fa-pen-to-square me-1"></i>Write
+                                    </button>
+                                </div>
+
+                                <!-- Summary -->
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="yp-review-score">{{ number_format($avgRating, 1) }}</div>
+                                    <div>
+                                        <div class="yp-review-stars" style="color:#f4b400;">
+                                            @php $rounded = (int) round($avgRating); @endphp
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= $rounded)
+                                                    <i class="fa-solid fa-star"></i>
+                                                @else
+                                                    <i class="fa-regular fa-star"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <div class="yp-review-meta">
+                                            {{ $allApprovedCount > 0 ? $allApprovedCount . ' reviews' : 'No reviews yet' }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if ($allApprovedCount == 0)
+                                    <div class="yp-review-empty">
+                                        Be the first to review this business.
+                                    </div>
+                                @endif
+
+                                <button type="button" class="btn btn-outline-secondary w-100 mt-3 yp-review-btn"
+                                    data-bs-toggle="modal" data-bs-target="#reviewModal">
+                                    <i class="fa-regular fa-star me-1"></i> Write a Review
+                                </button>
+
+                                {{-- keep your Suggested Listings block below if you want --}}
+                                <div class="yp-suggested-wrap mt-3">
+                                    <div class="yp-suggested-title mb-2">Suggested Listings</div>
+
+                                    @forelse($suggestedListings as $s)
+                                        <a href="{{ route('frontend.listing.show', $s->slug) }}" class="yp-suggested-card yp-suggested-card--media">
+                                            <div class="yp-suggested-thumb">
+                                                @php
+                                                    $img = $s->primaryPhoto?->path;
+                                                @endphp
+
+                                                @if($img)
+                                                    <img src="{{ Storage::url($img) }}" alt="{{ $s->primaryPhoto?->alt_text ?? $s->name }}">
+                                                @else
+                                                    <div class="yp-suggested-thumb--placeholder">
+                                                        <i class="fa-regular fa-image"></i>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="yp-suggested-body">
+                                                <div class="yp-suggested-name">{{ $s->name }}</div>
+
+                                                <div class="yp-suggested-meta">
+                                                    <i class="fa-solid fa-location-dot me-1"></i>
+                                                    {{ $s->city?->name ?? '—' }}
+                                                </div>
+
+                                                <div class="yp-suggested-meta">
+                                                    <i class="fa-regular fa-star me-1"></i>
+                                                    {{ number_format((float) ($s->avg_rating ?? 0), 1) }}
+                                                    ({{ (int) ($s->review_count ?? 0) }} reviews)
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @empty
+                                        <div class="yp-review-empty">
+                                            No suggested listings found in this category yet.
+                                        </div>
+                                    @endforelse
+
+                                    @if($listing->category?->slug)
+                                        <a href="{{ route('frontend.category.show', $listing->category->slug) }}"
+                                        class="btn btn-outline-secondary w-100 mt-2 yp-suggested-btn">
+                                            <i class="fa-solid fa-list me-1"></i> View More Listings
+                                        </a>
+                                    @endif
+                                </div>
+
                             </div>
                         </div>
 
                     </div>
                 </section>
 
+
             </div>
         </div>
+
+        <!-- Review Modal -->
+        <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="POST" action="{{ route('listings.reviews.store', $listing->slug) }}">
+                        @csrf
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" name="name" class="form-control" value="{{ old('name') }}"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+
+                                <input type="hidden" name="rating" id="reviewRating" value="{{ old('rating', 0) }}"
+                                    required>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <div id="ratingStars" class="fs-5" style="color:#f4b400; cursor:pointer;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="fa-regular fa-star" data-value="{{ $i }}"></i>
+                                        @endfor
+                                    </div>
+                                    <small class="text-muted" id="ratingText">Select rating</small>
+                                </div>
+
+                                @error('rating')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label">Review</label>
+                                <textarea name="comment" class="form-control" rows="4" required>{{ old('comment') }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary"
+                                style="background:#ff7a1a;border-color:#ff7a1a;">
+                                Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </main>
 @endsection
+
+@push('scripts')
+    <script>
+        (function() {
+            const ratingInput = document.getElementById('reviewRating');
+            const starsWrap = document.getElementById('ratingStars');
+            const ratingText = document.getElementById('ratingText');
+
+            if (!ratingInput || !starsWrap) return;
+
+            function paintStars(value) {
+                const stars = starsWrap.querySelectorAll('i[data-value]');
+                stars.forEach(star => {
+                    const v = parseInt(star.getAttribute('data-value'), 10);
+                    star.classList.toggle('fa-solid', v <= value);
+                    star.classList.toggle('fa-regular', v > value);
+                });
+                ratingText.textContent = value ? `${value} / 5` : 'Select rating';
+            }
+
+            starsWrap.addEventListener('click', function(e) {
+                const star = e.target.closest('i[data-value]');
+                if (!star) return;
+                const val = parseInt(star.getAttribute('data-value'), 10);
+                ratingInput.value = val;
+                paintStars(val);
+            });
+
+            // Load old value if validation failed
+            const initial = parseInt(ratingInput.value || '0', 10);
+            paintStars(initial);
+        })();
+    </script>
+@endpush

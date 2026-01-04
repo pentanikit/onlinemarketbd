@@ -140,7 +140,7 @@
 
 
                 <div class="mt-3">
-                    {{ $listings->links() }}
+                    {{ $categories->links() }}
                 </div>
 
                 </div>

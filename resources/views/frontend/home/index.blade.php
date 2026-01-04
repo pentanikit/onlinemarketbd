@@ -274,6 +274,41 @@
                     </div>
                 </div>
             </div>
+            <div class="row align-items-center text-center text-md-start my-5">
+                <!-- Left image circle -->
+                <div class="col-md-6 d-flex justify-content-center  mb-md-0">
+                    <div class="listing-photo-wrapper text-center">
+
+                    <h2 class="manage-title">Manage your <span>Shop</span></h2>
+                    {{-- <h2 class="manage-title" style="font-size:32px; font-weight:700">
+                        {{ $content->manage_title }}
+                    </h2> --}}
+                    <p class="manage-subtext mt-2 mb-1">
+                        Setup your shop with us. get reach to more users. Its easy and takes only a minute.
+                       <br> Try Now!
+
+
+                    </p>
+
+                    <a href="#" class="btn listing-btn"
+                        style="background-color: #ff7a1a; color:white; font-weight:700;">
+                        Setup your shop
+                    </a>
+
+
+
+
+                    </div>
+                </div>
+
+                <!-- Right content -->
+                <div class="col-md-6 text-center">
+                                            <!-- replace this image with your own -->
+
+                        <img src="{{ asset('storage/' . $content->manage_image) }}" width="350" height="340"
+                            alt="Manage Listing" class="listing-img img-fluid">
+                </div>
+            </div>
 
             <!-- About Us text -->
             <div class="my-5">

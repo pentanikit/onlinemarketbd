@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SiteContentController;
 use App\Http\Controllers\ListingReviewController;
+use App\Http\Controllers\AuthController;
 
 
 //Client
@@ -35,12 +36,12 @@ Route::post('/listings/{listing:slug}/reviews', [ListingReviewController::class,
 
 
 //admin routes
-Route::prefix('admin')->group(function(){
+Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function(){
 
-   Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
   
-   Route::get('listing', [AdminController::class, 'listing'])->name('admin.listing');
-//    Route::get('pending-listing', [AdminController::class, 'pending_listing'])->name('admin.pending-listing');
+    Route::get('listing', [AdminController::class, 'listing'])->name('admin.listing');
+
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
@@ -61,6 +62,18 @@ Route::prefix('admin')->group(function(){
     Route::post('/home-content', [SiteContentController::class, 'updateHome'])->name('home_content.update');
 
 });
+
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+
+Route::get('/logout', [AuthController::class, 'logout'])
+
+    ->name('logout');
 
 
 

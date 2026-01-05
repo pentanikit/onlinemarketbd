@@ -310,6 +310,10 @@
                 </div>
             </div>
 
+            <div class="my-5">
+                <x-frontend.shop-category />
+            </div>
+
             <!-- About Us text -->
             <div class="my-5">
                 <h3 class="about-title text-center mv-title">{{ $content->about_title }}</h3>

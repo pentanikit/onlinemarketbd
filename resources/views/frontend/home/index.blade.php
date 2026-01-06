@@ -274,6 +274,14 @@
                     </div>
                 </div>
             </div>
+
+            <div class="my-5">
+                <x-frontend.shop-header />
+            </div>
+
+            <div class="my-5">
+                <x-frontend.shop-category />
+            </div>
             <div class="row align-items-center text-center text-md-start my-5">
                 <!-- Left image circle -->
                 <div class="col-md-6 d-flex justify-content-center  mb-md-0">
@@ -297,7 +305,7 @@
 
 
 
-
+ 
                     </div>
                 </div>
 
@@ -310,9 +318,7 @@
                 </div>
             </div>
 
-            <div class="my-5">
-                <x-frontend.shop-category />
-            </div>
+
 
             <!-- About Us text -->
             <div class="my-5">

@@ -22,7 +22,9 @@ Route::prefix('listings')->group(function(){
     Route::get('category', [ListingController::class, 'children'])->name('listings.category');
 });
 
-
+Route::get('/seller/dashboard', function () {
+    return "Seller Dashboard (Coming soon)";
+})->name('welcome.seller');
 
 Route::get('/category/{category:slug}', [CategoryController::class, 'show'])
     ->name('frontend.category.show');

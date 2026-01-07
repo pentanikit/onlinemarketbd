@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SiteContentController;
 use App\Http\Controllers\ListingReviewController;
+use App\Http\Controllers\SellerOnboardingController;
 use App\Http\Controllers\AuthController;
 
 
@@ -61,6 +62,21 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function(){
     Route::get('/home-content', [SiteContentController::class, 'editHome'])->name('home_content.edit');
     Route::post('/home-content', [SiteContentController::class, 'updateHome'])->name('home_content.update');
 
+});
+
+
+Route::prefix('seller')->group(function () {
+    // Stepper page (Blade view)
+    Route::get('/onboarding', [SellerOnboardingController::class, 'create'])->name('seller.onboarding');
+
+    // API-like endpoints for step saving (AJAX)
+    Route::post('/onboarding/account',  [SellerOnboardingController::class, 'saveAccount'])->name('seller.onboarding.account');
+    Route::post('/onboarding/shop',     [SellerOnboardingController::class, 'saveShop'])->name('seller.onboarding.shop');
+    Route::post('/onboarding/address',  [SellerOnboardingController::class, 'saveAddress'])->name('seller.onboarding.address');
+    Route::post('/onboarding/payout',   [SellerOnboardingController::class, 'savePayout'])->name('seller.onboarding.payout');
+
+    // Final submit (creates/activates shop + logs in seller)
+    Route::post('/onboarding/finish',   [SellerOnboardingController::class, 'finish'])->name('seller.onboarding.finish');
 });
 
 

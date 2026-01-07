@@ -340,7 +340,7 @@
                 <span class="bk-icon-text">Seller login</span>
             </a>
 
-            <a class="bk-post-btn" href="#">Post a free Ad</a>
+            <a class="bk-post-btn" href="{{ route('seller.onboarding') }}">Post a free Ad</a>
         </div>
     </div>
 

@@ -47,4 +47,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    
+    public function shop(): HasOne
+    {
+        return $this->hasOne(Shop::class);
+    }
+
+    public function isSeller(): bool
+    {
+        return $this->role === 'seller';
+    }
 }

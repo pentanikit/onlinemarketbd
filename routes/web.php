@@ -8,6 +8,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\SiteContentController;
 use App\Http\Controllers\ListingReviewController;
 use App\Http\Controllers\SellerOnboardingController;
+use App\Http\Controllers\SellerDashboardController;
+use App\Http\Controllers\SellerAuthController;
 use App\Http\Controllers\AuthController;
 
 
@@ -22,9 +24,9 @@ Route::prefix('listings')->group(function(){
     Route::get('category', [ListingController::class, 'children'])->name('listings.category');
 });
 
-Route::get('/seller/dashboard', function () {
-    return "Seller Dashboard (Coming soon)";
-})->name('welcome.seller');
+
+
+
 
 Route::get('/category/{category:slug}', [CategoryController::class, 'show'])
     ->name('frontend.category.show');
@@ -77,9 +79,18 @@ Route::prefix('seller')->group(function () {
     Route::post('/onboarding/address',  [SellerOnboardingController::class, 'saveAddress'])->name('seller.onboarding.address');
     Route::post('/onboarding/payout',   [SellerOnboardingController::class, 'savePayout'])->name('seller.onboarding.payout');
 
+        // Seller login
+    Route::get('/seller-login', [SellerAuthController::class, 'showLogin'])->name('seller.login');
+    Route::post('/seller-signin', [SellerAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [SellerAuthController::class, 'logout'])->name('seller.logout');
+    Route::middleware(['auth', 'seller'])->group(function () {
+        Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
+    });
     // Final submit (creates/activates shop + logs in seller)
     Route::post('/onboarding/finish',   [SellerOnboardingController::class, 'finish'])->name('seller.onboarding.finish');
 });
+
+
 
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

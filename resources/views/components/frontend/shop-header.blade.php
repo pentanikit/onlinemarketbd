@@ -331,7 +331,7 @@
                 <span class="bk-icon-text">Support</span>
             </a>
 
-            <a class="bk-icon-link" href="#" title="Login" aria-label="Login">
+            <a class="bk-icon-link" href="{{ route('seller.login') }}" title="Login" aria-label="Login">
                 <!-- user icon -->
                 <svg viewBox="0 0 24 24" class="bk-ico" aria-hidden="true">
                     <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"

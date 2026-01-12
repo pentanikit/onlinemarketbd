@@ -9,8 +9,10 @@ use App\Http\Controllers\SiteContentController;
 use App\Http\Controllers\ListingReviewController;
 use App\Http\Controllers\SellerOnboardingController;
 use App\Http\Controllers\SellerDashboardController;
+use App\Http\Controllers\SellerProductsController;
 use App\Http\Controllers\SellerAuthController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ShopController;
 
 
 //Client
@@ -83,14 +85,24 @@ Route::prefix('seller')->group(function () {
     Route::get('/seller-login', [SellerAuthController::class, 'showLogin'])->name('seller.login');
     Route::post('/seller-signin', [SellerAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [SellerAuthController::class, 'logout'])->name('seller.logout');
+
+
     Route::middleware(['auth', 'seller'])->group(function () {
         Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
+        Route::get('/products/create', [SellerProductsController::class, 'create'])->name('products.create');
+        Route::post('/products', [SellerProductsController::class, 'store'])->name('products.store');
     });
+
+
     // Final submit (creates/activates shop + logs in seller)
     Route::post('/onboarding/finish',   [SellerOnboardingController::class, 'finish'])->name('seller.onboarding.finish');
 });
 
 
+Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shops.show');
+
+Route::get('/product/{slug}', [SellerProductsController::class, 'show'])
+    ->name('product.view');
 
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

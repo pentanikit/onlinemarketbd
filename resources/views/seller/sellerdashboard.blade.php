@@ -219,7 +219,7 @@
 
             <div class="d-flex gap-2 flex-wrap">
                 <!-- update these URLs to your real seller routes -->
-                <a class="btn btn-dark sd-btn" href="#">+ Add Product</a>
+                <a class="btn btn-dark sd-btn" href="{{ route('products.create') }}">+ Add Product</a>
                 <a class="btn btn-outline-dark sd-btn" href="#">Manage Orders</a>
                 <a class="btn btn-outline-secondary sd-btn" href="#">Shop Settings</a>
             </div>

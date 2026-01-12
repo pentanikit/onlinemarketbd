@@ -14,10 +14,10 @@ class SellerDashboardController extends Controller
     {
         $user = $request->user();
 
-        // Expecting your onboarding created a shop row linked to user_id
+        
         $shop = DB::table('shops')->where('user_id', $user->id)->first();
 
-        // If your onboarding route name is different, change it here:
+        
         if (!$shop) {
             return redirect()->route('seller.onboarding'); // <-- replace with your existing onboarding route name
         }

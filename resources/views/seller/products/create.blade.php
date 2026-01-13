@@ -134,8 +134,6 @@
             margin-top: 2px;
         }
 
-
-
         /* Preview grid */
         .sp-preview {
             display: grid;
@@ -287,6 +285,30 @@
                                 <div class="sd-help">Helpful for inventory (unique per shop).</div>
                             </div>
 
+                            <!-- ✅ NEW: Category + Subcategory -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label sd-label">Category (Parent) *</label>
+                                <select name="parent_category_id" id="spParentCat" class="form-select sd-input" required>
+                                    <option value="">Select category</option>
+                                    @foreach(($parentCategories ?? []) as $pc)
+                                        <option value="{{ $pc->id }}"
+                                            {{ (string)old('parent_category_id') === (string)$pc->id ? 'selected' : '' }}>
+                                            {{ $pc->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="sd-help">Choose a main category first.</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label sd-label">Subcategory (Optional)</label>
+                                <select name="seller_category_id" id="spChildCat" class="form-select sd-input" disabled>
+                                    <option value="">Select subcategory</option>
+                                </select>
+                                <div class="sd-help">If the category has subcategories, pick one.</div>
+                            </div>
+                            <!-- ✅ END: Category + Subcategory -->
+
                             <div class="col-12">
                                 <label class="form-label sd-label">Short Description (optional)</label>
                                 <textarea name="short_description" class="form-control sd-input" rows="2" placeholder="One short selling line…">{{ old('short_description') }}</textarea>
@@ -402,8 +424,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="sd-section">
                         <div class="sd-section-title">SEO (Optional)</div>
                         <div class="sd-section-sub">Helps Google understand your product.</div>
@@ -440,7 +460,6 @@
                         </div>
 
                         <input type="file" name="images[]" id="spImages" class="d-none" accept="image/*" multiple>
-
 
                         <div class="sp-preview mt-3" id="spPreview"></div>
 
@@ -495,25 +514,86 @@
             if (!slugTouched) slugEl.value = slugify(nameEl.value);
         });
 
+        /* ✅ Category -> Subcategory loader */
+        const parentCat = document.getElementById('spParentCat');
+        const childCat  = document.getElementById('spChildCat');
+
+        const childrenUrl = "{{ route('seller.categories.children') }}";
+        const oldChildId  = "{{ old('seller_category_id') }}";
+
+        function setChildDisabled(state) {
+            childCat.disabled = !!state;
+            childCat.classList.toggle('opacity-75', !!state);
+        }
+
+        function resetChild(message) {
+            childCat.innerHTML = `<option value="">${message || 'Select subcategory'}</option>`;
+            setChildDisabled(true);
+        }
+
+        async function loadChildren(parentId, preselectId = '') {
+            resetChild('Loading…');
+            try {
+                const res = await fetch(`${childrenUrl}?parent_id=${encodeURIComponent(parentId)}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const json = await res.json();
+                const rows = (json && json.data) ? json.data : [];
+
+                if (!rows.length) {
+                    // no subcategories -> keep disabled, parent will be saved
+                    resetChild('No subcategory (optional)');
+                    return;
+                }
+
+                childCat.innerHTML = `<option value="">Select subcategory</option>`;
+                rows.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.textContent = r.name;
+                    if (String(preselectId) && String(preselectId) === String(r.id)) opt.selected = true;
+                    childCat.appendChild(opt);
+                });
+
+                setChildDisabled(false);
+            } catch (e) {
+                resetChild('Failed to load');
+            }
+        }
+
+        parentCat?.addEventListener('change', () => {
+            const pid = parentCat.value;
+            if (!pid) {
+                resetChild('Select subcategory');
+                return;
+            }
+            loadChildren(pid, '');
+        });
+
+        // On page load (old input)
+        (function initCategory() {
+            const pid = parentCat?.value;
+            if (pid) loadChildren(pid, oldChildId);
+        })();
+
         /* image preview + remove (DataTransfer trick) */
         const fileInput = document.getElementById('spImages');
         const preview = document.getElementById('spPreview');
         const drop = document.getElementById('spDrop');
 
-       // ✅ open picker ONLY from dropzone
+        // ✅ open picker ONLY from dropzone
         drop.addEventListener('click', (e) => {
-        e.preventDefault();
-        fileInput.click();
+            e.preventDefault();
+            fileInput.click();
         });
 
         // optional: Enter/Space support for accessibility
         drop.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            fileInput.click();
-        }
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
         });
-
 
         drop.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -571,10 +651,6 @@
             });
         }
     </script>
-
-
-
-
 
 </body>
 

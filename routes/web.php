@@ -105,6 +105,11 @@ Route::get('/product/{slug}', [SellerProductsController::class, 'show'])
     ->name('product.view');
 
 
+Route::get('/seller/categories/children', [\App\Http\Controllers\SellerProductsController::class, 'categoryChildren'])
+    ->name('seller.categories.children');
+
+
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 

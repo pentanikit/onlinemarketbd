@@ -7,7 +7,9 @@
     <title>OnlineMarket BD • Create Your Shop</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="192x192" />
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}" />
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 

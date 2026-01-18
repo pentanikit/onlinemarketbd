@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OnlineMarketBD • Add Product</title>
-
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="192x192" />
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Reuse your Seller Dashboard base look */
@@ -288,7 +290,7 @@
                             <!-- ✅ NEW: Category + Subcategory -->
                             <div class="col-12 col-md-6">
                                 <label class="form-label sd-label">Category (Parent) *</label>
-                                <select name="parent_category_id" id="spParentCat" class="form-select sd-input" required>
+                                <select name="parent_category_id" id="spParentCat" class="form-select sd-input">
                                     <option value="">Select category</option>
                                     @foreach(($parentCategories ?? []) as $pc)
                                         <option value="{{ $pc->id }}"

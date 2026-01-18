@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $ad->title ?? 'Listing' }} • OnlineMarketBD</title>
-
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ asset('favicon.png') }}" sizes="192x192" />
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}" />
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -599,7 +601,7 @@
         {{-- Title + actions --}}
         <div class="slp-top">
             <div class="slp-titlebox">
-                <h1 class="slp-title">{{ $ad->title ?? 'Product Title' }}</h1>
+                <h1 class="slp-title">{{ $ad->name ?? 'Product Title' }}</h1>
                 <div class="slp-sub">
                     Posted at
                     {{ isset($ad->created_at) ? \Carbon\Carbon::parse($ad->created_at)->format('d M, h:i A') : '—' }},
@@ -728,7 +730,7 @@
                     // Expect $shop or $seller object
                     $shopObj = $shop ?? null;
                     $sellerName = $shopObj->name ?? ($shopObj->shop_name ?? ($ad->seller_name ?? 'Seller'));
-                    $sellerLogo = $shopObj->logo ?? null;
+                    $sellerLogo = $shopObj->logo_path ?? null;
                     $memberSince = isset($shopObj->created_at)
                         ? \Carbon\Carbon::parse($shopObj->created_at)->format('M Y')
                         : null;

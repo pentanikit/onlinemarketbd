@@ -280,7 +280,7 @@
             </div>
 
             <div class="my-5">
-                <x-frontend.shop-category />
+                <x-frontend.seller-categories />
             </div>
             <div class="row align-items-center text-center text-md-start my-5">
                 <!-- Left image circle -->

@@ -52,55 +52,66 @@
                     {{-- Left: Form Sections --}}
                     <div class="col-lg-8">
 
+                        {{-- LOGO --}}
                         <div class="card border-0 shadow-sm rounded-3 mb-3">
                             <div class="card-body">
-                                  <div class="col-12">
-                                  <label class="form-label small">Site Logo Image</label>
-                                  <input type="file"
-                                        class="form-control @error('logo_image') is-invalid @enderror"
-                                        name="logo_image"
-                                        accept="image/png,image/jpeg,image/webp"
-                                        data-preview="#previewManage">
-                                  @error('logo_image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small">Site Logo Image</label>
+                                        <input type="file" class="form-control @error('logo_image') is-invalid @enderror"
+                                            name="logo_image" accept="image/png,image/jpeg,image/webp"
+                                            data-preview="#previewLogo">
+                                        @error('logo_image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
 
-                                  <div class="mt-2 d-flex align-items-center gap-3">
-                                    <div class="rounded-3 border bg-light overflow-hidden" style="width: 180px; height: 92px;">
-                                      <img id="previewManage"
-                                          src="{{ asset('storage').'/'.$content->logo_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
-                                          alt="Manage Image Preview"
-                                          style="width:100%;height:100%;object-fit:cover;">
+                                        <div class="mt-2 d-flex align-items-center gap-3">
+                                            <div class="rounded-3 border bg-light overflow-hidden"
+                                                style="width: 180px; height: 92px;">
+                                                <img id="previewLogo"
+                                                    src="{{ $content->logo_image ? asset('storage/' . $content->logo_image) : 'https://via.placeholder.com/600x300?text=Logo+Image' }}"
+                                                    alt="Logo Image Preview"
+                                                    style="width:100%;height:100%;object-fit:cover;">
+                                            </div>
+                                            <div class="small text-muted">
+                                                Recommended: <span class="fw-semibold">1200×600</span> (or similar wide
+                                                ratio). <br>
+                                                Allowed: JPG, PNG, WEBP (max 4MB).
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="small text-muted">
-                                      Recommended: <span class="fw-semibold">1200×600</span> (or similar wide ratio). <br>
-                                      Allowed: JPG, PNG, WEBP (max 4MB).
-                                    </div>
-                                  </div>
                                 </div>
                             </div>
                         </div>
+
+                        {{-- HERO IMAGE --}}
                         <div class="card border-0 shadow-sm rounded-3 mb-3">
                             <div class="card-body">
-                                  <div class="col-12">
-                                  <label class="form-label small">Hero Image</label>
-                                  <input type="file"
-                                        class="form-control @error('manage_image') is-invalid @enderror"
-                                        name="hero_image"
-                                        accept="image/png,image/jpeg,image/webp"
-                                        data-preview="#previewManage">
-                                  @error('manage_image') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label small">Hero Image</label>
+                                        <input type="file" class="form-control @error('hero_image') is-invalid @enderror"
+                                            name="hero_image" accept="image/png,image/jpeg,image/webp"
+                                            data-preview="#previewHero">
+                                        @error('hero_image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
 
-                                  <div class="mt-2 d-flex align-items-center gap-3">
-                                    <div class="rounded-3 border bg-light overflow-hidden" style="width: 180px; height: 92px;">
-                                      <img id="previewManage"
-                                          src="{{ asset('storage').'/'.$content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
-                                          alt="Manage Image Preview"
-                                          style="width:100%;height:100%;object-fit:cover;">
+                                        <div class="mt-2 d-flex align-items-center gap-3">
+                                            <div class="rounded-3 border bg-light overflow-hidden"
+                                                style="width: 180px; height: 92px;">
+                                                <img id="previewHero"
+                                                    src="{{ $content->hero_image ? asset('storage/' . $content->hero_image) : 'https://via.placeholder.com/600x300?text=Hero+Image' }}"
+                                                    alt="Hero Image Preview"
+                                                    style="width:100%;height:100%;object-fit:cover;">
+                                            </div>
+                                            <div class="small text-muted">
+                                                Recommended: <span class="fw-semibold">1200×600</span> (or similar wide
+                                                ratio). <br>
+                                                Allowed: JPG, PNG, WEBP (max 4MB).
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="small text-muted">
-                                      Recommended: <span class="fw-semibold">1200×600</span> (or similar wide ratio). <br>
-                                      Allowed: JPG, PNG, WEBP (max 4MB).
-                                    </div>
-                                  </div>
                                 </div>
                             </div>
                         </div>
@@ -219,7 +230,7 @@
                                             <div class="rounded-3 border bg-light overflow-hidden"
                                                 style="width: 180px; height: 92px;">
                                                 <img id="previewManage"
-                                                    src="{{ asset('storage').'/'.$content->manage_image ?: 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
+                                                    src="{{ $content->manage_image ? asset('storage/' . $content->manage_image) : 'https://via.placeholder.com/600x300?text=Manage+Image' }}"
                                                     alt="Manage Image Preview"
                                                     style="width:100%;height:100%;object-fit:cover;">
                                             </div>
@@ -279,7 +290,7 @@
                                     <div class="col-12">
                                         <div class="rounded-3 border bg-light overflow-hidden" style="max-width: 420px;">
                                             <img id="previewMission"
-                                                src="{{ asset('storage').'/'.$content->mission_image ?: 'https://via.placeholder.com/900x900?text=Mission+Image' }}"
+                                                src="{{ $content->mission_image ? asset('storage/' . $content->mission_image) : 'https://via.placeholder.com/900x900?text=Mission+Image' }}"
                                                 alt="Mission Image Preview" style="width:100%;height:auto;display:block;">
                                         </div>
                                         <div class="form-text">Recommended: square (e.g. 900×900) for circle frame designs.
@@ -332,7 +343,7 @@
                                     <div class="col-12">
                                         <div class="rounded-3 border bg-light overflow-hidden" style="max-width: 420px;">
                                             <img id="previewVision"
-                                                src="{{ asset('storage').'/'.$content->vision_image ?: 'https://via.placeholder.com/900x900?text=Vision+Image' }}"
+                                                src="{{ $content->vision_image ? asset('storage/' . $content->vision_image) : 'https://via.placeholder.com/900x900?text=Vision+Image' }}"
                                                 alt="Vision Image Preview" style="width:100%;height:auto;display:block;">
                                         </div>
                                         <div class="form-text">Recommended: square (e.g. 900×900). Keep the subject
@@ -434,13 +445,13 @@
                 const file = e.target.files && e.target.files[0];
                 if (!file) return;
 
-                const target = document.querySelector(e.target.getAttribute('data-preview'));
+                const targetSel = e.target.getAttribute('data-preview');
+                const target = document.querySelector(targetSel);
                 if (!target) return;
 
                 const url = URL.createObjectURL(file);
                 target.src = url;
 
-                // cleanup
                 target.onload = () => URL.revokeObjectURL(url);
             });
         });

@@ -34,7 +34,7 @@ class SiteContentController extends Controller
     // Update homepage content (partial updates supported)
 public function updateHome(Request $request)
 {
-    dd($request->all());
+    // dd($request->all());
     // =========================
     // Dedicated file logger (works even if laravel.log isn't being created)
     // =========================

@@ -313,4 +313,81 @@ class SellerProductsController extends Controller
             'specs'  => $specs,
         ]);
     }
+
+
+    public function seller_products(Request $request)
+    {
+        // filters
+        $q        = trim((string) $request->get('q', ''));
+        $sort     = (string) $request->get('sort', 'newest'); // newest|price_low|price_high
+        $catId    = $request->get('cat'); // seller_category_id
+        $status   = $request->get('status'); // optional, if you use status
+        $perPage  = (int) $request->get('per_page', 12);
+        $perPage  = $perPage > 0 ? min($perPage, 48) : 12;
+
+        $query = Product::query()
+            ->with([
+                'primaryImage:id,product_id,path,is_primary',
+                'images:id,product_id,path,is_primary',
+                'category:id,name,slug,parent_id',
+            ]);
+
+        // search by name/sku/slug
+        if ($q !== '') {
+            $query->where(function ($qq) use ($q) {
+                $qq->where('name', 'like', "%{$q}%")
+                   ->orWhere('sku', 'like', "%{$q}%")
+                   ->orWhere('slug', 'like', "%{$q}%");
+            });
+        }
+
+        // category filter
+        if (!empty($catId)) {
+            $query->where('seller_category_id', $catId);
+        }
+
+        // status filter (optional)
+        if (!empty($status)) {
+            $query->where('status', $status);
+        } else {
+            // default: show active/published if you use it
+            // comment this if you don't have a standard status value
+            $query->whereIn('status', ['active', 'published', 1, '1']);
+        }
+
+        // sorting
+        if ($sort === 'price_low') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'price_high') {
+            $query->orderBy('price', 'desc');
+        } else {
+            $query->latest('id');
+        }
+
+        $products = $query->paginate($perPage)->withQueryString();
+
+        // sidebar categories (top-level + children)
+        $categories = SellerCategory::query()
+            ->select(['id','name','slug','parent_id'])
+            ->orderBy('name')
+            ->get();
+
+        // You can calculate counts per category if you want:
+        $categoryCounts = Product::query()
+            ->selectRaw('seller_category_id, COUNT(*) as total')
+            ->groupBy('seller_category_id')
+            ->pluck('total', 'seller_category_id');
+
+        return view('seller.categoryproducts', [
+            'products' => $products,
+            'categories' => $categories,
+            'categoryCounts' => $categoryCounts,
+            'filters' => [
+                'q' => $q,
+                'sort' => $sort,
+                'cat' => $catId,
+                'per_page' => $perPage,
+            ],
+        ]);
+    }
 }

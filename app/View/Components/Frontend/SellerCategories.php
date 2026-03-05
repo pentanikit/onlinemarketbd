@@ -28,6 +28,6 @@ class SellerCategories extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.frontend.shop-category');
+        return view('components.frontend.seller-categories');
     }
 }

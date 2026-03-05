@@ -1,14 +1,12 @@
-{{-- resources/views/frontend/marketplace/mobiles.blade.php --}}
+{{-- resources/views/seller/categoryproducts.blade.php --}}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mobiles and Accessories for Sale in Bangladesh</title>
+    <title>Seller Products</title>
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
@@ -38,23 +36,53 @@
 </head>
 
 <body class="bg-page">
+@php
+    $qs = request()->query();
+
+    $catNotFound = $catNotFound ?? false;
+    $selectedCategory = $selectedCategory ?? null;
+
+    // base url = current category page
+    $baseUrl = $selectedCategory
+        ? route('sellercategoryproducts', $selectedCategory->slug)
+        : url()->current();
+
+    // helper: keep query string while changing filters
+    $buildUrl = function(array $merge) use ($baseUrl, $qs) {
+        $new = array_merge($qs, $merge);
+        foreach ($new as $k => $v) {
+            if ($v === null || $v === '') unset($new[$k]);
+        }
+        $query = http_build_query($new);
+        return $query ? ($baseUrl.'?'.$query) : $baseUrl;
+    };
+
+    $categoryLabel = $selectedCategory ? $selectedCategory->name : 'Category';
+@endphp
+        @php
+            $content = \App\Models\SiteContent::where('key', 'home')->first();
+        @endphp
 
 <header class="bg-white border-bottom sticky-top">
     <div class="container py-3">
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
             <div>
-                <h1 class="h5 fw-bold mb-1">Mobiles and Accessories for Sale in Bangladesh</h1>
+                <h1 class="h5 fw-bold mb-1"><img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="" srcset=""></h1>
                 <div class="text-muted small">
-                    Home <span class="mx-1">›</span> All ads <span class="mx-1">›</span> Mobiles
+                    Home <span class="mx-1">›</span> Products
+                    @if($selectedCategory)
+                        <span class="mx-1">›</span> {{ $selectedCategory->name }}
+                    @endif
                 </div>
             </div>
 
-            <form class="searchbar ms-lg-auto" method="GET" action="#">
+            {{-- Search stays on same category route --}}
+            <form class="searchbar ms-lg-auto" method="GET" action="{{ $baseUrl }}">
                 <div class="input-group">
                     <input name="q" value="{{ $filters['q'] ?? '' }}" type="search"
-                           class="form-control form-control-lg" placeholder="What are you looking for?" />
+                           class="form-control form-control-lg" placeholder="Search by name, SKU, slug..." />
                     <input type="hidden" name="sort" value="{{ $filters['sort'] ?? 'newest' }}">
-                    <input type="hidden" name="cat" value="{{ $filters['cat'] ?? '' }}">
+                    <input type="hidden" name="per_page" value="{{ $filters['per_page'] ?? 12 }}">
                     <button class="btn btn-warning btn-lg px-4" type="submit" aria-label="Search">
                         <i class="bi bi-search"></i>
                     </button>
@@ -62,56 +90,26 @@
             </form>
         </div>
 
-        {{-- Filter Chips --}}
+        {{-- Filter row --}}
         <div class="d-flex flex-wrap gap-2 mt-3 align-items-center">
             <button class="btn btn-outline-success chip-btn" type="button" disabled>
                 <i class="bi bi-sliders me-1"></i> Refine
             </button>
 
-            {{-- Category Dropdown (from DB) --}}
-            <div class="dropdown">
-                <button class="btn btn-success chip-btn dropdown-toggle" data-bs-toggle="dropdown">
-                    {{ $filters['cat'] ? 'Category Selected' : 'Mobiles' }}
-                    <span class="ms-1 badge text-bg-light text-success">×</span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            All Mobiles
-                        </a>
-                    </li>
-                    @foreach($categories->where('parent_id', null) as $cat)
-                        <li>
-                            <a class="dropdown-item"
-                               href="#">
-                                {{ $cat->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+            {{-- Current Category Chip (non-click) --}}
+            <span class="btn btn-success chip-btn disabled">
+                {{ $categoryLabel }}
+            </span>
 
             {{-- Sort --}}
             <div class="dropdown ms-auto">
                 <button class="btn btn-outline-secondary chip-btn dropdown-toggle" data-bs-toggle="dropdown">
-                    Sort by
+                    Sort: {{ $filters['sort'] ?? 'newest' }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            Newest
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            Price: Low to High
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            Price: High to Low
-                        </a>
-                    </li>
+                    <li><a class="dropdown-item" href="{{ $buildUrl(['sort'=>'newest','page'=>null]) }}">Newest</a></li>
+                    <li><a class="dropdown-item" href="{{ $buildUrl(['sort'=>'price_low','page'=>null]) }}">Price: Low to High</a></li>
+                    <li><a class="dropdown-item" href="{{ $buildUrl(['sort'=>'price_high','page'=>null]) }}">Price: High to Low</a></li>
                 </ul>
             </div>
         </div>
@@ -123,21 +121,20 @@
         {{-- Sidebar --}}
         <aside class="col-12 col-lg-3">
             <div class="bg-white border rounded-3 p-3">
-                <div class="fw-semibold mb-2 text-muted small">All Categories</div>
-
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <i class="bi bi-phone text-secondary"></i>
-                    <div class="fw-bold">Mobiles</div>
-                </div>
+                <div class="fw-semibold mb-2 text-muted small">Categories</div>
 
                 <div class="list-group list-group-flush sidebar-links">
                     @foreach($categories->where('parent_id', null) as $cat)
                         @php
-                            $isActive = (string)($filters['cat'] ?? '') === (string)$cat->id;
+                            $catUrl = route('sellercategoryproducts', $cat->slug);
+                            $catUrl = count($qs) ? ($catUrl . '?' . http_build_query($qs)) : $catUrl;
+
+                            $isActive = $selectedCategory && ((string)$selectedCategory->id === (string)$cat->id);
                             $count = (int)($categoryCounts[$cat->id] ?? 0);
                         @endphp
+
                         <a class="list-group-item d-flex justify-content-between align-items-center {{ $isActive ? 'cat-active' : '' }}"
-                           href="#">
+                           href="{{ $catUrl }}">
                             <span><i class="bi bi-tag me-2"></i>{{ $cat->name }}</span>
                             <span class="text-muted small">({{ number_format($count) }})</span>
                         </a>
@@ -148,31 +145,60 @@
 
         {{-- Content --}}
         <section class="col-12 col-lg-9">
+
+            {{-- Category not found fallback --}}
+            @if($catNotFound)
+                <div class="alert alert-warning d-flex align-items-start gap-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <div class="fw-bold">Category not found</div>
+                        <div class="small text-muted">
+                            The category you selected doesn’t exist anymore (or the link is invalid).
+                        </div>
+                        @php $firstCat = $categories->where('parent_id', null)->first(); @endphp
+                        @if($firstCat)
+                            <div class="mt-2">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   href="{{ route('sellercategoryproducts', $firstCat->slug) }}">
+                                    Browse categories
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                 <div class="text-muted">
-                    Showing
-                    {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
-                    of {{ number_format($products->total()) }} ads
+                    Showing {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
+                    of {{ number_format($products->total()) }} products
                 </div>
 
-                <button class="btn btn-link text-decoration-none d-flex align-items-center gap-2" disabled>
-                    <i class="bi bi-bookmark"></i> Save search
-                </button>
+                {{-- per page --}}
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        Per page: {{ $filters['per_page'] ?? 12 }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach([12, 24, 48] as $pp)
+                            <li><a class="dropdown-item" href="{{ $buildUrl(['per_page'=>$pp,'page'=>null]) }}">{{ $pp }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
 
             <div class="vstack gap-3">
                 @forelse($products as $p)
                     @php
-                        $img = optional($p->primaryImage)->image_path;
-                        if (!$img && $p->images && $p->images->count()) {
-                            $img = $p->images->first()->image_path;
-                        }
+                        $img = optional($p->primaryImage)->path;
+                        if (!$img && $p->images && $p->images->count()) $img = $p->images->first()->path;
+
                         $imgUrl = $img
                             ? (str_starts_with($img, 'http') ? $img : asset($img))
                             : 'https://via.placeholder.com/340x240?text=No+Image';
 
-                        $loc = 'Bangladesh'; // you can replace with shop location later
                         $statusLabel = is_string($p->status) ? strtoupper($p->status) : 'ACTIVE';
+                        $categoryName = optional($p->category)->name;
                     @endphp
 
                     <article class="listing-card">
@@ -182,22 +208,16 @@
                                 <div class="d-flex justify-content-between gap-3">
                                     <div>
                                         <div class="listing-title">{{ $p->name }}</div>
-                                        <div class="listing-meta">{{ $loc }}{{ $p->category ? ', '.$p->category->name : '' }}</div>
+                                        <div class="listing-meta">
+                                            SKU: {{ $p->sku ?? 'N/A' }}
+                                            @if($categoryName) • {{ $categoryName }} @endif
+                                        </div>
+
                                         <div class="price mt-2">
-                                            Tk {{ number_format((float)$p->price) }}
+                                            Tk {{ number_format((float)($p->price ?? 0)) }}
                                         </div>
 
                                         <div class="d-flex flex-wrap gap-2 mt-2">
-                                            @if($p->compare_price && (float)$p->compare_price > (float)$p->price)
-                                                <span class="badge text-bg-warning badge-pill">FEATURED</span>
-                                            @endif
-
-                                            @if($p->stock_qty !== null)
-                                                <span class="badge text-bg-secondary badge-pill">
-                                                    STOCK: {{ (int)$p->stock_qty }}
-                                                </span>
-                                            @endif
-
                                             <span class="badge text-bg-light text-dark border badge-pill">
                                                 {{ $statusLabel }}
                                             </span>
@@ -205,12 +225,9 @@
                                     </div>
 
                                     <div class="action-icons">
-                                        <button class="icon-btn" type="button" title="Promote">
-                                            <i class="bi bi-arrow-up text-warning"></i>
-                                        </button>
-                                        <button class="icon-btn" type="button" title="Save">
-                                            <i class="bi bi-bookmark text-danger"></i>
-                                        </button>
+                                        {{-- Put your real routes here --}}
+                                        <a class="icon-btn" href="#" title="Edit"><i class="bi bi-pencil"></i></a>
+                                        <a class="icon-btn" href="#" title="View"><i class="bi bi-eye"></i></a>
                                     </div>
                                 </div>
 
@@ -224,7 +241,11 @@
                     </article>
                 @empty
                     <div class="bg-white border rounded-3 p-4 text-center text-muted">
-                        No products found.
+                        @if($selectedCategory)
+                            No products found in <span class="fw-semibold">{{ $selectedCategory->name }}</span>.
+                        @else
+                            No products found.
+                        @endif
                     </div>
                 @endforelse
             </div>

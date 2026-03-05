@@ -202,42 +202,45 @@
                     @endphp
 
                     <article class="listing-card">
-                        <div class="d-flex">
-                            <img class="listing-img" src="{{ $imgUrl }}" alt="{{ $p->name }}">
-                            <div class="p-3 flex-grow-1">
-                                <div class="d-flex justify-content-between gap-3">
-                                    <div>
-                                        <div class="listing-title">{{ $p->name }}</div>
-                                        <div class="listing-meta">
-                                            SKU: {{ $p->sku ?? 'N/A' }}
-                                            @if($categoryName) • {{ $categoryName }} @endif
+                        <a href="{{ route('product.view', $p->slug) }}">
+                                                        <div class="d-flex">
+                                <img class="listing-img" src="{{ $imgUrl }}" alt="{{ $p->name }}">
+                                <div class="p-3 flex-grow-1">
+                                    <div class="d-flex justify-content-between gap-3">
+                                        <div>
+                                            <div class="listing-title">{{ $p->name }}</div>
+                                            <div class="listing-meta">
+                                                SKU: {{ $p->sku ?? 'N/A' }}
+                                                @if($categoryName) • {{ $categoryName }} @endif
+                                            </div>
+
+                                            <div class="price mt-2">
+                                                Tk {{ number_format((float)($p->price ?? 0)) }}
+                                            </div>
+
+                                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                                <span class="badge text-bg-light text-dark border badge-pill">
+                                                    {{ $statusLabel }}
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        <div class="price mt-2">
-                                            Tk {{ number_format((float)($p->price ?? 0)) }}
-                                        </div>
-
-                                        <div class="d-flex flex-wrap gap-2 mt-2">
-                                            <span class="badge text-bg-light text-dark border badge-pill">
-                                                {{ $statusLabel }}
-                                            </span>
+                                        <div class="action-icons">
+                                            {{-- Put your real routes here --}}
+                                            {{-- <a class="icon-btn" href="#" title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <a class="icon-btn" href="#" title="View"><i class="bi bi-eye"></i></a> --}}
                                         </div>
                                     </div>
 
-                                    <div class="action-icons">
-                                        {{-- Put your real routes here --}}
-                                        <a class="icon-btn" href="#" title="Edit"><i class="bi bi-pencil"></i></a>
-                                        <a class="icon-btn" href="#" title="View"><i class="bi bi-eye"></i></a>
-                                    </div>
+                                    @if(!empty($p->short_description))
+                                        <div class="text-muted small mt-2">
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($p->short_description), 120) }}
+                                        </div>
+                                    @endif
                                 </div>
-
-                                @if(!empty($p->short_description))
-                                    <div class="text-muted small mt-2">
-                                        {{ \Illuminate\Support\Str::limit(strip_tags($p->short_description), 120) }}
-                                    </div>
-                                @endif
                             </div>
-                        </div>
+                        </a>
+
                     </article>
                 @empty
                     <div class="bg-white border rounded-3 p-4 text-center text-muted">

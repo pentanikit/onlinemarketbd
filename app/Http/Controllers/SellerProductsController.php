@@ -7,7 +7,7 @@ use App\Models\SellerProducts as Product;
 use App\Models\ProductImages as ProductImage;
 use App\Models\Shop;
 
-use App\Models\SellerCategory; // ✅ NEW
+use App\Models\SellerCategory; 
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

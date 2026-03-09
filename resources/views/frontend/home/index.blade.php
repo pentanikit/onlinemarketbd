@@ -273,7 +273,7 @@
                         call {{ $content->manage_phone }}
                     </div>
                 </div>
-            </div>
+            </div> 
 
             <div class="my-5">
                 <x-frontend.shop-header />

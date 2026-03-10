@@ -24,7 +24,8 @@ class AdController extends Controller
     public function store(
         StoreAdRequest $request,
         ClassifiedOnboardingService $service
-    ) {
+    ) 
+    {
         $category = ClassifiedCategory::query()
             ->where('id', $request->category_id)
             ->where('is_active', true)

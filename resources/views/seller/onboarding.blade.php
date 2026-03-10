@@ -10,15 +10,14 @@
     <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
     <link rel="icon" href="{{ asset('favicon.png') }}" sizes="192x192" />
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}" />
-    <!-- Bootstrap 5 -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* OnlineMarket BD - Stepper styles */
         .om-body { background: #f6f8fb; }
         .om-brand { font-weight: 800; letter-spacing: .3px; }
         .om-card { border: 1px solid #e9eef6; border-radius: 14px; }
-        .om-stepper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .om-stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .om-step { display: flex; flex-direction: column; align-items: center; text-align: center; user-select: none; cursor: pointer; }
         .om-step-dot { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; border: 2px solid #d8e2f2; background: #fff; color: #6b7280; }
         .om-step-label { margin-top: 6px; font-size: 12px; color: #6b7280; }
@@ -31,6 +30,7 @@
         .om-summary-title { font-weight: 700; margin-bottom: 8px; }
         .om-summary-item { font-size: 14px; color: #374151; margin-bottom: 6px; }
         .om-summary-item span { color: #6b7280; display: inline-block; min-width: 90px; }
+
         @media (max-width: 575.98px) {
             .om-stepper { grid-template-columns: 1fr; gap: 8px; }
             .om-step { flex-direction: row; gap: 10px; justify-content: flex-start; text-align: left; }
@@ -67,10 +67,10 @@
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div class="small text-muted">Progress</div>
-                                <div class="small text-muted"><span id="progressText">Step 1</span> of 5</div>
+                                <div class="small text-muted"><span id="progressText">Step 1</span> of 3</div>
                             </div>
                             <div class="progress" style="height:10px;">
-                                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 20%"></div>
+                                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 33%"></div>
                             </div>
                         </div>
 
@@ -85,14 +85,6 @@
                             </div>
                             <div class="om-step" data-step="2">
                                 <div class="om-step-dot">3</div>
-                                <div class="om-step-label">Address</div>
-                            </div>
-                            <div class="om-step" data-step="3">
-                                <div class="om-step-dot">4</div>
-                                <div class="om-step-label">Payments</div>
-                            </div>
-                            <div class="om-step" data-step="4">
-                                <div class="om-step-dot">5</div>
                                 <div class="om-step-label">Finish</div>
                             </div>
                         </div>
@@ -201,7 +193,7 @@
                                     <div class="col-12">
                                         <label class="form-label">Short Description</label>
                                         <textarea class="form-control" name="shopDesc" rows="3"
-                                            placeholder="Tell customers what you sell..." required></textarea>
+                                            placeholder="Tell customers what you sell..."></textarea>
                                         <div class="invalid-feedback">Please write a short description.</div>
                                     </div>
 
@@ -241,98 +233,6 @@
                             <!-- STEP 3 -->
                             <section class="om-step-panel d-none" data-step="2">
                                 <div class="mb-3">
-                                    <h2 class="h6 mb-1">Pickup / business address</h2>
-                                    <div class="text-muted small">Used for delivery pickups & verification.</div>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Division</label>
-                                        <select class="form-select" name="division" required>
-                                            <option value="" selected disabled>Select division</option>
-                                            <option>Dhaka</option>
-                                            <option>Chattogram</option>
-                                            <option>Khulna</option>
-                                            <option>Rajshahi</option>
-                                            <option>Barishal</option>
-                                            <option>Sylhet</option>
-                                            <option>Rangpur</option>
-                                            <option>Mymensingh</option>
-                                        </select>
-                                        <div class="invalid-feedback">Division is required.</div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label">City / District</label>
-                                        <input type="text" class="form-control" name="district" placeholder="e.g. Mirpur, Dhaka" required>
-                                        <div class="invalid-feedback">City/District is required.</div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label class="form-label">Full Address</label>
-                                        <textarea class="form-control" name="address" rows="3" placeholder="House, Road, Area..." required></textarea>
-                                        <div class="invalid-feedback">Address is required.</div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label">Postal Code (optional)</label>
-                                        <input type="text" class="form-control" name="postal" placeholder="e.g. 1216">
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label">Pickup Instructions (optional)</label>
-                                        <input type="text" class="form-control" name="pickupNotes" placeholder="Gate, floor, call before...">
-                                    </div>
-                                </div>
-                            </section>
-
-                            <!-- STEP 4 -->
-                            <section class="om-step-panel d-none" data-step="3">
-                                <div class="mb-3">
-                                    <h2 class="h6 mb-1">Payout method</h2>
-                                    <div class="text-muted small">Where we send your earnings.</div>
-                                </div>
-
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Payout Method</label>
-                                        <select class="form-select" name="payoutMethod" required>
-                                            <option value="" selected disabled>Select method</option>
-                                            <option value="bkash">bKash</option>
-                                            <option value="nagad">Nagad</option>
-                                            <option value="bank">Bank Transfer</option>
-                                        </select>
-                                        <div class="invalid-feedback">Choose a payout method.</div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label">Account Number</label>
-                                        <input type="text" class="form-control" name="payoutNumber" placeholder="e.g. 01XXXXXXXXX / Bank A/C" required>
-                                        <div class="invalid-feedback">Account number is required.</div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label class="form-label">Account Holder Name</label>
-                                        <input type="text" class="form-control" name="payoutName" placeholder="Name on account" required>
-                                        <div class="invalid-feedback">Account holder name is required.</div>
-                                    </div>
-
-                                    <div class="col-md-6" id="bankFields" style="display:none;">
-                                        <label class="form-label">Bank Name + Branch (for bank)</label>
-                                        <input type="text" class="form-control" name="bankInfo" placeholder="e.g. DBBL • Mirpur-10">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <div class="alert alert-warning small mb-0">
-                                            Demo note: This form does not send real payments; it just collects data.
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <!-- STEP 5 -->
-                            <section class="om-step-panel d-none" data-step="4">
-                                <div class="mb-3">
                                     <h2 class="h6 mb-1">Review & create shop</h2>
                                     <div class="text-muted small">Check everything before finishing.</div>
                                 </div>
@@ -346,25 +246,14 @@
                                                 <div class="om-summary-item"><span>Phone:</span> <strong id="sumPhone">—</strong></div>
                                                 <div class="om-summary-item"><span>Email:</span> <strong id="sumEmail">—</strong></div>
                                             </div>
+
                                             <div class="col-md-6">
                                                 <div class="om-summary-title">Shop</div>
                                                 <div class="om-summary-item"><span>Shop Name:</span> <strong id="sumShopName">—</strong></div>
                                                 <div class="om-summary-item"><span>Category:</span> <strong id="sumCategory">—</strong></div>
                                                 <div class="om-summary-item"><span>URL:</span> <strong id="sumUrl">—</strong></div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="om-summary-title">Address</div>
-                                                <div class="om-summary-item"><span>Division:</span> <strong id="sumDivision">—</strong></div>
-                                                <div class="om-summary-item"><span>District:</span> <strong id="sumDistrict">—</strong></div>
-                                                <div class="om-summary-item"><span>Address:</span> <strong id="sumAddress">—</strong></div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="om-summary-title">Payout</div>
-                                                <div class="om-summary-item"><span>Method:</span> <strong id="sumMethod">—</strong></div>
-                                                <div class="om-summary-item"><span>Account:</span> <strong id="sumPayoutNumber">—</strong></div>
-                                                <div class="om-summary-item"><span>Holder:</span> <strong id="sumPayoutName">—</strong></div>
+                                                <div class="om-summary-item"><span>Support:</span> <strong id="sumSupportPhone">—</strong></div>
+                                                <div class="om-summary-item"><span>Description:</span> <strong id="sumShopDesc">—</strong></div>
                                             </div>
                                         </div>
 
@@ -428,13 +317,11 @@
             if (year) year.textContent = new Date().getFullYear();
 
             const CSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const DRAFT_KEY = "om_shop_onboarding_draft_v1";
+            const DRAFT_KEY = "om_shop_onboarding_draft_v2";
 
             const ROUTES = {
                 account: "{{ route('seller.onboarding.account') }}",
                 shop: "{{ route('seller.onboarding.shop') }}",
-                address: "{{ route('seller.onboarding.address') }}",
-                payout: "{{ route('seller.onboarding.payout') }}",
                 finish: "{{ route('seller.onboarding.finish') }}",
             };
 
@@ -478,7 +365,7 @@
                 btnNext.classList.toggle('d-none', last);
                 btnSubmit.classList.toggle('d-none', !last);
 
-                const skippable = (stepIdx === 1 || stepIdx === 2 || stepIdx === 3);
+                const skippable = (stepIdx === 1);
                 btnSkip.classList.toggle('d-none', !skippable);
 
                 const percent = Math.round(((stepIdx + 1) / panels.length) * 100);
@@ -486,7 +373,7 @@
                 progressText.textContent = `Step ${stepIdx + 1}`;
 
                 clearAlerts();
-                if (stepIdx === 4) fillSummary();
+                if (stepIdx === 2) fillSummary();
             }
 
             function isValidBDPhone(v) {
@@ -537,7 +424,7 @@
                     }
                 }
 
-                if (stepIdx === 4) {
+                if (stepIdx === 2) {
                     const confirm = document.getElementById('confirmInfo');
                     if (confirm && !confirm.checked) {
                         confirm.classList.add('is-invalid');
@@ -549,17 +436,14 @@
                 return ok;
             }
 
-            function getFD() {
-                return new FormData(form);
-            }
-
             function saveDraft() {
                 const fd = new FormData(form);
                 const data = {};
                 for (const [k, v] of fd.entries()) {
-                    if (v instanceof File) continue; // don't store files in localStorage
+                    if (v instanceof File) continue;
                     data[k] = String(v);
                 }
+
                 data.agreeTerms = document.getElementById('agreeTerms')?.checked ? "yes" : "no";
                 data.confirmInfo = document.getElementById('confirmInfo')?.checked ? "yes" : "no";
                 data._step = currentStep;
@@ -576,6 +460,7 @@
             function restoreDraftIfAny() {
                 const raw = localStorage.getItem(DRAFT_KEY);
                 if (!raw) return;
+
                 try {
                     const data = JSON.parse(raw);
 
@@ -600,7 +485,6 @@
                 } catch (e) {}
             }
 
-            // ---- File previews ----
             const logoInput = form.querySelector('input[name="logo"]');
             const bannerInput = form.querySelector('input[name="banner"]');
 
@@ -624,16 +508,6 @@
             handlePreview(logoInput, document.getElementById('logoPreview'), document.getElementById('logoPlaceholder'));
             handlePreview(bannerInput, document.getElementById('bannerPreview'), document.getElementById('bannerPlaceholder'));
 
-            // ---- Bank fields toggle ----
-            const payoutMethod = form.querySelector('select[name="payoutMethod"]');
-            const bankFields = document.getElementById('bankFields');
-            if (payoutMethod) {
-                payoutMethod.addEventListener('change', () => {
-                    bankFields.style.display = payoutMethod.value === 'bank' ? 'block' : 'none';
-                });
-            }
-
-            // ---- Summary fill ----
             function setText(id, value) {
                 const el = document.getElementById(id);
                 if (el) el.textContent = value || "—";
@@ -651,17 +525,10 @@
                 setText('sumCategory', get('category'));
                 const slug = (get('shopSlug') || "").trim();
                 setText('sumUrl', slug ? `onlinemarketbd.com/shop/${slug}` : "—");
-
-                setText('sumDivision', get('division'));
-                setText('sumDistrict', get('district'));
-                setText('sumAddress', get('address'));
-
-                setText('sumMethod', get('payoutMethod'));
-                setText('sumPayoutNumber', get('payoutNumber'));
-                setText('sumPayoutName', get('payoutName'));
+                setText('sumSupportPhone', get('supportPhone'));
+                setText('sumShopDesc', get('shopDesc'));
             }
 
-            // ---- Fetch helper ----
             async function postForm(url, formData) {
                 const res = await fetch(url, {
                     method: "POST",
@@ -674,7 +541,6 @@
 
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) {
-                    // Laravel validation error
                     if (data?.message) throw new Error(data.message);
                     if (data?.errors) {
                         const firstKey = Object.keys(data.errors)[0];
@@ -686,7 +552,6 @@
                 return data;
             }
 
-            // Build per-step payload (only the fields for that step)
             function buildStepFormData(stepIdx) {
                 const fdAll = new FormData(form);
                 const fd = new FormData();
@@ -699,26 +564,15 @@
 
                 if (stepIdx === 0) {
                     pick(['fullName', 'phone', 'email', 'password', 'agreeTerms']);
-                    // ensure checkbox value exists
                     if (!document.getElementById('agreeTerms').checked) fd.delete('agreeTerms');
                     else fd.set('agreeTerms', 'yes');
                 }
 
                 if (stepIdx === 1) {
                     pick(['shopName', 'category', 'shopSlug', 'supportPhone', 'shopDesc', 'logo', 'banner']);
-                    // note: logo/banner are files
                 }
 
                 if (stepIdx === 2) {
-                    pick(['division', 'district', 'address', 'postal', 'pickupNotes']);
-                }
-
-                if (stepIdx === 3) {
-                    pick(['payoutMethod', 'payoutNumber', 'payoutName', 'bankInfo']);
-                }
-
-                if (stepIdx === 4) {
-                    // finish
                     if (document.getElementById('confirmInfo').checked) fd.set('confirmInfo', 'yes');
                 }
 
@@ -728,11 +582,9 @@
             async function saveCurrentStepToServer() {
                 if (!validateStep(currentStep)) return false;
 
-                // Prevent double submission
                 if (isSubmitting) return false;
                 isSubmitting = true;
 
-                // Loading state
                 const originalNext = btnNext.innerHTML;
                 btnNext.disabled = true;
                 btnSkip.disabled = true;
@@ -741,16 +593,14 @@
                     let url = null;
                     if (currentStep === 0) url = ROUTES.account;
                     if (currentStep === 1) url = ROUTES.shop;
-                    if (currentStep === 2) url = ROUTES.address;
-                    if (currentStep === 3) url = ROUTES.payout;
 
-                    if (!url) return true; // step 4 is final submit
+                    if (!url) return true;
 
                     const fd = buildStepFormData(currentStep);
                     await postForm(url, fd);
 
                     showSuccess("Saved ✔");
-                    saveDraft(); // local
+                    saveDraft();
                     return true;
                 } catch (err) {
                     showError(err.message || "Something went wrong.");
@@ -763,7 +613,6 @@
                 }
             }
 
-            // ---- Navigation ----
             btnNext.addEventListener('click', async () => {
                 const ok = await saveCurrentStepToServer();
                 if (!ok) return;
@@ -775,7 +624,6 @@
             });
 
             btnSkip.addEventListener('click', async () => {
-                // still validates current step; you can remove saveCurrentStepToServer() if you want skip without saving
                 const ok = await saveCurrentStepToServer();
                 if (!ok) return;
                 setPanel(Math.min(currentStep + 1, panels.length - 1));
@@ -790,11 +638,10 @@
             document.getElementById('btnSaveDraft').addEventListener('click', saveDraft);
             document.getElementById('btnClearDraft').addEventListener('click', clearDraft);
 
-            // Final submit -> POST finish route
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!validateStep(4)) return;
+                if (!validateStep(2)) return;
 
                 if (isSubmitting) return;
                 isSubmitting = true;
@@ -804,14 +651,12 @@
                 btnSubmit.innerHTML = 'Creating...';
 
                 try {
-                    // Save step 4 confirm only
-                    const fd = buildStepFormData(4);
+                    const fd = buildStepFormData(2);
                     const data = await postForm(ROUTES.finish, fd);
 
                     localStorage.removeItem(DRAFT_KEY);
                     showSuccess(data.message || "Shop created successfully!");
 
-                    // redirect if provided by backend
                     if (data.redirect) {
                         window.location.href = data.redirect;
                     }
@@ -824,7 +669,6 @@
                 }
             });
 
-            // Init
             setPanel(0);
             restoreDraftIfAny();
         })();

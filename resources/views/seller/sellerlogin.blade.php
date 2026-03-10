@@ -144,6 +144,10 @@
                         </button>
 
                         <div class="text-center mt-3">
+                           Not a seller yet?  <a class="sa-link small" href="{{ route('seller.onboarding') }}">SignUp</a>
+                        </div>
+
+                        <div class="text-center mt-3">
                             <a class="sa-link small" href="{{ url('/') }}">← Back to website</a>
                         </div>
                     </form>

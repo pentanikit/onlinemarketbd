@@ -71,14 +71,15 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function(){
 
 
 Route::prefix('seller')->group(function () {
-    // Stepper page (Blade view)
-    Route::get('/onboarding', [SellerOnboardingController::class, 'create'])->name('seller.onboarding');
+  
+
 
     // API-like endpoints for step saving (AJAX)
-    Route::post('/onboarding/account',  [SellerOnboardingController::class, 'saveAccount'])->name('seller.onboarding.account');
-    Route::post('/onboarding/shop',     [SellerOnboardingController::class, 'saveShop'])->name('seller.onboarding.shop');
-    Route::post('/onboarding/address',  [SellerOnboardingController::class, 'saveAddress'])->name('seller.onboarding.address');
-    Route::post('/onboarding/payout',   [SellerOnboardingController::class, 'savePayout'])->name('seller.onboarding.payout');
+    Route::get('/onboarding', [SellerOnboardingController::class, 'create'])->name('seller.onboarding');
+
+    Route::post('onboarding/account', [SellerOnboardingController::class, 'saveAccount'])->name('seller.onboarding.account');
+    Route::post('onboarding/shop', [SellerOnboardingController::class, 'saveShop'])->name('seller.onboarding.shop');
+    Route::post('onboarding/finish', [SellerOnboardingController::class, 'finish'])->name('seller.onboarding.finish');
 
         // Seller login
     Route::get('/seller-login', [SellerAuthController::class, 'showLogin'])->name('seller.login');

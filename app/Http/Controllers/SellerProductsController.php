@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Modules\Classifieds\Models\SellerProducts as Product;
-use App\Modules\Classifieds\Models\ProductImages as ProductImage;
+use App\Models\SellerProducts as Product;
+use App\Models\ProductImages as ProductImage;
 use App\Models\Shop;
 
 use App\Models\SellerCategory; 

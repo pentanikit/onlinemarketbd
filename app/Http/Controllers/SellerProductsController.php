@@ -2,415 +2,386 @@
 
 namespace App\Http\Controllers;
 
+use App\Modules\Classifieds\Models\ClassifiedAd;
+use App\Modules\Classifieds\Models\ClassifiedAdImage;
+use App\Modules\Classifieds\Models\ClassifiedAdUser;
+use App\Modules\Classifieds\ClassifiedCategory;
 use Illuminate\Http\Request;
-use App\Models\SellerProducts as Product;
-use App\Models\ProductImages as ProductImage;
-use App\Models\Shop;
-
-use App\Models\SellerCategory; 
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
-class SellerProductsController extends Controller
+class ClassifiedAdController extends Controller
 {
-    public function create()
+    public function index(Request $request)
     {
-        $shop = $this->sellerShop();
+        $query = ClassifiedAd::with([
+            'user',
+            'category',
+            'images',
+        ]);
 
-        // ✅ NEW: Parent categories for dropdown
-        $parentCategories = SellerCategory::query()
-            ->where('shop_id', (int) $shop->id)
-            ->where('seller_id', (int) auth()->id())
-            ->whereNull('parent_id')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get(['id','name','slug']);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
-        return view('seller.products.create', compact('shop', 'parentCategories'));
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('classified_ad_user_id')) {
+            $query->where('classified_ad_user_id', $request->classified_ad_user_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('contact_name', 'like', "%{$search}%")
+                  ->orWhere('contact_phone', 'like', "%{$search}%");
+            });
+        }
+
+        $ads = $query->latest()->paginate($request->get('per_page', 20));
+
+        return response()->json($ads);
     }
 
-    /**
-     * ✅ NEW: AJAX endpoint to fetch subcategories by parent_id
-     * Route example:
-     *   Route::get('/seller/categories/children', [SellerProductsController::class, 'categoryChildren'])
-     *      ->name('seller.categories.children');
-     */
-    public function categoryChildren(Request $request)
+    public function publishedAds(Request $request)
     {
-        $shop = $this->sellerShop();
+        $query = ClassifiedAd::with(['user', 'category', 'images'])
+            ->where('status', 'published');
 
-        $parentId = (int) $request->get('parent_id', 0);
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
 
-        $children = SellerCategory::query()
-            ->where('shop_id', (int) $shop->id)
-            ->where('seller_id', (int) auth()->id())
-            ->where('parent_id', $parentId)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get(['id','name','slug','parent_id']);
+        if ($request->filled('slug')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->slug);
+            });
+        }
 
-        return response()->json(['data' => $children]);
+        $ads = $query->orderByDesc('published_at')->paginate($request->get('per_page', 20));
+
+        return response()->json($ads);
+    }
+
+    public function show($id)
+    {
+        $ad = ClassifiedAd::with([
+            'user',
+            'category',
+            'images',
+        ])->findOrFail($id);
+
+        $ad->increment('views_count');
+
+        return response()->json($ad->fresh(['user', 'category', 'images']));
+    }
+
+    public function showBySlug($slug)
+    {
+        $ad = ClassifiedAd::with([
+            'user',
+            'category',
+            'images',
+        ])->where('slug', $slug)->firstOrFail();
+
+        $ad->increment('views_count');
+
+        return response()->json($ad->fresh(['user', 'category', 'images']));
     }
 
     public function store(Request $request)
     {
-        $shop = $this->sellerShop();
-
-        $data = $request->validate([
-            'name' => ['required','string','max:180'],
-            'sku' => ['nullable','string','max:80'],
-
-            // ✅ NEW: Category inputs (parent + subcategory)
-            // You can submit either:
-            // - seller_category_id (subcategory id) OR
-            // - parent_category_id (only parent if no subcategories)
-            'parent_category_id' => ['nullable','integer','exists:seller_categories,id'],
-            'seller_category_id' => ['nullable','integer','exists:seller_categories,id'],
-
-            'price' => ['required','numeric','min:0'],
-            'compare_price' => ['nullable','numeric','min:0'],
-            'cost_price' => ['nullable','numeric','min:0'],
-
-            'stock_qty' => ['nullable','integer','min:0'],
-            'track_stock' => ['nullable','boolean'],
-            'allow_backorder' => ['nullable','boolean'],
-
-            'short_description' => ['nullable','string','max:2000'],
-            'description' => ['nullable','string'],
-
-            'status' => ['required','in:draft,active,inactive'],
-
-            // ✅ NEW: friendly input (optional)
-            'attributes_text' => ['nullable','string','max:10000'],
-
-            // existing
-            'attributes_json' => ['nullable','string'],
-            'variants_json' => ['nullable','string'],
-            'shipping_json' => ['nullable','string'],
-
-            'images' => ['nullable','array','max:10'],
-            'images.*' => ['image','mimes:jpg,jpeg,png,webp','max:3072'],
+        $request->validate([
+            'classified_ad_user_id' => 'required|exists:classified_ad_users,id',
+            'category_id' => 'required|exists:classified_categories,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'price_type' => 'nullable|string|in:fixed,negotiable,call',
+            'condition_type' => 'nullable|string|in:new,used',
+            'location' => 'nullable|string|max:255',
+            'contact_name' => 'required|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'required|string|max:30',
+            'status' => 'nullable|string|in:pending,published,rejected,sold',
+            'published_at' => 'nullable|date',
+            'expires_at' => 'nullable|date',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|string',
+            'primary_image' => 'nullable|string',
         ]);
 
-        // Normalize booleans
-        $trackStock = (bool) ($request->input('track_stock', 1));
-        $allowBackorder = (bool) ($request->input('allow_backorder', 0));
+        DB::beginTransaction();
 
-        $rawAttr = (string) $request->input('attributes_text', '');
-        $rawAttr = trim($rawAttr);
+        try {
+            $slug = Str::slug($request->title);
+            $originalSlug = $slug;
+            $count = 1;
 
-        // Clean formatting
-        $attributesText = null;
-        if ($rawAttr !== '') {
-            $lines = preg_split("/\r\n|\n|\r/", $rawAttr);
-            $clean = [];
-
-            foreach ($lines as $line) {
-                $line = trim((string)$line);
-                if ($line === '') continue;
-
-                $line = preg_replace('/\s*:\s*/', ': ', $line);
-                $line = preg_replace('/\s*,\s*/', ', ', $line);
-                $line = preg_replace('/\s{2,}/', ' ', $line);
-
-                $clean[] = $line;
+            while (ClassifiedAd::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
             }
 
-            $attributesText = !empty($clean) ? implode("\n", $clean) : null;
-        }
-
-        $baseSlug = Str::slug($request->input('slug') ?: $data['name']);
-        if ($baseSlug === '') $baseSlug = 'product';
-
-        // ✅ NEW: Decide final category id (prefer subcategory)
-        $finalCategoryId = $this->resolveSellerCategoryId(
-            $shop,
-            $request->input('parent_category_id'),
-            $request->input('seller_category_id')
-        );
-
-        return DB::transaction(function () use ($request, $data, $shop, $baseSlug, $trackStock, $allowBackorder, $attributesText, $finalCategoryId) {
-
-            $slug = $this->uniqueSlug((int)$shop->id, $baseSlug);
-
-            $product = Product::create([
-                'shop_id' => (int) $shop->id,
-                'seller_id' => (int) auth()->id(),
-
-                // ✅ NEW: save category/subcategory
-                'seller_category_id' => $finalCategoryId,
-
-                'name' => $data['name'],
+            $ad = ClassifiedAd::create([
+                'classified_ad_user_id' => $request->classified_ad_user_id,
+                'category_id' => $request->category_id,
+                'title' => $request->title,
                 'slug' => $slug,
-                'sku' => $data['sku'] ?: null,
-
-                'price' => $data['price'],
-                'compare_price' => $data['compare_price'] ?? null,
-                'cost_price' => $data['cost_price'] ?? null,
-                'currency' => 'BDT',
-
-                'stock_qty' => (int) ($data['stock_qty'] ?? 0),
-                'track_stock' => $trackStock,
-                'allow_backorder' => $allowBackorder,
-
-                'short_description' => $data['short_description'] ?? null,
-                'description' => $data['description'] ?? null,
-
-                // ✅ FIX: store cleaned text (your old code used $data['attributes_text'] which isn't in $data)
-                'attributes' => $attributesText,
-
-                'variants' => $request->input('variants_json'),
-                'shipping' => $request->input('shipping_json'),
-
-                'status' => $data['status'],
-                'seo_title' => $request->input('seo_title') ?: null,
-                'seo_description' => $request->input('seo_description') ?: null,
+                'description' => $request->description,
+                'price' => $request->price,
+                'price_type' => $request->price_type ?? 'fixed',
+                'condition_type' => $request->condition_type,
+                'location' => $request->location,
+                'contact_name' => $request->contact_name,
+                'contact_email' => $request->contact_email,
+                'contact_phone' => $request->contact_phone,
+                'status' => $request->status ?? 'pending',
+                'published_at' => $request->published_at,
+                'expires_at' => $request->expires_at,
             ]);
 
-            // Images (first one becomes primary)
-            $files = $request->file('images', []);
-            $sort = 0;
-
-            foreach ($files as $i => $file) {
-                $path = $file->store("products/{$shop->id}/{$product->id}", 'public');
-
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'path' => $path,
-                    'alt_text' => $product->name,
-                    'sort_order' => $sort++,
-                    'is_primary' => ($i === 0),
-                ]);
+            if ($request->filled('images')) {
+                foreach ($request->images as $index => $imagePath) {
+                    ClassifiedAdImage::create([
+                        'classified_ad_id' => $ad->id,
+                        'image_path' => $imagePath,
+                        'is_primary' => $request->primary_image === $imagePath || ($index === 0 && !$request->filled('primary_image')),
+                        'sort_order' => $index,
+                    ]);
+                }
             }
 
-            $next = $request->input('save_next'); // "1" if Save & Add Another
-            if ($next) {
-                return redirect()
-                    ->route('products.create')
-                    ->with('success', 'Product saved ✅ Now add another one!');
-            }
+            DB::commit();
 
-            return redirect()
-                ->route('products.create')
-                ->with('success', 'Product saved ✅');
-        });
+            return response()->json([
+                'message' => 'Classified ad created successfully.',
+                'data' => $ad->load(['user', 'category', 'images']),
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to create classified ad.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    private function uniqueSlug(int $shopId, string $baseSlug): string
+    public function update(Request $request, $id)
     {
-        $slug = $baseSlug;
-        $n = 2;
+        $ad = ClassifiedAd::with('images')->findOrFail($id);
 
-        while (Product::where('shop_id', $shopId)->where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $n;
-            $n++;
-        }
-        return $slug;
-    }
+        $request->validate([
+            'classified_ad_user_id' => 'nullable|exists:classified_ad_users,id',
+            'category_id' => 'nullable|exists:classified_categories,id',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'price_type' => 'nullable|string|in:fixed,negotiable,call',
+            'condition_type' => 'nullable|string|in:new,used',
+            'location' => 'nullable|string|max:255',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:30',
+            'status' => 'nullable|string|in:pending,published,rejected,sold',
+            'published_at' => 'nullable|date',
+            'expires_at' => 'nullable|date',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|string',
+            'primary_image' => 'nullable|string',
+        ]);
 
-    private function sellerShop()
-    {
-        return Shop::where('user_id', auth()->id())->firstOrFail();
-    }
+        DB::beginTransaction();
 
-    /**
-     * ✅ NEW: Validate + resolve category id.
-     * Priority: seller_category_id (subcategory) -> parent_category_id -> null
-     */
-    private function resolveSellerCategoryId(Shop $shop, $parentId, $childId): ?int
-    {
-        $sellerId = (int) auth()->id();
-        $shopId   = (int) $shop->id;
+        try {
+            $data = [];
 
-        $parentId = $parentId !== null && $parentId !== '' ? (int) $parentId : null;
-        $childId  = $childId !== null && $childId !== '' ? (int) $childId : null;
-
-        // Validate parent scope (must belong to same seller+shop)
-        if ($parentId) {
-            $okParent = SellerCategory::query()
-                ->where('id', $parentId)
-                ->where('shop_id', $shopId)
-                ->where('seller_id', $sellerId)
-                ->exists();
-
-            if (!$okParent) {
-                abort(422, 'Invalid parent category.');
-            }
-        }
-
-        // Validate child scope + ensure it belongs to parent if parent given
-        if ($childId) {
-            $child = SellerCategory::query()
-                ->where('id', $childId)
-                ->where('shop_id', $shopId)
-                ->where('seller_id', $sellerId)
-                ->first();
-
-            if (!$child) {
-                abort(422, 'Invalid subcategory.');
+            if ($request->filled('classified_ad_user_id')) {
+                $data['classified_ad_user_id'] = $request->classified_ad_user_id;
             }
 
-            if ($parentId && (int)($child->parent_id ?? 0) !== (int)$parentId) {
-                abort(422, 'Subcategory does not belong to selected parent category.');
+            if ($request->filled('category_id')) {
+                $data['category_id'] = $request->category_id;
             }
 
-            return (int) $childId;
-        }
+            if ($request->filled('title')) {
+                $slug = Str::slug($request->title);
+                $originalSlug = $slug;
+                $count = 1;
 
-        return $parentId ? (int) $parentId : null;
+                while (
+                    ClassifiedAd::where('slug', $slug)
+                        ->where('id', '!=', $ad->id)
+                        ->exists()
+                ) {
+                    $slug = $originalSlug . '-' . $count++;
+                }
+
+                $data['title'] = $request->title;
+                $data['slug'] = $slug;
+            }
+
+            if ($request->has('description')) {
+                $data['description'] = $request->description;
+            }
+
+            if ($request->has('price')) {
+                $data['price'] = $request->price;
+            }
+
+            if ($request->filled('price_type')) {
+                $data['price_type'] = $request->price_type;
+            }
+
+            if ($request->has('condition_type')) {
+                $data['condition_type'] = $request->condition_type;
+            }
+
+            if ($request->has('location')) {
+                $data['location'] = $request->location;
+            }
+
+            if ($request->filled('contact_name')) {
+                $data['contact_name'] = $request->contact_name;
+            }
+
+            if ($request->has('contact_email')) {
+                $data['contact_email'] = $request->contact_email;
+            }
+
+            if ($request->filled('contact_phone')) {
+                $data['contact_phone'] = $request->contact_phone;
+            }
+
+            if ($request->filled('status')) {
+                $data['status'] = $request->status;
+            }
+
+            if ($request->has('published_at')) {
+                $data['published_at'] = $request->published_at;
+            }
+
+            if ($request->has('expires_at')) {
+                $data['expires_at'] = $request->expires_at;
+            }
+
+            $ad->update($data);
+
+            if ($request->has('images')) {
+                $ad->images()->delete();
+
+                foreach ($request->images as $index => $imagePath) {
+                    ClassifiedAdImage::create([
+                        'classified_ad_id' => $ad->id,
+                        'image_path' => $imagePath,
+                        'is_primary' => $request->primary_image === $imagePath || ($index === 0 && !$request->filled('primary_image')),
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Classified ad updated successfully.',
+                'data' => $ad->fresh(['user', 'category', 'images']),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to update classified ad.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    public function show(string $slug)
+    public function destroy($id)
     {
-        // 1) Load product + images (and primaryImage) + category
-        $ad = Product::query()
-            ->where('slug', $slug)
-            ->where('status', 'active')
-            ->with(['images', 'primaryImage', 'category', 'category.parent'])
-            ->firstOrFail();
+        $ad = ClassifiedAd::findOrFail($id);
+        $ad->delete();
 
-        // 2) Build images array (primary first)
-        $images = [];
-
-        if ($ad->primaryImage && !empty($ad->primaryImage->path)) {
-            $images[] = $ad->primaryImage->path;
-        }
-
-        foreach ($ad->images as $img) {
-            if (empty($img->path)) continue;
-            if (in_array($img->path, $images, true)) continue;
-            $images[] = $img->path;
-        }
-
-        if (empty($images)) {
-            $images = ['https://dummyimage.com/1200x800/f2f4f8/111&text=No+Image'];
-        }
-
-        // 3) Load shop info
-        $shop = null;
-        if (!empty($ad->shop_id) && class_exists(\App\Models\Shop::class)) {
-            $shop = \App\Models\Shop::query()->where('id', $ad->shop_id)->first();
-        }
-
-        // 4) Optional specs (+ category)
-        $specs = [
-            'SKU' => $ad->sku ?: '—',
-            'Stock' => (string)($ad->stock_qty ?? 0),
-            'Currency' => $ad->currency ?: 'BDT',
-            'Category' => $ad->category?->parent
-                ? ($ad->category->parent->name . ' > ' . $ad->category->name)
-                : ($ad->category->name ?? '—'),
-        ];
-
-        return view('seller.products.view', [
-            'ad'     => $ad,
-            'images' => $images,
-            'shop'   => $shop,
-            'specs'  => $specs,
+        return response()->json([
+            'message' => 'Classified ad deleted successfully.',
         ]);
     }
 
+    public function categories()
+    {
+        $categories = ClassifiedCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
 
-    public function seller_products(Request $request, $category)
-{
-    // filters (query string)
-    $q        = trim((string) $request->get('q', ''));
-    $sort     = (string) $request->get('sort', 'newest'); // newest|price_low|price_high
-    $status   = $request->get('status');
-    $perPage  = (int) $request->get('per_page', 12);
-    $perPage  = $perPage > 0 ? min($perPage, 48) : 12;
+        return response()->json($categories);
+    }
 
-    // Resolve category from route param (ID or slug)
-    $selectedCategory = \App\Models\SellerCategory::query()
-        ->select(['id', 'name', 'slug', 'parent_id'])
-        ->where('id', $category)
-        ->orWhere('slug', $category)
-        ->first();
+    public function categoryAds($categoryId, Request $request)
+    {
+        $ads = ClassifiedAd::with(['user', 'category', 'images'])
+            ->where('category_id', $categoryId)
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $q->where('status', $request->status);
+            }, function ($q) {
+                $q->where('status', 'published');
+            })
+            ->latest()
+            ->paginate($request->get('per_page', 20));
 
-    // Sidebar categories
-    $categories = \App\Models\SellerCategory::query()
-        ->select(['id','name','slug','parent_id'])
-        ->orderBy('name')
-        ->get();
+        return response()->json($ads);
+    }
 
-    // Category counts (optional)
-    $categoryCounts = Product::query()
-        ->selectRaw('seller_category_id, COUNT(*) as total')
-        ->groupBy('seller_category_id')
-        ->pluck('total', 'seller_category_id');
+    public function userAds($userId, Request $request)
+    {
+        $ads = ClassifiedAd::with(['user', 'category', 'images'])
+            ->where('classified_ad_user_id', $userId)
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $q->where('status', $request->status);
+            })
+            ->latest()
+            ->paginate($request->get('per_page', 20));
 
-    // If category doesn't exist => return view with fallback flag
-    if (! $selectedCategory) {
-        $products = Product::query()
-            ->whereRaw('1=0')
-            ->paginate($perPage)
-            ->withQueryString();
+        return response()->json($ads);
+    }
 
-        return view('seller.categoryproducts', [
-            'products' => $products,
-            'categories' => $categories,
-            'categoryCounts' => $categoryCounts,
-            'selectedCategory' => null,
-            'catNotFound' => true,
-            'filters' => [
-                'q' => $q,
-                'sort' => $sort,
-                'per_page' => $perPage,
-            ],
+    public function markAsSold($id)
+    {
+        $ad = ClassifiedAd::findOrFail($id);
+        $ad->update([
+            'status' => 'sold',
+        ]);
+
+        return response()->json([
+            'message' => 'Classified ad marked as sold.',
+            'data' => $ad,
         ]);
     }
 
-    // Product query (force this category from route)
-    $query = Product::query()
-        ->with([
-            'primaryImage:id,product_id,path,is_primary',
-            'images:id,product_id,path,is_primary',
-            'category:id,name,slug,parent_id',
-        ])
-        ->where('seller_category_id', $selectedCategory->id);
+    public function publish($id)
+    {
+        $ad = ClassifiedAd::findOrFail($id);
+        $ad->update([
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
 
-    // search by name/sku/slug
-    if ($q !== '') {
-        $query->where(function ($qq) use ($q) {
-            $qq->where('name', 'like', "%{$q}%")
-               ->orWhere('sku', 'like', "%{$q}%")
-               ->orWhere('slug', 'like', "%{$q}%");
-        });
+        return response()->json([
+            'message' => 'Classified ad published successfully.',
+            'data' => $ad,
+        ]);
     }
 
-    // status filter
-    if (!empty($status)) {
-        $query->where('status', $status);
-    } else {
-        $query->whereIn('status', ['active', 'published', 1, '1']);
+    public function pendingAds(Request $request)
+    {
+        $ads = ClassifiedAd::with(['user', 'category', 'images'])
+            ->where('status', 'pending')
+            ->latest()
+            ->paginate($request->get('per_page', 20));
+
+        return response()->json($ads);
     }
-
-    // sorting
-    if ($sort === 'price_low') {
-        $query->orderBy('price', 'asc');
-    } elseif ($sort === 'price_high') {
-        $query->orderBy('price', 'desc');
-    } else {
-        $query->latest('id');
-    }
-
-    $products = $query->paginate($perPage)->withQueryString();
-
-    return view('seller.categoryproducts', [
-        'products' => $products,
-        'categories' => $categories,
-        'categoryCounts' => $categoryCounts,
-        'selectedCategory' => $selectedCategory,
-        'catNotFound' => false,
-        'filters' => [
-            'q' => $q,
-            'sort' => $sort,
-            'per_page' => $perPage,
-        ],
-    ]);
-}
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shop;
-use App\Models\User;
+use App\Modules\Classifieds\Models\ClassifiedAdUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +40,7 @@ class SellerOnboardingController extends Controller
             ], 422);
         }
 
-        if (User::where('phone', $data['phone'])->exists()) {
+        if (ClassifiedAdUser::where('phone', $data['phone'])->exists()) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Phone already used.',

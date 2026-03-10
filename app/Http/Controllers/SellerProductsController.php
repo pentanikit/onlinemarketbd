@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-class ClassifiedAdController extends Controller
+class SellerProductsController extends Controller
 {
     public function index(Request $request)
     {

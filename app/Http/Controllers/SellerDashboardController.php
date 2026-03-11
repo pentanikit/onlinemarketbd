@@ -15,7 +15,7 @@ class SellerDashboardController extends Controller
         $user = $request->user();
 
         
-        $shop = DB::table('shops')->where('user_id', $user->id)->first();
+        $shop = DB::table('shops')->where('classified_ad_user_id', $user->id)->first();
 
         
         if (!$shop) {
@@ -28,7 +28,7 @@ class SellerDashboardController extends Controller
 
         // Try to infer "shop column" and "money column" from orders table
         $orderCols = $hasOrders ? Schema::getColumnListing('orders') : [];
-        $orderShopCol = $this->pickFirstExisting($orderCols, ['shop_id','seller_id','vendor_id','user_id']);
+        $orderShopCol = $this->pickFirstExisting($orderCols, ['shop_id','seller_id','vendor_id','classified_ad_user_id']);
         $orderTotalCol = $this->pickFirstExisting($orderCols, ['grand_total','total_amount','total','amount','payable']);
         $orderStatusCol = $this->pickFirstExisting($orderCols, ['status','order_status','payment_status']);
 
@@ -74,7 +74,7 @@ class SellerDashboardController extends Controller
         // ---- Product stats ----
         if ($hasProducts) {
             $productCols = Schema::getColumnListing('products');
-            $productShopCol = $this->pickFirstExisting($productCols, ['shop_id','seller_id','vendor_id','user_id']);
+            $productShopCol = $this->pickFirstExisting($productCols, ['shop_id','seller_id','vendor_id','classified_ad_user_id']);
 
             if ($productShopCol) {
                 $stats['products_total'] = DB::table('products')->where($productShopCol, $shop->id)->count();

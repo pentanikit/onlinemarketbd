@@ -14,34 +14,29 @@ class SellerAuthController extends Controller
         return view('seller.sellerlogin');
     }
 
+
     public function login(Request $request)
     {
         $data = $request->validate([
-            'email'    => ['required','email'],
-            'password' => ['required','string','min:6'],
+            'login'    => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6'],
         ]);
 
         $remember = (bool) $request->boolean('remember');
 
-        if (!Auth::attempt(['email' => $data['email'], 'password' => $data['password']], $remember)) {
+        $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        if (!Auth::guard('classified_ad')->attempt([
+            $field => $data['login'],
+            'password' => $data['password'],
+            'status' => 'active',
+        ], $remember)) {
             throw ValidationException::withMessages([
-                'email' => 'Invalid email or password.',
+                'login' => 'Invalid email/phone or password.',
             ]);
         }
 
-        // Logged in. Now enforce seller role.
         $request->session()->regenerate();
-
-        $user = $request->user();
-        if (strtolower((string)($user->role ?? '')) !== 'seller') {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            throw ValidationException::withMessages([
-                'email' => 'This account is not a seller.',
-            ]);
-        }
 
         return redirect()->intended(route('seller.dashboard'));
     }

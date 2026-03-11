@@ -15,31 +15,29 @@ class SellerAuthController extends Controller
     }
 
 
-    public function login(Request $request)
-    {
-        $data = $request->validate([
-            'login'    => ['required', 'string'],
-            'password' => ['required', 'string', 'min:6'],
+public function login(Request $request)
+{
+    $data = $request->validate([
+        'email'    => ['required', 'email'],
+        'password' => ['required', 'string', 'min:6'],
+    ]);
+
+    $remember = (bool) $request->boolean('remember');
+
+    if (!Auth::guard('classified_ad')->attempt([
+        'email' => $data['email'],
+        'password' => $data['password'],
+        'status' => 'active',
+    ], $remember)) {
+        throw ValidationException::withMessages([
+            'email' => 'Invalid email or password.',
         ]);
-
-        $remember = (bool) $request->boolean('remember');
-
-        $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-
-        if (!Auth::guard('classified_ad')->attempt([
-            $field => $data['login'],
-            'password' => $data['password'],
-            'status' => 'active',
-        ], $remember)) {
-            throw ValidationException::withMessages([
-                'login' => 'Invalid email/phone or password.',
-            ]);
-        }
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('seller.dashboard'));
     }
+
+    $request->session()->regenerate();
+
+    return redirect()->intended(route('seller.dashboard'));
+}
 
     public function logout(Request $request)
     {

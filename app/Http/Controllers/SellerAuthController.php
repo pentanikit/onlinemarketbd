@@ -36,7 +36,7 @@ public function login(Request $request)
 
     $request->session()->regenerate();
 
-    return redirect()->intended(route('seller.dashboard'));
+    return redirect()->route('seller.dashboard');
 }
 
     public function logout(Request $request)

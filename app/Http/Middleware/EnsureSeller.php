@@ -4,19 +4,16 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EnsureSeller
 {
     public function handle(Request $request, Closure $next)
     {
-        $user = $request->user();
+        $seller = Auth::guard('classified_ad')->user();
 
-        if (!$user) {
+        if (!$seller) {
             return redirect()->route('seller.login');
-        }
-
-        if (strtolower((string) ($user->role ?? '')) !== 'seller') {
-            abort(403, 'Seller access only.');
         }
 
         return $next($request);

@@ -87,7 +87,7 @@ Route::prefix('seller')->group(function () {
     Route::post('/logout', [SellerAuthController::class, 'logout'])->name('seller.logout');
 
 
-    Route::middleware('auth:classified_ad')->group(function () {
+    Route::middleware(['auth', 'seller'])->group(function () {
         Route::get('/dashboard', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
         Route::get('/products/create', [SellerProductsController::class, 'create'])->name('products.create');
         Route::post('/products', [SellerProductsController::class, 'store'])->name('products.store');

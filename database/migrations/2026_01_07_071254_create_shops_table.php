@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('classified_ad_user_id')
+                ->constrained('classified_ad_users')
+                ->cascadeOnDelete();
 
             $table->string('name');
             $table->string('category')->index();
-            $table->string('slug')->unique(); // shop url slug
+            $table->string('slug')->unique();
             $table->string('support_phone', 20)->nullable();
 
             $table->text('description')->nullable();
@@ -26,12 +28,12 @@ return new class extends Migration
             $table->string('logo_path')->nullable();
             $table->string('banner_path')->nullable();
 
-            $table->string('status')->default('pending')->index(); // pending|active|suspended
+            $table->string('status')->default('pending')->index();
             $table->timestamp('onboarded_at')->nullable();
 
             $table->timestamps();
 
-            $table->unique(['user_id']); // one shop per user (remove if you want multiple shops)
+            $table->unique(['classified_ad_user_id']);
         });
     }
 

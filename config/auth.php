@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'classified_ad' => [
+            'driver' => 'session',
+            'provider' => 'classified_ad_users',
+        ],
     ],
 
     /*
@@ -63,6 +67,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+        'classified_ad_users' => [
+            'driver' => 'eloquent',
+            'model' => App\Modules\Classifieds\Models\ClassifiedAdUser::class,
         ],
 
         // 'users' => [

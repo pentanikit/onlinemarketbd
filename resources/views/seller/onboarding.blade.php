@@ -45,11 +45,11 @@
             <div class="col-lg-9 col-xl-8">
 
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div>
+                    <a style="text-decoration:none;" href="{{ route('clientHome') }}">
                         <div class="om-brand">OnlineMarket BD</div>
                         <h1 class="h4 mb-0">Create your shop</h1>
                         <div class="text-muted small">Finish onboarding in ~2 minutes.</div>
-                    </div>
+                    </a>
 
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-secondary btn-sm" id="btnSaveDraft">

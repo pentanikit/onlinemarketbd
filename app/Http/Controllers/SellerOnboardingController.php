@@ -33,7 +33,7 @@ class SellerOnboardingController extends Controller
             'phone.regex' => 'Phone must be a valid BD number (01XXXXXXXXX).',
         ]);
 
-        if (!empty($data['email']) && User::where('email', $data['email'])->exists()) {
+        if (!empty($data['email']) && ClassifiedAdUser::where('email', $data['email'])->exists()) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Email already used.',
@@ -142,14 +142,14 @@ class SellerOnboardingController extends Controller
             ], 422);
         }
 
-        if (!empty($account['email']) && User::where('email', $account['email'])->exists()) {
+        if (!empty($account['email']) && ClassifiedAdUser::where('email', $account['email'])->exists()) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Email already used.',
             ], 422);
         }
 
-        if (User::where('phone', $account['phone'])->exists()) {
+        if (ClassifiedAdUser::where('phone', $account['phone'])->exists()) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Phone already used.',
@@ -167,19 +167,19 @@ class SellerOnboardingController extends Controller
         $createdShop = null;
 
         DB::transaction(function () use (&$createdUser, &$createdShop, $account, $shop) {
-            $createdUser = User::create([
+            $createdUser = ClassifiedAdUser::create([
                 'name'     => $account['name'],
                 'email'    => $account['email'],
                 'phone'    => $account['phone'],
                 'password' => Hash::make($account['password']),
-                'role'     => 'seller',
+                
             ]);
 
             $logoPath = $this->moveTempToPermanent($shop['logo_path'] ?? null);
             $bannerPath = $this->moveTempToPermanent($shop['banner_path'] ?? null);
 
             $createdShop = Shop::create([
-                'user_id'       => $createdUser->id,
+                'classified_ad_user_id'       => $createdUser->id,
                 'name'          => $shop['name'],
                 'category'      => $shop['category'],
                 'slug'          => $shop['slug'],
@@ -192,9 +192,11 @@ class SellerOnboardingController extends Controller
             ]);
         });
 
-        Auth::login($createdUser);
+        Auth::guard('classified_ad')->login($createdUser);
 
         session()->forget('seller_onboarding');
+
+        session()->flash('success', 'Seller account and shop created successfully. Please login to continue.');
 
         return response()->json([
             'ok' => true,

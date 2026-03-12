@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Shop extends Model
 {
     protected $fillable = [
-        'user_id',
+        'classified_ad_user_id',
         'name',
         'category',
         'slug',

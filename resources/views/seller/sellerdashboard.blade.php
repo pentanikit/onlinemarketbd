@@ -214,7 +214,7 @@
             <div>
                 <div class="sd-title">Dashboard</div>
                 <div class="sd-subtitle">
-                    Welcome back, <strong>{{ auth()->user()->name ?? 'Seller' }}</strong> — here’s what’s happening
+                    Welcome back, <strong>{{ auth('classified_ad')->user()->name ?? 'Seller' }}</strong> — here’s what’s happening
                     today.
                 </div>
             </div>

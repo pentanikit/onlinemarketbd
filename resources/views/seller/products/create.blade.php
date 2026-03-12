@@ -4,13 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>OnlineMarketBD • Add Product</title>
+    <title>OnlineMarketBD • Post New Ad</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" sizes="32x32" />
     <link rel="icon" href="{{ asset('favicon.png') }}" sizes="192x192" />
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Reuse your Seller Dashboard base look */
         .sd-body {
             background: #f6f8fb;
             font-family: "Trebuchet MS", Arial, sans-serif;
@@ -24,7 +23,7 @@
             letter-spacing: .2px;
         }
 
-        .sd-shop-pill {
+        .sd-user-pill {
             font-size: 13px;
             padding: 6px 10px;
             border-radius: 999px;
@@ -108,7 +107,6 @@
             font-size: 13px;
         }
 
-        /* Dropzone */
         .sp-drop {
             position: relative;
             border: 2px dashed #dbe3f2;
@@ -136,7 +134,6 @@
             margin-top: 2px;
         }
 
-        /* Preview grid */
         .sp-preview {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -212,8 +209,8 @@
             </a>
 
             <div class="ms-auto d-flex align-items-center gap-2">
-                <span class="sd-shop-pill">
-                    {{ $shop->shop_name ?? 'My Shop' }}
+                <span class="sd-user-pill">
+                    {{ auth('classified_ad')->user()->name ?? auth()->user()->name ?? 'My Account' }}
                 </span>
 
                 <a class="btn btn-sm btn-outline-dark" href="{{ url('/') }}">View Site</a>
@@ -228,11 +225,10 @@
 
     <main class="container py-4">
 
-        <div
-            class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mb-3">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mb-3">
             <div>
-                <div class="sd-title">Add Product</div>
-                <div class="sd-subtitle">Fast entry, clean photos, correct BDT price. Your catalog will look pro.</div>
+                <div class="sd-title">Post New Ad</div>
+                <div class="sd-subtitle">Add clear title, price, category, contact info and quality photos to get more responses.</div>
             </div>
 
             <div class="d-flex gap-2 flex-wrap">
@@ -259,42 +255,40 @@
             @csrf
 
             <div class="row g-3">
-                <!-- Left: main form -->
                 <div class="col-12 col-lg-8">
 
                     <div class="sd-section mb-3">
                         <div class="sd-section-title">Basic Info</div>
-                        <div class="sd-section-sub">Name + details customers understand instantly.</div>
+                        <div class="sd-section-sub">Write the title and description buyers understand instantly.</div>
 
                         <div class="row g-3 mt-1">
                             <div class="col-12">
-                                <label class="form-label sd-label">Product Name *</label>
-                                <input type="text" name="name" id="spName" value="{{ old('name') }}"
-                                    class="form-control sd-input" placeholder="Ex: Premium Cotton T-Shirt" required>
+                                <label class="form-label sd-label">Ad Title *</label>
+                                <input type="text" name="title" id="spTitle" value="{{ old('title') }}"
+                                    class="form-control sd-input" placeholder="Ex: Used iPhone 13 Pro Max 256GB" required>
                             </div>
 
                             <div class="col-12 col-md-6">
                                 <label class="form-label sd-label">Slug (auto)</label>
                                 <input type="text" name="slug" id="spSlug" value="{{ old('slug') }}"
-                                    class="form-control sd-input" placeholder="premium-cotton-t-shirt">
-                                <div class="sd-help">Used in URL. You can edit if you want.</div>
+                                    class="form-control sd-input" placeholder="used-iphone-13-pro-max-256gb">
+                                <div class="sd-help">Used in URL. You can edit this manually.</div>
                             </div>
 
                             <div class="col-12 col-md-6">
-                                <label class="form-label sd-label">SKU (optional)</label>
-                                <input type="text" name="sku" value="{{ old('sku') }}"
-                                    class="form-control sd-input" placeholder="Ex: TS-RED-M-001">
-                                <div class="sd-help">Helpful for inventory (unique per shop).</div>
+                                <label class="form-label sd-label">Location</label>
+                                <input type="text" name="location" value="{{ old('location') }}"
+                                    class="form-control sd-input" placeholder="Ex: Mirpur, Dhaka">
+                                <div class="sd-help">Mention city, area or pickup location.</div>
                             </div>
 
-                            <!-- ✅ NEW: Category + Subcategory -->
                             <div class="col-12 col-md-6">
                                 <label class="form-label sd-label">Category (Parent) *</label>
                                 <select name="parent_category_id" id="spParentCat" class="form-select sd-input">
                                     <option value="">Select category</option>
                                     @foreach(($parentCategories ?? []) as $pc)
                                         <option value="{{ $pc->id }}"
-                                            {{ (string)old('parent_category_id') === (string)$pc->id ? 'selected' : '' }}>
+                                            {{ (string) old('parent_category_id') === (string) $pc->id ? 'selected' : '' }}>
                                             {{ $pc->name }}
                                         </option>
                                     @endforeach
@@ -307,153 +301,101 @@
                                 <select name="seller_category_id" id="spChildCat" class="form-select sd-input" disabled>
                                     <option value="">Select subcategory</option>
                                 </select>
-                                <div class="sd-help">If the category has subcategories, pick one.</div>
-                            </div>
-                            <!-- ✅ END: Category + Subcategory -->
-
-                            <div class="col-12">
-                                <label class="form-label sd-label">Short Description (optional)</label>
-                                <textarea name="short_description" class="form-control sd-input" rows="2" placeholder="One short selling line…">{{ old('short_description') }}</textarea>
+                                <div class="sd-help">If available, choose the best matching subcategory.</div>
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label sd-label">Full Description (optional)</label>
+                                <label class="form-label sd-label">Description</label>
                                 <textarea name="description" class="form-control sd-input" rows="6"
-                                    placeholder="Write details: fabric, warranty, delivery, what’s included…">{{ old('description') }}</textarea>
+                                    placeholder="Write full details: condition, features, accessories, warranty, reason for sale, delivery option...">{{ old('description') }}</textarea>
                             </div>
                         </div>
                     </div>
 
                     <div class="sd-section mb-3">
-                        <div class="sd-section-title">Pricing (BDT)</div>
-                        <div class="sd-section-sub">Use clear price. Compare price shows discount.</div>
+                        <div class="sd-section-title">Pricing</div>
+                        <div class="sd-section-sub">Set clear pricing so buyers know what to expect.</div>
 
                         <div class="row g-3 mt-1">
                             <div class="col-12 col-md-4">
-                                <label class="form-label sd-label">Price *</label>
+                                <label class="form-label sd-label">Price</label>
                                 <input type="number" step="0.01" min="0" name="price"
-                                    value="{{ old('price', 0) }}" class="form-control sd-input" required>
+                                    value="{{ old('price') }}" class="form-control sd-input"
+                                    placeholder="Ex: 25000">
                             </div>
 
                             <div class="col-12 col-md-4">
-                                <label class="form-label sd-label">Compare Price (optional)</label>
-                                <input type="number" step="0.01" min="0" name="compare_price"
-                                    value="{{ old('compare_price') }}" class="form-control sd-input"
-                                    placeholder="Ex: 1490">
+                                <label class="form-label sd-label">Price Type</label>
+                                <select name="price_type" class="form-select sd-input">
+                                    <option value="fixed" {{ old('price_type', 'fixed') === 'fixed' ? 'selected' : '' }}>Fixed</option>
+                                    <option value="negotiable" {{ old('price_type') === 'negotiable' ? 'selected' : '' }}>Negotiable</option>
+                                    <option value="call" {{ old('price_type') === 'call' ? 'selected' : '' }}>Call for price</option>
+                                </select>
                             </div>
 
                             <div class="col-12 col-md-4">
-                                <label class="form-label sd-label">Cost Price (optional)</label>
-                                <input type="number" step="0.01" min="0" name="cost_price"
-                                    value="{{ old('cost_price') }}" class="form-control sd-input"
-                                    placeholder="Your buying cost">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sd-section mb-3">
-                        <div class="sd-section-title">Stock</div>
-                        <div class="sd-section-sub">Simple inventory controls.</div>
-
-                        <div class="row g-3 mt-1 align-items-end">
-                            <div class="col-12 col-md-4">
-                                <label class="form-label sd-label">Stock Qty</label>
-                                <input type="number" min="0" name="stock_qty"
-                                    value="{{ old('stock_qty', 0) }}" class="form-control sd-input">
-                            </div>
-
-                            <div class="col-12 col-md-4">
-                                <div class="form-check sd-check">
-                                    <input class="form-check-input" type="checkbox" name="track_stock"
-                                        value="1" id="spTrack" {{ old('track_stock', 1) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="spTrack">Track stock</label>
-                                </div>
-                                <div class="form-check sd-check mt-1">
-                                    <input class="form-check-input" type="checkbox" name="allow_backorder"
-                                        value="1" id="spBackorder"
-                                        {{ old('allow_backorder') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="spBackorder">Allow backorder</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-md-4">
-                                <label class="form-label sd-label">Status</label>
-                                <select name="status" class="form-select sd-input">
-                                    <option value="draft" {{ old('status', 'draft') === 'draft' ? 'selected' : '' }}>
-                                        Draft</option>
-                                    <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>Active
-                                    </option>
-                                    <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>
-                                        Inactive</option>
+                                <label class="form-label sd-label">Condition</label>
+                                <select name="condition_type" class="form-select sd-input">
+                                    <option value="">Select condition</option>
+                                    <option value="new" {{ old('condition_type') === 'new' ? 'selected' : '' }}>New</option>
+                                    <option value="used" {{ old('condition_type') === 'used' ? 'selected' : '' }}>Used</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="sd-section mb-3">
-                        <div class="sd-section-title">Advanced (Flexible)</div>
-                        <div class="sd-section-sub">
-                            Type attributes in comma separated format like:
-                            <strong>Color: Black, green</strong> and <strong>Size: M, L, XL</strong>.
-                            This will be saved as plain text (string).
-                        </div>
+                        <div class="sd-section-title">Contact Information</div>
+                        <div class="sd-section-sub">This info will help buyers contact the ad owner quickly.</div>
 
                         <div class="row g-3 mt-1">
-                            <!-- ✅ Attributes saved as string -->
-                            <div class="col-12">
-                                <label class="form-label sd-label">Attributes (comma format)</label>
-                                <textarea name="attributes_text" id="spAttrText" class="form-control sd-input" rows="4"
-                                    placeholder="Color: Black, green Size: M, L, XL Material: Cotton">{{ old('attributes_text') }}</textarea>
-
-                                <div class="sd-help">
-                                    One line per attribute. Use <strong>:</strong> between key and values. Values
-                                    separated by comma.
-                                    Example: <strong>Color: Black, Green</strong>
-                                </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label sd-label">Contact Name *</label>
+                                <input type="text" name="contact_name" value="{{ old('contact_name', auth('classified_ad')->user()->name ?? auth()->user()->name ?? '') }}"
+                                    class="form-control sd-input" placeholder="Ex: Rahim" required>
                             </div>
 
-                            <div class="col-12">
-                                <label class="form-label sd-label">Variants JSON (optional)</label>
-                                <textarea name="variants_json" class="form-control sd-input" rows="3"
-                                    placeholder='option: Black / M, sku: TS-BLK-M, price: 990, stock: 10'>{{ old('variants_json') }}</textarea>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label sd-label">Contact Email</label>
+                                <input type="email" name="contact_email" value="{{ old('contact_email', auth('classified_ad')->user()->email ?? auth()->user()->email ?? '') }}"
+                                    class="form-control sd-input" placeholder="Ex: name@email.com">
                             </div>
 
-                            <div class="col-12">
-                                <label class="form-label sd-label">Shipping JSON (optional)</label>
-                                <textarea name="shipping_json" class="form-control sd-input" rows="3"
-                                    placeholder='inside_dhaka: 80, outside_dhaka: 130, weight: 1.2, unit: kg'>{{ old('shipping_json') }}</textarea>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label sd-label">Contact Phone *</label>
+                                <input type="text" name="contact_phone" value="{{ old('contact_phone', auth('classified_ad')->user()->phone ?? '') }}"
+                                    class="form-control sd-input" placeholder="Ex: 017XXXXXXXX" required>
                             </div>
                         </div>
                     </div>
 
                     <div class="sd-section">
-                        <div class="sd-section-title">SEO (Optional)</div>
-                        <div class="sd-section-sub">Helps Google understand your product.</div>
+                        <div class="sd-section-title">Publishing</div>
+                        <div class="sd-section-sub">Choose whether to publish now or keep it pending.</div>
 
                         <div class="row g-3 mt-1">
-                            <div class="col-12">
-                                <label class="form-label sd-label">SEO Title</label>
-                                <input type="text" name="seo_title" value="{{ old('seo_title') }}"
-                                    class="form-control sd-input"
-                                    placeholder="Ex: Premium Cotton T-Shirt Price in BD">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label sd-label">Status</label>
+                                <select name="status" class="form-select sd-input">
+                                    <option value="pending" {{ old('status', 'pending') === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
+                                </select>
                             </div>
 
-                            <div class="col-12">
-                                <label class="form-label sd-label">SEO Description</label>
-                                <input type="text" name="seo_description" value="{{ old('seo_description') }}"
-                                    class="form-control sd-input"
-                                    placeholder="Short meta description (max ~155 chars)">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label sd-label">Expiry Date (optional)</label>
+                                <input type="datetime-local" name="expires_at"
+                                    value="{{ old('expires_at') }}" class="form-control sd-input">
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Right: images + actions -->
                 <div class="col-12 col-lg-4">
 
                     <div class="sd-section mb-3">
-                        <div class="sd-section-title">Product Images</div>
+                        <div class="sd-section-title">Ad Images</div>
                         <div class="sd-section-sub">Upload up to 10 images. First image becomes primary.</div>
 
                         <div class="sp-drop mt-2" id="spDrop" role="button" tabindex="0">
@@ -466,7 +408,7 @@
                         <div class="sp-preview mt-3" id="spPreview"></div>
 
                         <div class="sd-help mt-2">
-                            Tip: Use 1:1 square + bright background. Looks premium.
+                            Tip: Use real, bright and clear photos from multiple angles.
                         </div>
                     </div>
 
@@ -475,16 +417,15 @@
                         <div class="sd-section-sub">Choose what happens after save.</div>
 
                         <div class="d-grid gap-2 mt-2">
-                            <button type="submit" class="btn btn-dark sd-btn">Save Product</button>
-                            <button type="submit" name="save_next" value="1"
-                                class="btn btn-outline-dark sd-btn">
+                            <button type="submit" class="btn btn-dark sd-btn">Save Ad</button>
+                            <button type="submit" name="save_next" value="1" class="btn btn-outline-dark sd-btn">
                                 Save & Add Another
                             </button>
                         </div>
 
                         <div class="sd-tip mt-3">
                             <div class="sd-tip-title">Pro tip</div>
-                            <div class="sd-tip-text">Use 5–7 photos. Real images = higher trust = more orders.</div>
+                            <div class="sd-tip-text">Use 5–7 real images and write honest condition details for better response.</div>
                         </div>
                     </div>
 
@@ -498,7 +439,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        /* slug auto */
         function slugify(text) {
             return text.toString().toLowerCase()
                 .trim()
@@ -507,21 +447,24 @@
                 .replace(/\-\-+/g, '-');
         }
 
-        const nameEl = document.getElementById('spName');
+        const titleEl = document.getElementById('spTitle');
         const slugEl = document.getElementById('spSlug');
         let slugTouched = false;
 
-        slugEl.addEventListener('input', () => slugTouched = true);
-        nameEl.addEventListener('input', () => {
-            if (!slugTouched) slugEl.value = slugify(nameEl.value);
-        });
+        if (slugEl) {
+            slugEl.addEventListener('input', () => slugTouched = true);
+        }
 
-        /* ✅ Category -> Subcategory loader */
+        if (titleEl) {
+            titleEl.addEventListener('input', () => {
+                if (!slugTouched && slugEl) slugEl.value = slugify(titleEl.value);
+            });
+        }
+
         const parentCat = document.getElementById('spParentCat');
-        const childCat  = document.getElementById('spChildCat');
-
+        const childCat = document.getElementById('spChildCat');
         const childrenUrl = "{{ route('seller.categories.children') }}";
-        const oldChildId  = "{{ old('seller_category_id') }}";
+        const oldChildId = "{{ old('seller_category_id') }}";
 
         function setChildDisabled(state) {
             childCat.disabled = !!state;
@@ -535,25 +478,33 @@
 
         async function loadChildren(parentId, preselectId = '') {
             resetChild('Loading…');
+
             try {
                 const res = await fetch(`${childrenUrl}?parent_id=${encodeURIComponent(parentId)}`, {
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
+
                 const json = await res.json();
                 const rows = (json && json.data) ? json.data : [];
 
                 if (!rows.length) {
-                    // no subcategories -> keep disabled, parent will be saved
                     resetChild('No subcategory (optional)');
                     return;
                 }
 
                 childCat.innerHTML = `<option value="">Select subcategory</option>`;
+
                 rows.forEach(r => {
                     const opt = document.createElement('option');
                     opt.value = r.id;
                     opt.textContent = r.name;
-                    if (String(preselectId) && String(preselectId) === String(r.id)) opt.selected = true;
+
+                    if (String(preselectId) && String(preselectId) === String(r.id)) {
+                        opt.selected = true;
+                    }
+
                     childCat.appendChild(opt);
                 });
 
@@ -572,24 +523,20 @@
             loadChildren(pid, '');
         });
 
-        // On page load (old input)
         (function initCategory() {
             const pid = parentCat?.value;
             if (pid) loadChildren(pid, oldChildId);
         })();
 
-        /* image preview + remove (DataTransfer trick) */
         const fileInput = document.getElementById('spImages');
         const preview = document.getElementById('spPreview');
         const drop = document.getElementById('spDrop');
 
-        // ✅ open picker ONLY from dropzone
         drop.addEventListener('click', (e) => {
             e.preventDefault();
             fileInput.click();
         });
 
-        // optional: Enter/Space support for accessibility
         drop.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -601,15 +548,19 @@
             e.preventDefault();
             drop.classList.add('sp-drop-active');
         });
+
         drop.addEventListener('dragleave', () => drop.classList.remove('sp-drop-active'));
+
         drop.addEventListener('drop', (e) => {
             e.preventDefault();
             drop.classList.remove('sp-drop-active');
+
             if (e.dataTransfer.files && e.dataTransfer.files.length) {
                 const dt = new DataTransfer();
-                // merge existing + dropped
+
                 Array.from(fileInput.files).forEach(f => dt.items.add(f));
                 Array.from(e.dataTransfer.files).forEach(f => dt.items.add(f));
+
                 fileInput.files = dt.files;
                 renderPreviews();
             }
@@ -620,6 +571,7 @@
         function renderPreviews() {
             preview.innerHTML = '';
             const files = Array.from(fileInput.files || []);
+
             if (!files.length) return;
 
             files.slice(0, 10).forEach((file, idx) => {
@@ -629,24 +581,25 @@
                 item.className = 'sp-thumb';
 
                 item.innerHTML = `
-                <img src="${url}" alt="preview">
-                <div class="sp-thumb-bar">
-                    <div class="sp-thumb-badge">${idx === 0 ? 'Primary' : 'Image'}</div>
-                    <button type="button" class="sp-thumb-remove" data-index="${idx}">Remove</button>
-                </div>
+                    <img src="${url}" alt="preview">
+                    <div class="sp-thumb-bar">
+                        <div class="sp-thumb-badge">${idx === 0 ? 'Primary' : 'Image'}</div>
+                        <button type="button" class="sp-thumb-remove" data-index="${idx}">Remove</button>
+                    </div>
                 `;
 
                 preview.appendChild(item);
             });
 
-            // remove handlers
             preview.querySelectorAll('.sp-thumb-remove').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const removeIndex = parseInt(btn.getAttribute('data-index'));
                     const dt = new DataTransfer();
+
                     Array.from(fileInput.files).forEach((f, i) => {
                         if (i !== removeIndex) dt.items.add(f);
                     });
+
                     fileInput.files = dt.files;
                     renderPreviews();
                 });

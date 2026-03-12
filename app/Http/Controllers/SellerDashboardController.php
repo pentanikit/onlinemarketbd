@@ -12,7 +12,7 @@ class SellerDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user('classified_ad');
 
         
         $shop = DB::table('shops')->where('classified_ad_user_id', $user->id)->first();

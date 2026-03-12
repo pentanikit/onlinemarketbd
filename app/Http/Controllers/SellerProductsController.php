@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\SellerProducts as Product;
-use App\Models\ProductImages as ProductImage;
-use App\Models\Shop;
-
-use App\Models\SellerCategory; 
-
+use App\Modules\Classifieds\Models\ClassifiedAd as Product;
+use App\Modules\Classifieds\Models\ClassifiedAdImage as ProductImage;
+use App\Modules\Classifieds\Models\ClassifiedCategory as SellerCategory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -17,244 +14,176 @@ class SellerProductsController extends Controller
 {
     public function create()
     {
-        $shop = $this->sellerShop();
-
-        // ✅ NEW: Parent categories for dropdown
         $parentCategories = SellerCategory::query()
-            ->where('shop_id', (int) $shop->id)
-            ->where('seller_id', (int) auth()->id())
             ->whereNull('parent_id')
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get(['id','name','slug']);
+            ->get(['id', 'name', 'slug']);
 
-        return view('seller.products.create', compact('shop', 'parentCategories'));
+        return view('seller.products.create', compact('parentCategories'));
     }
 
     /**
-     * ✅ NEW: AJAX endpoint to fetch subcategories by parent_id
-     * Route example:
-     *   Route::get('/seller/categories/children', [SellerProductsController::class, 'categoryChildren'])
-     *      ->name('seller.categories.children');
+     * AJAX endpoint to fetch subcategories by parent_id
      */
     public function categoryChildren(Request $request)
     {
-        $shop = $this->sellerShop();
-
         $parentId = (int) $request->get('parent_id', 0);
 
         $children = SellerCategory::query()
-            ->where('shop_id', (int) $shop->id)
-            ->where('seller_id', (int) auth()->id())
             ->where('parent_id', $parentId)
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get(['id','name','slug','parent_id']);
+            ->get(['id', 'name', 'slug', 'parent_id']);
 
         return response()->json(['data' => $children]);
     }
 
     public function store(Request $request)
     {
-        $shop = $this->sellerShop();
+        $adUserId = auth('classified_ad')->id() ?? auth()->id();
+
+        abort_if(!$adUserId, 401, 'Please login first.');
 
         $data = $request->validate([
-            'name' => ['required','string','max:180'],
-            'sku' => ['nullable','string','max:80'],
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
 
-            // ✅ NEW: Category inputs (parent + subcategory)
-            // You can submit either:
-            // - seller_category_id (subcategory id) OR
-            // - parent_category_id (only parent if no subcategories)
-            'parent_category_id' => ['nullable','integer','exists:seller_categories,id'],
-            'seller_category_id' => ['nullable','integer','exists:seller_categories,id'],
+            // category
+            'parent_category_id' => ['nullable', 'integer', 'exists:classified_categories,id'],
+            'category_id' => ['nullable', 'integer', 'exists:classified_categories,id'],
+            'seller_category_id' => ['nullable', 'integer', 'exists:classified_categories,id'], // backward compatibility
 
-            'price' => ['required','numeric','min:0'],
-            'compare_price' => ['nullable','numeric','min:0'],
-            'cost_price' => ['nullable','numeric','min:0'],
+            'description' => ['nullable', 'string'],
+            'price' => ['nullable', 'numeric', 'min:0'],
+            'price_type' => ['nullable', 'in:fixed,negotiable,call'],
+            'condition_type' => ['nullable', 'in:new,used'],
+            'location' => ['nullable', 'string', 'max:255'],
 
-            'stock_qty' => ['nullable','integer','min:0'],
-            'track_stock' => ['nullable','boolean'],
-            'allow_backorder' => ['nullable','boolean'],
+            'contact_name' => ['required', 'string', 'max:255'],
+            'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_phone' => ['required', 'string', 'max:30'],
 
-            'short_description' => ['nullable','string','max:2000'],
-            'description' => ['nullable','string'],
+            'status' => ['nullable', 'in:pending,published,rejected,sold'],
+            'published_at' => ['nullable', 'date'],
+            'expires_at' => ['nullable', 'date'],
 
-            'status' => ['required','in:draft,active,inactive'],
-
-            // ✅ NEW: friendly input (optional)
-            'attributes_text' => ['nullable','string','max:10000'],
-
-            // existing
-            'attributes_json' => ['nullable','string'],
-            'variants_json' => ['nullable','string'],
-            'shipping_json' => ['nullable','string'],
-
-            'images' => ['nullable','array','max:10'],
-            'images.*' => ['image','mimes:jpg,jpeg,png,webp','max:3072'],
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
         ]);
 
-        // Normalize booleans
-        $trackStock = (bool) ($request->input('track_stock', 1));
-        $allowBackorder = (bool) ($request->input('allow_backorder', 0));
-
-        $rawAttr = (string) $request->input('attributes_text', '');
-        $rawAttr = trim($rawAttr);
-
-        // Clean formatting
-        $attributesText = null;
-        if ($rawAttr !== '') {
-            $lines = preg_split("/\r\n|\n|\r/", $rawAttr);
-            $clean = [];
-
-            foreach ($lines as $line) {
-                $line = trim((string)$line);
-                if ($line === '') continue;
-
-                $line = preg_replace('/\s*:\s*/', ': ', $line);
-                $line = preg_replace('/\s*,\s*/', ', ', $line);
-                $line = preg_replace('/\s{2,}/', ' ', $line);
-
-                $clean[] = $line;
-            }
-
-            $attributesText = !empty($clean) ? implode("\n", $clean) : null;
+        $baseSlug = Str::slug($request->input('slug') ?: $data['title']);
+        if ($baseSlug === '') {
+            $baseSlug = 'classified-ad';
         }
 
-        $baseSlug = Str::slug($request->input('slug') ?: $data['name']);
-        if ($baseSlug === '') $baseSlug = 'product';
-
-        // ✅ NEW: Decide final category id (prefer subcategory)
         $finalCategoryId = $this->resolveSellerCategoryId(
-            $shop,
             $request->input('parent_category_id'),
-            $request->input('seller_category_id')
+            $request->input('category_id', $request->input('seller_category_id'))
         );
 
-        return DB::transaction(function () use ($request, $data, $shop, $baseSlug, $trackStock, $allowBackorder, $attributesText, $finalCategoryId) {
+        return DB::transaction(function () use ($request, $data, $adUserId, $baseSlug, $finalCategoryId) {
+            $slug = $this->uniqueSlug($baseSlug);
 
-            $slug = $this->uniqueSlug((int)$shop->id, $baseSlug);
+            $status = $data['status'] ?? 'pending';
 
-            $product = Product::create([
-                'shop_id' => (int) $shop->id,
-                'seller_id' => (int) auth()->id(),
+            $ad = Product::create([
+                'classified_ad_user_id' => (int) $adUserId,
+                'category_id'           => $finalCategoryId,
 
-                // ✅ NEW: save category/subcategory
-                'seller_category_id' => $finalCategoryId,
+                'title'                 => $data['title'],
+                'slug'                  => $slug,
+                'description'           => $data['description'] ?? null,
 
-                'name' => $data['name'],
-                'slug' => $slug,
-                'sku' => $data['sku'] ?: null,
+                'price'                 => $data['price'] ?? null,
+                'price_type'            => $data['price_type'] ?? 'fixed',
+                'condition_type'        => $data['condition_type'] ?? null,
+                'location'              => $data['location'] ?? null,
 
-                'price' => $data['price'],
-                'compare_price' => $data['compare_price'] ?? null,
-                'cost_price' => $data['cost_price'] ?? null,
-                'currency' => 'BDT',
+                'contact_name'          => $data['contact_name'],
+                'contact_email'         => $data['contact_email'] ?? null,
+                'contact_phone'         => $data['contact_phone'],
 
-                'stock_qty' => (int) ($data['stock_qty'] ?? 0),
-                'track_stock' => $trackStock,
-                'allow_backorder' => $allowBackorder,
-
-                'short_description' => $data['short_description'] ?? null,
-                'description' => $data['description'] ?? null,
-
-                // ✅ FIX: store cleaned text (your old code used $data['attributes_text'] which isn't in $data)
-                'attributes' => $attributesText,
-
-                'variants' => $request->input('variants_json'),
-                'shipping' => $request->input('shipping_json'),
-
-                'status' => $data['status'],
-                'seo_title' => $request->input('seo_title') ?: null,
-                'seo_description' => $request->input('seo_description') ?: null,
+                'status'                => $status,
+                'published_at'          => $status === 'published'
+                    ? ($data['published_at'] ?? now())
+                    : null,
+                'expires_at'            => $data['expires_at'] ?? null,
             ]);
 
-            // Images (first one becomes primary)
             $files = $request->file('images', []);
             $sort = 0;
 
             foreach ($files as $i => $file) {
-                $path = $file->store("products/{$shop->id}/{$product->id}", 'public');
+                $path = $file->store("classifieds/{$ad->id}", 'public');
 
                 ProductImage::create([
-                    'product_id' => $product->id,
-                    'path' => $path,
-                    'alt_text' => $product->name,
-                    'sort_order' => $sort++,
-                    'is_primary' => ($i === 0),
+                    'classified_ad_id' => $ad->id,
+                    'image_path'       => $path,
+                    'sort_order'       => $sort++,
+                    'is_primary'       => ($i === 0),
                 ]);
             }
 
-            $next = $request->input('save_next'); // "1" if Save & Add Another
+            $next = $request->input('save_next');
             if ($next) {
                 return redirect()
                     ->route('products.create')
-                    ->with('success', 'Product saved ✅ Now add another one!');
+                    ->with('success', 'Ad saved ✅ Now add another one!');
             }
 
             return redirect()
                 ->route('products.create')
-                ->with('success', 'Product saved ✅');
+                ->with('success', 'Ad saved ✅');
         });
     }
 
-    private function uniqueSlug(int $shopId, string $baseSlug): string
+    private function uniqueSlug(string $baseSlug): string
     {
         $slug = $baseSlug;
         $n = 2;
 
-        while (Product::where('shop_id', $shopId)->where('slug', $slug)->exists()) {
+        while (Product::where('slug', $slug)->exists()) {
             $slug = $baseSlug . '-' . $n;
             $n++;
         }
+
         return $slug;
     }
 
-    private function sellerShop()
-    {
-        return Shop::where('user_id', auth()->id())->firstOrFail();
-    }
-
     /**
-     * ✅ NEW: Validate + resolve category id.
-     * Priority: seller_category_id (subcategory) -> parent_category_id -> null
+     * Validate + resolve category id.
+     * Priority: category_id / seller_category_id (child) -> parent_category_id -> null
      */
-    private function resolveSellerCategoryId(Shop $shop, $parentId, $childId): ?int
+    private function resolveSellerCategoryId($parentId, $childId): ?int
     {
-        $sellerId = (int) auth()->id();
-        $shopId   = (int) $shop->id;
-
         $parentId = $parentId !== null && $parentId !== '' ? (int) $parentId : null;
         $childId  = $childId !== null && $childId !== '' ? (int) $childId : null;
 
-        // Validate parent scope (must belong to same seller+shop)
         if ($parentId) {
-            $okParent = SellerCategory::query()
+            $parent = SellerCategory::query()
                 ->where('id', $parentId)
-                ->where('shop_id', $shopId)
-                ->where('seller_id', $sellerId)
-                ->exists();
+                ->where('is_active', true)
+                ->first();
 
-            if (!$okParent) {
+            if (!$parent) {
                 abort(422, 'Invalid parent category.');
             }
         }
 
-        // Validate child scope + ensure it belongs to parent if parent given
         if ($childId) {
             $child = SellerCategory::query()
                 ->where('id', $childId)
-                ->where('shop_id', $shopId)
-                ->where('seller_id', $sellerId)
+                ->where('is_active', true)
                 ->first();
 
             if (!$child) {
                 abort(422, 'Invalid subcategory.');
             }
 
-            if ($parentId && (int)($child->parent_id ?? 0) !== (int)$parentId) {
+            if ($parentId && (int) ($child->parent_id ?? 0) !== (int) $parentId) {
                 abort(422, 'Subcategory does not belong to selected parent category.');
             }
 
@@ -266,97 +195,157 @@ class SellerProductsController extends Controller
 
     public function show(string $slug)
     {
-        // 1) Load product + images (and primaryImage) + category
         $ad = Product::query()
             ->where('slug', $slug)
-            ->where('status', 'active')
-            ->with(['images', 'primaryImage', 'category', 'category.parent'])
+            ->whereIn('status', ['published', 'sold'])
+            ->with([
+                'images',
+                'primaryImage',
+                'category',
+                'category.parent',
+                'adUser',
+            ])
             ->firstOrFail();
 
-        // 2) Build images array (primary first)
         $images = [];
 
-        if ($ad->primaryImage && !empty($ad->primaryImage->path)) {
-            $images[] = $ad->primaryImage->path;
+        if ($ad->primaryImage && !empty($ad->primaryImage->image_path)) {
+            $images[] = $ad->primaryImage->image_path;
         }
 
         foreach ($ad->images as $img) {
-            if (empty($img->path)) continue;
-            if (in_array($img->path, $images, true)) continue;
-            $images[] = $img->path;
+            if (empty($img->image_path)) {
+                continue;
+            }
+
+            if (in_array($img->image_path, $images, true)) {
+                continue;
+            }
+
+            $images[] = $img->image_path;
         }
 
         if (empty($images)) {
             $images = ['https://dummyimage.com/1200x800/f2f4f8/111&text=No+Image'];
         }
 
-        // 3) Load shop info
-        $shop = null;
-        if (!empty($ad->shop_id) && class_exists(\App\Models\Shop::class)) {
-            $shop = \App\Models\Shop::query()->where('id', $ad->shop_id)->first();
-        }
-
-        // 4) Optional specs (+ category)
         $specs = [
-            'SKU' => $ad->sku ?: '—',
-            'Stock' => (string)($ad->stock_qty ?? 0),
-            'Currency' => $ad->currency ?: 'BDT',
-            'Category' => $ad->category?->parent
+            'Price Type' => $ad->price_type ?: '—',
+            'Condition'  => $ad->condition_type ?: '—',
+            'Location'   => $ad->location ?: '—',
+            'Category'   => $ad->category?->parent
                 ? ($ad->category->parent->name . ' > ' . $ad->category->name)
                 : ($ad->category->name ?? '—'),
+            'Views'      => (string) ($ad->views_count ?? 0),
+            'Status'     => $ad->status ?: '—',
         ];
 
         return view('seller.products.view', [
             'ad'     => $ad,
             'images' => $images,
-            'shop'   => $shop,
+            'shop'   => null,
             'specs'  => $specs,
         ]);
     }
 
+    public function seller_products(Request $request, $category)
+    {
+        $q       = trim((string) $request->get('q', ''));
+        $sort    = (string) $request->get('sort', 'newest'); // newest|price_low|price_high
+        $status  = $request->get('status');
+        $perPage = (int) $request->get('per_page', 12);
+        $perPage = $perPage > 0 ? min($perPage, 48) : 12;
 
-public function seller_products(Request $request, $category)
-{
-    // filters (query string)
-    $q        = trim((string) $request->get('q', ''));
-    $sort     = (string) $request->get('sort', 'newest'); // newest|price_low|price_high
-    $status   = $request->get('status');
-    $perPage  = (int) $request->get('per_page', 12);
-    $perPage  = $perPage > 0 ? min($perPage, 48) : 12;
+        $selectedCategory = SellerCategory::query()
+            ->select(['id', 'name', 'slug', 'parent_id'])
+            ->where('id', $category)
+            ->orWhere('slug', $category)
+            ->first();
 
-    // Resolve category from route param (ID or slug)
-    $selectedCategory = \App\Models\SellerCategory::query()
-        ->select(['id', 'name', 'slug', 'parent_id'])
-        ->where('id', $category)
-        ->orWhere('slug', $category)
-        ->first();
+        $categories = SellerCategory::query()
+            ->select(['id', 'name', 'slug', 'parent_id'])
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
-    // Sidebar categories
-    $categories = \App\Models\SellerCategory::query()
-        ->select(['id','name','slug','parent_id'])
-        ->orderBy('name')
-        ->get();
+        $categoryCounts = Product::query()
+            ->whereIn('status', ['published', 'sold'])
+            ->selectRaw('category_id, COUNT(*) as total')
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id');
 
-    // Category counts (optional)
-    $categoryCounts = Product::query()
-        ->selectRaw('seller_category_id, COUNT(*) as total')
-        ->groupBy('seller_category_id')
-        ->pluck('total', 'seller_category_id');
+        if (!$selectedCategory) {
+            $products = Product::query()
+                ->whereRaw('1=0')
+                ->paginate($perPage)
+                ->withQueryString();
 
-    // If category doesn't exist => return view with fallback flag
-    if (! $selectedCategory) {
-        $products = Product::query()
-            ->whereRaw('1=0')
-            ->paginate($perPage)
-            ->withQueryString();
+            return view('seller.categoryproducts', [
+                'products'         => $products,
+                'categories'       => $categories,
+                'categoryCounts'   => $categoryCounts,
+                'selectedCategory' => null,
+                'catNotFound'      => true,
+                'filters'          => [
+                    'q' => $q,
+                    'sort' => $sort,
+                    'per_page' => $perPage,
+                ],
+            ]);
+        }
+
+        $categoryIds = [$selectedCategory->id];
+
+        $childIds = SellerCategory::query()
+            ->where('parent_id', $selectedCategory->id)
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($childIds)) {
+            $categoryIds = array_merge($categoryIds, $childIds);
+        }
+
+        $query = Product::query()
+            ->with([
+                'primaryImage:id,classified_ad_id,image_path,is_primary',
+                'images:id,classified_ad_id,image_path,is_primary',
+                'category:id,name,slug,parent_id',
+            ])
+            ->whereIn('category_id', $categoryIds);
+
+        if ($q !== '') {
+            $query->where(function ($qq) use ($q) {
+                $qq->where('title', 'like', "%{$q}%")
+                    ->orWhere('slug', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhere('location', 'like', "%{$q}%");
+            });
+        }
+
+        if (!empty($status)) {
+            $query->where('status', $status);
+        } else {
+            $query->whereIn('status', ['published', 'sold']);
+        }
+
+        if ($sort === 'price_low') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'price_high') {
+            $query->orderBy('price', 'desc');
+        } else {
+            $query->latest('id');
+        }
+
+        $products = $query->paginate($perPage)->withQueryString();
 
         return view('seller.categoryproducts', [
-            'products' => $products,
-            'categories' => $categories,
-            'categoryCounts' => $categoryCounts,
-            'selectedCategory' => null,
-            'catNotFound' => true,
-            'filters' => [
+            'products'         => $products,
+            'categories'       => $categories,
+            'categoryCounts'   => $categoryCounts,
+            'selectedCategory' => $selectedCategory,
+            'catNotFound'      => false,
+            'filters'          => [
                 'q' => $q,
                 'sort' => $sort,
                 'per_page' => $perPage,
@@ -364,53 +353,16 @@ public function seller_products(Request $request, $category)
         ]);
     }
 
-    // Product query (force this category from route)
-    $query = Product::query()
-        ->with([
-            'primaryImage:id,product_id,path,is_primary',
-            'images:id,product_id,path,is_primary',
-            'category:id,name,slug,parent_id',
-        ])
-        ->where('seller_category_id', $selectedCategory->id);
+    public function destroyImage($id)
+    {
+        $image = ProductImage::query()->findOrFail($id);
 
-    // search by name/sku/slug
-    if ($q !== '') {
-        $query->where(function ($qq) use ($q) {
-            $qq->where('name', 'like', "%{$q}%")
-               ->orWhere('sku', 'like', "%{$q}%")
-               ->orWhere('slug', 'like', "%{$q}%");
-        });
+        if (!empty($image->image_path) && Storage::disk('public')->exists($image->image_path)) {
+            Storage::disk('public')->delete($image->image_path);
+        }
+
+        $image->delete();
+
+        return back()->with('success', 'Image deleted successfully.');
     }
-
-    // status filter
-    if (!empty($status)) {
-        $query->where('status', $status);
-    } else {
-        $query->whereIn('status', ['active', 'published', 1, '1']);
-    }
-
-    // sorting
-    if ($sort === 'price_low') {
-        $query->orderBy('price', 'asc');
-    } elseif ($sort === 'price_high') {
-        $query->orderBy('price', 'desc');
-    } else {
-        $query->latest('id');
-    }
-
-    $products = $query->paginate($perPage)->withQueryString();
-
-    return view('seller.categoryproducts', [
-        'products' => $products,
-        'categories' => $categories,
-        'categoryCounts' => $categoryCounts,
-        'selectedCategory' => $selectedCategory,
-        'catNotFound' => false,
-        'filters' => [
-            'q' => $q,
-            'sort' => $sort,
-            'per_page' => $perPage,
-        ],
-    ]);
-}
 }

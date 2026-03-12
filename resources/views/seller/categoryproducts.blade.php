@@ -1,10 +1,9 @@
-{{-- resources/views/seller/categoryproducts.blade.php --}}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Seller Products</title>
+    <title>Classified Ads</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -42,12 +41,10 @@
     $catNotFound = $catNotFound ?? false;
     $selectedCategory = $selectedCategory ?? null;
 
-    // base url = current category page
     $baseUrl = $selectedCategory
         ? route('sellercategoryproducts', $selectedCategory->slug)
         : url()->current();
 
-    // helper: keep query string while changing filters
     $buildUrl = function(array $merge) use ($baseUrl, $qs) {
         $new = array_merge($qs, $merge);
         foreach ($new as $k => $v) {
@@ -59,28 +56,30 @@
 
     $categoryLabel = $selectedCategory ? $selectedCategory->name : 'Category';
 @endphp
-        @php
-            $content = \App\Models\SiteContent::where('key', 'home')->first();
-        @endphp
+
+@php
+    $content = \App\Models\SiteContent::where('key', 'home')->first();
+@endphp
 
 <header class="bg-white border-bottom sticky-top">
     <div class="container py-3">
         <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
             <div>
-                <h1 class="h5 fw-bold mb-1"><img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="" srcset=""></h1>
+                <h1 class="h5 fw-bold mb-1">
+                    <img src="{{ asset('storage').'/'.$content->logo_image }}" width="220" height="60" alt="">
+                </h1>
                 <div class="text-muted small">
-                    Home <span class="mx-1">›</span> Products
+                    Home <span class="mx-1">›</span> Ads
                     @if($selectedCategory)
                         <span class="mx-1">›</span> {{ $selectedCategory->name }}
                     @endif
                 </div>
             </div>
 
-            {{-- Search stays on same category route --}}
             <form class="searchbar ms-lg-auto" method="GET" action="{{ $baseUrl }}">
                 <div class="input-group">
                     <input name="q" value="{{ $filters['q'] ?? '' }}" type="search"
-                           class="form-control form-control-lg" placeholder="Search by name, SKU, slug..." />
+                           class="form-control form-control-lg" placeholder="Search by title, slug, description, location..." />
                     <input type="hidden" name="sort" value="{{ $filters['sort'] ?? 'newest' }}">
                     <input type="hidden" name="per_page" value="{{ $filters['per_page'] ?? 12 }}">
                     <button class="btn btn-warning btn-lg px-4" type="submit" aria-label="Search">
@@ -90,18 +89,15 @@
             </form>
         </div>
 
-        {{-- Filter row --}}
         <div class="d-flex flex-wrap gap-2 mt-3 align-items-center">
             <button class="btn btn-outline-success chip-btn" type="button" disabled>
                 <i class="bi bi-sliders me-1"></i> Refine
             </button>
 
-            {{-- Current Category Chip (non-click) --}}
             <span class="btn btn-success chip-btn disabled">
                 {{ $categoryLabel }}
             </span>
 
-            {{-- Sort --}}
             <div class="dropdown ms-auto">
                 <button class="btn btn-outline-secondary chip-btn dropdown-toggle" data-bs-toggle="dropdown">
                     Sort: {{ $filters['sort'] ?? 'newest' }}
@@ -118,7 +114,6 @@
 
 <main class="container py-4">
     <div class="row g-4">
-        {{-- Sidebar --}}
         <aside class="col-12 col-lg-3">
             <div class="bg-white border rounded-3 p-3">
                 <div class="fw-semibold mb-2 text-muted small">Categories</div>
@@ -143,17 +138,14 @@
             </div>
         </aside>
 
-        {{-- Content --}}
         <section class="col-12 col-lg-9">
-
-            {{-- Category not found fallback --}}
             @if($catNotFound)
                 <div class="alert alert-warning d-flex align-items-start gap-2">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
                         <div class="fw-bold">Category not found</div>
                         <div class="small text-muted">
-                            The category you selected doesn’t exist anymore (or the link is invalid).
+                            The category you selected doesn’t exist anymore or the link is invalid.
                         </div>
                         @php $firstCat = $categories->where('parent_id', null)->first(); @endphp
                         @if($firstCat)
@@ -171,10 +163,9 @@
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                 <div class="text-muted">
                     Showing {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
-                    of {{ number_format($products->total()) }} products
+                    of {{ number_format($products->total()) }} ads
                 </div>
 
-                {{-- per page --}}
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
                         Per page: {{ $filters['per_page'] ?? 12 }}
@@ -190,64 +181,97 @@
             <div class="vstack gap-3">
                 @forelse($products as $p)
                     @php
-                        $img = optional($p->primaryImage)->path;
-                        if (!$img && $p->images && $p->images->count()) $img = $p->images->first()->path;
+                        $img = null;
 
-                        $imgUrl = $img
-                            ? (str_starts_with($img, 'http') ? $img : asset($img))
-                            : 'https://via.placeholder.com/340x240?text=No+Image';
+                        if (isset($p->primaryImage)) {
+                            if ($p->primaryImage instanceof \Illuminate\Support\Collection) {
+                                $img = optional($p->primaryImage->first())->image_path;
+                            } else {
+                                $img = optional($p->primaryImage)->image_path;
+                            }
+                        }
 
-                        $statusLabel = is_string($p->status) ? strtoupper($p->status) : 'ACTIVE';
+                        if (!$img && isset($p->images) && $p->images instanceof \Illuminate\Support\Collection && $p->images->count()) {
+                            $img = optional($p->images->first())->image_path;
+                        }
+
+                        if ($img) {
+                            $imgUrl = str_starts_with($img, 'http')
+                                ? $img
+                                : asset('storage/' . ltrim($img, '/'));
+                        } else {
+                            $imgUrl = 'https://via.placeholder.com/340x240?text=No+Image';
+                        }
+
+                        $statusLabel = is_string($p->status) ? strtoupper($p->status) : 'PUBLISHED';
                         $categoryName = optional($p->category)->name;
                     @endphp
 
                     <article class="listing-card">
                         <a href="{{ route('product.view', $p->slug) }}">
-                                                        <div class="d-flex">
-                                <img class="listing-img" src="{{ $imgUrl }}" alt="{{ $p->name }}">
+                            <div class="d-flex">
+                                <img class="listing-img" src="{{ $imgUrl }}" alt="{{ $p->title }}">
                                 <div class="p-3 flex-grow-1">
                                     <div class="d-flex justify-content-between gap-3">
                                         <div>
-                                            <div class="listing-title">{{ $p->name }}</div>
+                                            <div class="listing-title">{{ $p->title }}</div>
+
                                             <div class="listing-meta">
-                                                SKU: {{ $p->sku ?? 'N/A' }}
-                                                @if($categoryName) • {{ $categoryName }} @endif
+                                                @if($categoryName)
+                                                    {{ $categoryName }}
+                                                @endif
+                                                @if(!empty($p->location))
+                                                    • {{ $p->location }}
+                                                @endif
+                                                @if(!empty($p->condition_type))
+                                                    • {{ ucfirst($p->condition_type) }}
+                                                @endif
                                             </div>
 
                                             <div class="price mt-2">
-                                                Tk {{ number_format((float)($p->price ?? 0)) }}
+                                                @if($p->price_type === 'call')
+                                                    Call for price
+                                                @elseif(!is_null($p->price))
+                                                    Tk {{ number_format((float) $p->price, 2) }}
+                                                    @if($p->price_type === 'negotiable')
+                                                        <span class="text-muted fw-normal small">(Negotiable)</span>
+                                                    @endif
+                                                @else
+                                                    Price not set
+                                                @endif
                                             </div>
 
                                             <div class="d-flex flex-wrap gap-2 mt-2">
                                                 <span class="badge text-bg-light text-dark border badge-pill">
                                                     {{ $statusLabel }}
                                                 </span>
+                                                @if(!empty($p->price_type))
+                                                    <span class="badge text-bg-light text-dark border badge-pill">
+                                                        {{ strtoupper($p->price_type) }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
 
                                         <div class="action-icons">
-                                            {{-- Put your real routes here --}}
-                                            {{-- <a class="icon-btn" href="#" title="Edit"><i class="bi bi-pencil"></i></a>
-                                            <a class="icon-btn" href="#" title="View"><i class="bi bi-eye"></i></a> --}}
                                         </div>
                                     </div>
 
-                                    @if(!empty($p->short_description))
+                                    @if(!empty($p->description))
                                         <div class="text-muted small mt-2">
-                                            {{ \Illuminate\Support\Str::limit(strip_tags($p->short_description), 120) }}
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($p->description), 120) }}
                                         </div>
                                     @endif
                                 </div>
                             </div>
                         </a>
-
                     </article>
                 @empty
                     <div class="bg-white border rounded-3 p-4 text-center text-muted">
                         @if($selectedCategory)
-                            No products found in <span class="fw-semibold">{{ $selectedCategory->name }}</span>.
+                            No ads found in <span class="fw-semibold">{{ $selectedCategory->name }}</span>.
                         @else
-                            No products found.
+                            No ads found.
                         @endif
                     </div>
                 @endforelse
